@@ -6,6 +6,8 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity @Getter
 @NoArgsConstructor
@@ -47,4 +49,7 @@ public class User {
 
     @Column(nullable = false)
     private Byte reliability;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestionList> questionLists = new ArrayList<>();
 }
