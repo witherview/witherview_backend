@@ -1,6 +1,5 @@
 package com.witherview.database.entity;
 
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
