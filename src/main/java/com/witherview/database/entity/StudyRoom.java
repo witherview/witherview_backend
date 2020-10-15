@@ -8,6 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity @Getter
 @NoArgsConstructor
@@ -38,4 +40,7 @@ public class StudyRoom {
 
     @Column(columnDefinition = "TIME")
     private LocalTime time;
+
+    @OneToMany(mappedBy = "study_room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudyRoomParticipant> studyRoomParticipants = new ArrayList<>();
 }

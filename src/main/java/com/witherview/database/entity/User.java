@@ -54,5 +54,8 @@ public class User {
     private List<QuestionList> questionLists = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StudyRoom> studyRooms = new ArrayList<>();
+    private List<StudyRoom> hostedStudyRooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudyRoomParticipant> participatedStudyRooms = new ArrayList<>();
 }
