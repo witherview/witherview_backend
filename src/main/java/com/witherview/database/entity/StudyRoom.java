@@ -43,4 +43,7 @@ public class StudyRoom {
 
     @OneToMany(mappedBy = "study_room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoomParticipant> studyRoomParticipants = new ArrayList<>();
+
+    @OneToMany(mappedBy = "study_room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Chat> chats = new ArrayList<>();
 }
