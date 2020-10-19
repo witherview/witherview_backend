@@ -48,6 +48,7 @@ public class User {
     private Integer selfPracticeCnt;
 
     @Column(nullable = false)
+    @ColumnDefault("0")
     private Byte reliability;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
