@@ -32,4 +32,15 @@ public class StudyFeedback extends CreatedBaseEntity {
 
     @NotNull
     private Boolean passOrFail;
+
+    public StudyFeedback(StudyRoom studyRoom, String feedbackMessage, Byte score, Boolean passOrFail) {
+        this.studyRoom = studyRoom;
+        this.feedbackMessage = feedbackMessage;
+        this.score = score;
+        this.passOrFail = passOrFail;
+    }
+
+    protected void updateTargetUser(User targetUser) {
+        this.targetUser = targetUser;
+    }
 }

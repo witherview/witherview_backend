@@ -78,4 +78,9 @@ public class User {
         studyRoom.updateHost(this);
         this.hostedStudyRooms.add(studyRoom);
     }
+
+    public void addStudyFeedback(StudyFeedback studyFeedback) {
+        studyFeedback.updateTargetUser(this);
+        this.studyFeedbacks.add(studyFeedback);
+    }
 }
