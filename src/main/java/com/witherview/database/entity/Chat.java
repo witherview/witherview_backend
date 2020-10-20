@@ -25,4 +25,13 @@ public class Chat extends CreatedBaseEntity {
     @NotBlank
     @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
+
+    public Chat(User user, String message) {
+        this.user = user;
+        this.message = message;
+    }
+
+    protected void updateStudyRoom(StudyRoom studyRoom) {
+        this.studyRoom = studyRoom;
+    }
 }

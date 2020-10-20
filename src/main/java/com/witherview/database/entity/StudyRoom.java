@@ -58,4 +58,9 @@ public class StudyRoom {
     protected void updateHost(User host) {
         this.host = host;
     }
+
+    public void addChat(Chat chat) {
+        this.chats.add(chat);
+        chat.updateStudyRoom(this);
+    }
 }
