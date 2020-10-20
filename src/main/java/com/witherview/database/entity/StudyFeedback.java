@@ -2,17 +2,15 @@ package com.witherview.database.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Entity @Getter
 @NoArgsConstructor
 @Table(name = "tbl_study_feedback")
-public class StudyFeedback {
+public class StudyFeedback extends CreatedBaseEntity {
 
     @Id @GeneratedValue
     private Long id;
@@ -34,7 +32,4 @@ public class StudyFeedback {
 
     @NotNull
     private Boolean passOrFail;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
 }
