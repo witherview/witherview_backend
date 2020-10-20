@@ -48,8 +48,8 @@ public class QuestionList {
     }
 
     public void addQuestion(Question question) {
-        this.questions.add(question);
         question.updateBelongList(this);
+        this.questions.add(question);
     }
 
     protected void updateOwner(User owner) {

@@ -70,7 +70,12 @@ public class User {
     }
 
     public void addQuestionList(QuestionList questionList) {
-        this.questionLists.add(questionList);
         questionList.updateOwner(this);
+        this.questionLists.add(questionList);
+    }
+
+    public void addHostedRoom(StudyRoom studyRoom) {
+        studyRoom.updateHost(this);
+        this.hostedStudyRooms.add(studyRoom);
     }
 }

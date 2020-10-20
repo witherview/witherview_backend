@@ -46,4 +46,16 @@ public class StudyRoom {
 
     @OneToMany(mappedBy = "study_room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chat> chats = new ArrayList<>();
+
+    public StudyRoom(String title, Byte nowUserCnt, Byte maxUserCnt, LocalDate date, LocalTime time) {
+        this.title = title;
+        this.nowUserCnt = nowUserCnt;
+        this.maxUserCnt = maxUserCnt;
+        this.date = date;
+        this.time = time;
+    }
+
+    protected void updateHost(User host) {
+        this.host = host;
+    }
 }

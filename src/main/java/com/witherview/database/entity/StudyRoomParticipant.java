@@ -20,4 +20,11 @@ public class StudyRoomParticipant {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public StudyRoomParticipant(StudyRoom studyRoom, User user) {
+        this.studyRoom = studyRoom;
+        this.user = user;
+        studyRoom.getStudyRoomParticipants().add(this);
+        user.getParticipatedStudyRooms().add(this);
+    }
 }
