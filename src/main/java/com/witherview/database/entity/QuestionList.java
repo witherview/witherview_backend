@@ -39,4 +39,24 @@ public class QuestionList {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
+
+    public QuestionList(String title, String enterprise, String job, Integer order) {
+        this.title = title;
+        this.enterprise = enterprise;
+        this.job = job;
+        this.order = order;
+    }
+
+    public void addQuestion(Question question) {
+        this.questions.add(question);
+        question.updateBelongList(this);
+    }
+
+    protected void updateOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public void updateOrder(Integer order) {
+        this.order = order;
+    }
 }

@@ -68,4 +68,9 @@ public class User {
         this.password = password;
         this.name = name;
     }
+
+    public void addQuestionList(QuestionList questionList) {
+        this.questionLists.add(questionList);
+        questionList.updateOwner(this);
+    }
 }
