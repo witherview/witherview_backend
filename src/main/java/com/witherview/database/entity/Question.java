@@ -27,7 +27,7 @@ public class Question {
     private String answer;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "order_num", nullable = false)
     private Integer order;
 
     public Question(String question, String answer, Integer order) {

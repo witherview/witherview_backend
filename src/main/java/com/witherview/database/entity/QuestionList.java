@@ -34,7 +34,7 @@ public class QuestionList {
     private String job;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "order_num", nullable = false)
     private Integer order;
 
     @OneToMany(mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
