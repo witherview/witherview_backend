@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +34,7 @@ public class StudyFeedback extends CreatedBaseEntity {
     @NotNull
     private Boolean passOrFail;
 
+    @Builder
     public StudyFeedback(StudyRoom studyRoom, String feedbackMessage, Byte score, Boolean passOrFail) {
         this.studyRoom = studyRoom;
         this.feedbackMessage = feedbackMessage;

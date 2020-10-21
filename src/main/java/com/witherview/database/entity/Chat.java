@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +27,7 @@ public class Chat extends CreatedBaseEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
 
+    @Builder
     public Chat(User user, String message) {
         this.user = user;
         this.message = message;

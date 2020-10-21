@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -47,6 +48,7 @@ public class StudyRoom {
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chat> chats = new ArrayList<>();
 
+    @Builder
     public StudyRoom(String title, Byte nowUserCnt, Byte maxUserCnt, LocalDate date, LocalTime time) {
         this.title = title;
         this.nowUserCnt = nowUserCnt;

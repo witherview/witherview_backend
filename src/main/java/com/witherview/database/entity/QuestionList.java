@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,6 +41,7 @@ public class QuestionList {
     @OneToMany(mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
+    @Builder
     public QuestionList(String title, String enterprise, String job, Integer order) {
         this.title = title;
         this.enterprise = enterprise;

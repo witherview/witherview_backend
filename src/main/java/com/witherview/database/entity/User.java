@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -63,6 +64,7 @@ public class User {
     @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyFeedback> studyFeedbacks = new ArrayList<>();
 
+    @Builder
     public User(String email, String password, String name) {
         this.email = email;
         this.password = password;
