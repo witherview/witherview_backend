@@ -41,10 +41,10 @@ public class StudyRoom {
     @Column(columnDefinition = "TIME")
     private LocalTime time;
 
-    @OneToMany(mappedBy = "study_room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoomParticipant> studyRoomParticipants = new ArrayList<>();
 
-    @OneToMany(mappedBy = "study_room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chat> chats = new ArrayList<>();
 
     public StudyRoom(String title, Byte nowUserCnt, Byte maxUserCnt, LocalDate date, LocalTime time) {

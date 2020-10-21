@@ -37,7 +37,7 @@ public class QuestionList {
     @Column(nullable = false)
     private Integer order;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     public QuestionList(String title, String enterprise, String job, Integer order) {
