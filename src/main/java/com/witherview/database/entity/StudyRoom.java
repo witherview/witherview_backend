@@ -65,4 +65,8 @@ public class StudyRoom {
         this.chats.add(chat);
         chat.updateStudyRoom(this);
     }
+
+    public void addParticipants(StudyRoomParticipant studyRoomParticipant) {
+        this.studyRoomParticipants.add(studyRoomParticipant);
+    }
 }

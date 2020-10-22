@@ -85,4 +85,8 @@ public class User {
         studyFeedback.updateTargetUser(this);
         this.studyFeedbacks.add(studyFeedback);
     }
+
+    public void addParticipatedRoom(StudyRoomParticipant participatedStudyRoom) {
+        this.participatedStudyRooms.add(participatedStudyRoom);
+    }
 }
