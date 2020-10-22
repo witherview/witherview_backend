@@ -28,6 +28,10 @@ public class StudyRoom {
     @Column(nullable = false)
     private String title;
 
+    @NotBlank
+    @Column(nullable = false)
+    private String describe;
+
     @NotNull
     @Column(nullable = false)
     private Byte nowUserCnt;
@@ -49,8 +53,9 @@ public class StudyRoom {
     private List<Chat> chats = new ArrayList<>();
 
     @Builder
-    public StudyRoom(String title, Byte nowUserCnt, Byte maxUserCnt, LocalDate date, LocalTime time) {
+    public StudyRoom(String title, String describe, Byte nowUserCnt, Byte maxUserCnt, LocalDate date, LocalTime time) {
         this.title = title;
+        this.describe = describe;
         this.nowUserCnt = nowUserCnt;
         this.maxUserCnt = maxUserCnt;
         this.date = date;
