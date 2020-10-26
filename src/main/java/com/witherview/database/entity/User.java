@@ -13,7 +13,7 @@ import java.util.List;
 @Entity @Getter
 @NoArgsConstructor
 @Table(name = "tbl_user")
-public class User {
+public class User extends CreatedBaseEntity {
 
     @Id @GeneratedValue
     private Long id;
