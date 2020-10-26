@@ -64,6 +64,9 @@ public class User extends CreatedBaseEntity {
     @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyFeedback> studyFeedbacks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SelfStudy> selfStudies = new ArrayList<>();
+
     @Builder
     public User(String email, String password, String name) {
         this.email = email;
@@ -88,5 +91,10 @@ public class User extends CreatedBaseEntity {
 
     public void addParticipatedRoom(StudyRoomParticipant participatedStudyRoom) {
         this.participatedStudyRooms.add(participatedStudyRoom);
+    }
+
+    public void addSelfStudy(SelfStudy selfStudy) {
+        selfStudy.updateUser(this);
+        this.selfStudies.add(selfStudy);
     }
 }
