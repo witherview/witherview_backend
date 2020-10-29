@@ -1,7 +1,6 @@
 package com.witherview.exception;
 
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 public enum ErrorCode {
