@@ -1,6 +1,7 @@
 package com.witherview.account;
 
 import com.witherview.account.exception.DuplicateEmail;
+import com.witherview.account.exception.NotEqualPassword;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,9 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
 
     public User register(AccountDTO.RegisterDTO dto) {
+        if (!dto.getPassword().equals(dto.getPasswordConfirm())) {
+            throw new NotEqualPassword();
+        }
         User findUser = userRepository.findByEmail(dto.getEmail());
         if (findUser != null) {
             throw new DuplicateEmail();

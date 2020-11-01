@@ -13,7 +13,9 @@ public enum ErrorCode {
     UNSUPPORTED_MEDIA_TYPE(415,"COMMON015", "Unsupported Media Type"),
 
     // AUTH
-    DUPLICATE_EMAIL(400, "AUTH001", "중복된 이메일 입니다. 다른 이메일을 사용해 주세요.");
+    DUPLICATE_EMAIL(400, "AUTH001", "중복된 이메일 입니다. 다른 이메일을 사용해 주세요."),
+    NOT_EQUAL_PASSWORD(400, "AUTH002", "입력하신 두 비밀번호가 일치하지 않습니다.");
+
 
     private final int status;
     private final String code;
