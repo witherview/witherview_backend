@@ -38,15 +38,12 @@ public class User extends CreatedBaseEntity {
 
     private String subJob;
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer studyCnt;
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer selfPracticeCnt;
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Byte reliability;
 
