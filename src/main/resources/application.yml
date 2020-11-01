@@ -30,7 +30,7 @@ logging:
 ---
 
 spring:
-  profiles: dev
+  profiles: test
   datasource:
     username: guest
     password: 1234
