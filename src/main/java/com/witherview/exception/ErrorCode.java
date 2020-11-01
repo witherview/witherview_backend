@@ -10,7 +10,10 @@ public enum ErrorCode {
     HANDLE_ACCESS_DENIED(403, "COMMON003", "Access is Denied"),
     NOT_FOUND_EXCEPTION(404, "COMMON004", "Page Not Found"),
     METHOD_NOT_ALLOWED(405, "COMMON005", " Method Not Allowed"),
-    UNSUPPORTED_MEDIA_TYPE(415,"COMMON015", "Unsupported Media Type");
+    UNSUPPORTED_MEDIA_TYPE(415,"COMMON015", "Unsupported Media Type"),
+
+    // AUTH
+    DUPLICATE_EMAIL(400, "AUTH001", "중복된 이메일 입니다. 다른 이메일을 사용해 주세요.");
 
     private final int status;
     private final String code;
