@@ -30,8 +30,6 @@ public class User extends CreatedBaseEntity {
     @Column(nullable = false)
     private String name;
 
-    private String refreshToken;
-
     private String mainIndustry;
 
     private String subIndustry;
