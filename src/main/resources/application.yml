@@ -7,7 +7,7 @@ spring:
     username: guest
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/witherview?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
 
   devtools:
     livereload:
@@ -35,7 +35,7 @@ spring:
     username: guest
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/witherview_test?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/witherview_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
 
   devtools:
     livereload:
