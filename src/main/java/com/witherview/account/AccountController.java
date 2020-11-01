@@ -23,7 +23,7 @@ public class AccountController {
 
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,
                                      produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody @Valid AccountDTO.RegisterDTO registerDTO,
+    public ResponseEntity<?> register(@RequestBody @Valid AccountDTO.RegisterDTO registerDTO,
                                                        BindingResult result) {
         if (result.hasErrors()) {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
