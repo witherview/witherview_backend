@@ -8,7 +8,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class AccountDTO {
-
     @Getter @Setter
     public static class RegisterDTO {
         @NotBlank(message = "이메일은 반드시 입력해야 합니다.")
@@ -28,6 +27,13 @@ public class AccountDTO {
         @NotBlank(message = "이름은 반드시 입력해야 합니다.")
         @Length(min = 2, message = "이름은 2자 이상이어야 합니다.")
         @Length(max = 20, message = "이름은 20자 이하여야 합니다.")
+        private String name;
+    }
+
+    @Getter @Setter
+    public static class ResponseRegister {
+        private Long id;
+        private String email;
         private String name;
     }
 }
