@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,4 +21,10 @@ public class StudyRoomParticipant {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Builder
+    public StudyRoomParticipant(StudyRoom studyRoom, User user) {
+        this.studyRoom = studyRoom;
+        this.user = user;
+    }
 }

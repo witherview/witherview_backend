@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -48,17 +49,44 @@ public class User {
     private Integer selfPracticeCnt;
 
     @Column(nullable = false)
+    @ColumnDefault("0")
     private Byte reliability;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionList> questionLists = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoom> hostedStudyRooms = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoomParticipant> participatedStudyRooms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyFeedback> studyFeedbacks = new ArrayList<>();
+
+    @Builder
+    public User(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
+
+    public void addQuestionList(QuestionList questionList) {
+        questionList.updateOwner(this);
+        this.questionLists.add(questionList);
+    }
+
+    public void addHostedRoom(StudyRoom studyRoom) {
+        studyRoom.updateHost(this);
+        this.hostedStudyRooms.add(studyRoom);
+    }
+
+    public void addStudyFeedback(StudyFeedback studyFeedback) {
+        studyFeedback.updateTargetUser(this);
+        this.studyFeedbacks.add(studyFeedback);
+    }
+
+    public void addParticipatedRoom(StudyRoomParticipant participatedStudyRoom) {
+        this.participatedStudyRooms.add(participatedStudyRoom);
+    }
 }

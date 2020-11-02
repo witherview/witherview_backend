@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +28,21 @@ public class Question {
     private String answer;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "order_num", nullable = false)
     private Integer order;
+
+    @Builder
+    public Question(String question, String answer, Integer order) {
+        this.question = question;
+        this.answer = answer;
+        this.order = order;
+    }
+
+    protected void updateBelongList(QuestionList questionList) {
+        this.belongList = questionList;
+    }
+
+    public void updateOrder(Integer order) {
+        this.order = order;
+    }
 }
