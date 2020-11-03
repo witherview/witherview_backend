@@ -11,11 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AccountService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
         if (!dto.getPassword().equals(dto.getPasswordConfirm())) {
             throw new NotEqualPassword();
