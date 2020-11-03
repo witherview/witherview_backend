@@ -8,11 +8,13 @@ import com.witherview.selfPractice.exception.NotFoundQuestionList;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
 import java.util.List;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class SelfQuestionListService {
     private final QuestionListRepository questionListRepository;
@@ -30,17 +32,13 @@ public class SelfQuestionListService {
 
     @Transactional
     public void updateList(Long id, SelfQuestionListDTO.UpdateDTO requestDto) {
-        QuestionList questionList = questionListRepository.findById(id)
-                .orElseThrow(() -> new NotFoundQuestionList());
-
+        QuestionList questionList = findList(id);
         questionList.update(requestDto.getTitle(), requestDto.getEnterprise(), requestDto.getJob());
     }
 
     @Transactional
     public QuestionList deleteList(Long id) {
-        QuestionList questionList = questionListRepository.findById(id)
-                .orElseThrow(() -> new NotFoundQuestionList());
-
+        QuestionList questionList = findList(id);
         questionListRepository.delete(questionList);
         return questionList;
     }
