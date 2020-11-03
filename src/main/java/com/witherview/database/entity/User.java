@@ -13,7 +13,7 @@ import java.util.List;
 @Entity @Getter
 @NoArgsConstructor
 @Table(name = "tbl_user")
-public class User {
+public class User extends CreatedBaseEntity {
 
     @Id @GeneratedValue
     private Long id;
@@ -30,8 +30,6 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    private String refreshToken;
-
     private String mainIndustry;
 
     private String subIndustry;
@@ -40,15 +38,12 @@ public class User {
 
     private String subJob;
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer studyCnt;
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer selfPracticeCnt;
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Byte reliability;
 
@@ -63,6 +58,9 @@ public class User {
 
     @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyFeedback> studyFeedbacks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SelfStudy> selfStudies = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String name) {
@@ -88,5 +86,10 @@ public class User {
 
     public void addParticipatedRoom(StudyRoomParticipant participatedStudyRoom) {
         this.participatedStudyRooms.add(participatedStudyRoom);
+    }
+
+    public void addSelfStudy(SelfStudy selfStudy) {
+        selfStudy.updateUser(this);
+        this.selfStudies.add(selfStudy);
     }
 }

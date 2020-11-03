@@ -21,6 +21,10 @@ public class StudyFeedback extends CreatedBaseEntity {
     private User targetUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "written_user_id", nullable = false)
+    private User writtenUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
 
@@ -35,8 +39,10 @@ public class StudyFeedback extends CreatedBaseEntity {
     private Boolean passOrFail;
 
     @Builder
-    public StudyFeedback(StudyRoom studyRoom, String feedbackMessage, Byte score, Boolean passOrFail) {
+    public StudyFeedback(StudyRoom studyRoom, User writtenUser,
+                         String feedbackMessage, Byte score, Boolean passOrFail) {
         this.studyRoom = studyRoom;
+        this.writtenUser = writtenUser;
         this.feedbackMessage = feedbackMessage;
         this.score = score;
         this.passOrFail = passOrFail;

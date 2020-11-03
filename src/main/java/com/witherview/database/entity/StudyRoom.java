@@ -15,7 +15,7 @@ import java.util.List;
 @Entity @Getter
 @NoArgsConstructor
 @Table(name = "tbl_study_room")
-public class StudyRoom {
+public class StudyRoom extends CreatedBaseEntity {
 
     @Id @GeneratedValue
     private Long id;
