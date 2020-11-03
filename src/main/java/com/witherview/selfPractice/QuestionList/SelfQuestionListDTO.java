@@ -4,15 +4,11 @@ import com.witherview.database.entity.QuestionList;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.modelmapper.ModelMapper;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class SelfQuestionListDTO {
-    private static final ModelMapper modelMapper = new ModelMapper();
 
     @Getter @Setter @Builder
     public static class SaveDTO {
@@ -59,26 +55,10 @@ public class SelfQuestionListDTO {
         private String enterprise;
         private String job;
         private Integer order;
-
-        public static ResponseDTO of(QuestionList questionList) {
-            ResponseDTO responseDTO = modelMapper.map(questionList, ResponseDTO.class);
-            return responseDTO;
-        }
-
-        public static List<ResponseDTO> of(List<QuestionList> questionList) {
-            return questionList.stream()
-                    .map(ResponseDTO::of)
-                    .collect(Collectors.toList());
-        }
     }
 
     @Getter @Setter
     public static class DeleteResponseDTO {
         private Long id;
-
-        public static DeleteResponseDTO of(QuestionList questionList) {
-            DeleteResponseDTO deleteResponseDTO = modelMapper.map(questionList, DeleteResponseDTO.class);
-            return deleteResponseDTO;
-        }
     }
 }
