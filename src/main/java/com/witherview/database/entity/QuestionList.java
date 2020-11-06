@@ -61,10 +61,4 @@ public class QuestionList {
     public void updateOrder(Integer order) {
         this.order = order;
     }
-
-    public void update(String title, String enterprise, String job) {
-        this.title = title;
-        this.enterprise = enterprise;
-        this.job = job;
-    }
 }
