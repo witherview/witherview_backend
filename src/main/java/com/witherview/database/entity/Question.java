@@ -45,4 +45,9 @@ public class Question {
     public void updateOrder(Integer order) {
         this.order = order;
     }
+
+    public void update(String question, String answer) {
+        this.question = question;
+        this.answer = answer;
+    }
 }
