@@ -8,10 +8,22 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class SelfQuestionDTO {
-    @Getter @Setter @Builder
+
+    @Getter @Setter
     public static class SaveDTO {
+        @NotNull(message = "리스트 아이디는 반드시 입력해야 합니다.")
+        private Long listId;
+
+        @NotNull(message = "질문은 반드시 입력해야 합니다.")
+        private List<QuestionDTO> questions;
+    }
+
+    @Getter @Setter @Builder
+    public static class QuestionDTO {
+
         @NotBlank(message = "질문은 반드시 입력해야 합니다.")
         private String question;
 
