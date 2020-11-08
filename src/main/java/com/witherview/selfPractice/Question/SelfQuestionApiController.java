@@ -8,8 +8,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,28 +23,33 @@ public class SelfQuestionApiController {
     private final CustomValidator customValidator;
 
     // 질문 등록
-    @PostMapping(path = "/self/question/{listId}", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(path = "/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveQuestion(@PathVariable Long listId,
-                                  @RequestBody List<SelfQuestionDTO.SaveDTO> requestDto,
-                                  Errors errors) {
+    public ResponseEntity<?> saveQuestion(@RequestBody @Valid SelfQuestionDTO.SaveDTO requestDto,
+                                          BindingResult result,
+                                          Errors errors) {
+        // requestDTO 객체 검사
+        if(result.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
 
-        customValidator.validate(requestDto, errors);
+        // 질문 객체 하나하나 검사
+        customValidator.validate(requestDto.getQuestions(), errors);
 
         if(errors.hasErrors()) {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
-        List<Question> lists = selfQuestionService.save(listId, requestDto);
+        List<Question> lists = selfQuestionService.save(requestDto);
         return new ResponseEntity<>(modelMapper.map(lists, SelfQuestionDTO.ResponseDTO[].class), HttpStatus.CREATED);
     }
 
     // 질문 수정
-    @PatchMapping(path = "/self/question/{listId}", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PatchMapping(path = "/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateQuestion(@PathVariable Long listId,
-                                  @RequestBody List<SelfQuestionDTO.UpdateDTO> requestDto,
+    public ResponseEntity<?> updateQuestion(@RequestBody List<SelfQuestionDTO.UpdateDTO> requestDto,
                                   Errors errors) {
 
         customValidator.validate(requestDto, errors);
@@ -51,7 +59,7 @@ public class SelfQuestionApiController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
-        selfQuestionService.update(listId, requestDto);
+        selfQuestionService.update(requestDto);
 
         SelfQuestionDTO.UpdateResponseDTO responseDTO = new SelfQuestionDTO.UpdateResponseDTO("수정 성공");
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
