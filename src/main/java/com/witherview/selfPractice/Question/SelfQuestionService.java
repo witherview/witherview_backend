@@ -21,11 +21,11 @@ public class SelfQuestionService {
     private final QuestionRepository questionRepository;
 
     @Transactional
-    public List<Question> save(Long listId, List<SelfQuestionDTO.SaveDTO> requestDto) {
-        QuestionList questionList = questionListRepository.findById(listId)
-                                        .orElseThrow(() -> new NotFoundQuestionList());
+    public List<Question> save(SelfQuestionDTO.SaveDTO requestDto) {
+        QuestionList questionList = questionListRepository.findById(requestDto.getListId())
+                .orElseThrow(() -> new NotFoundQuestionList());
 
-        return requestDto.stream()
+        return requestDto.getQuestions().stream()
                 .map(dto -> {
                     Question question = dto.toEntity();
                     questionList.addQuestion(question);
@@ -35,9 +35,7 @@ public class SelfQuestionService {
     }
 
     @Transactional
-    public void update(Long listId, List<SelfQuestionDTO.UpdateDTO> requestDto) {
-        questionListRepository.findById(listId).orElseThrow(() -> new NotFoundQuestionList());
-
+    public void update(List<SelfQuestionDTO.UpdateDTO> requestDto) {
         requestDto.stream()
                 .forEach(dto -> {
                     Question question = findQuestion(dto.getId());
