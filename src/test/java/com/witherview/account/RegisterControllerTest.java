@@ -1,10 +1,7 @@
 package com.witherview.account;
 
 import com.witherview.database.entity.User;
-import com.witherview.database.repository.UserRepository;
-import com.witherview.support.MockMvcSupporter;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -13,14 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class RegisterControllerTest extends MockMvcSupporter {
-    final String email = "hohoho@witherview.com";
-    final String password = "123456";
-    final String passwordConfirm = "123456";
-    final String name = "위더뷰";
-
-    @Autowired
-    UserRepository userRepository;
+public class RegisterControllerTest extends AccountSupporter {
 
     @Test
     public void 회원가입_성공케이스() throws Exception {
