@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class AccountControllerTest extends MockMvcSupporter {
+public class RegisterControllerTest extends MockMvcSupporter {
     final String email = "hohoho@witherview.com";
     final String password = "123456";
     final String passwordConfirm = "123456";
@@ -43,10 +43,10 @@ public class AccountControllerTest extends MockMvcSupporter {
 
     @Test
     public void 회원가입_실패케이스_이메일_중복() throws Exception {
-        userRepository.save(new User(email, password, name));
+        userRepository.save(new User(email + "2", password, name));
 
         AccountDTO.RegisterDTO dto = new AccountDTO.RegisterDTO();
-        dto.setEmail(email);
+        dto.setEmail(email + "2");
         dto.setPassword(password);
         dto.setPasswordConfirm(passwordConfirm);
         dto.setName(name);
