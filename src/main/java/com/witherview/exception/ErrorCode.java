@@ -14,7 +14,8 @@ public enum ErrorCode {
 
     // AUTH
     DUPLICATE_EMAIL(400, "AUTH001", "중복된 이메일 입니다. 다른 이메일을 사용해 주세요."),
-    NOT_EQUAL_PASSWORD(400, "AUTH002", "입력하신 두 비밀번호가 일치하지 않습니다.");
+    NOT_EQUAL_PASSWORD(400, "AUTH002", "입력하신 두 비밀번호가 일치하지 않습니다."),
+    INVALID_LOGIN(404, "AUTH003", "입력하신 이메일 혹은 비밀번호가 일치하지 않습니다.");
 
 
     private final int status;
