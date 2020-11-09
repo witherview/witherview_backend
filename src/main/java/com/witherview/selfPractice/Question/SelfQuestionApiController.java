@@ -3,6 +3,7 @@ package com.witherview.selfPractice.Question;
 import com.witherview.database.entity.Question;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
+import com.witherview.selfPractice.CustomValidator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -61,8 +63,10 @@ public class SelfQuestionApiController {
 
         selfQuestionService.update(requestDto);
 
-        SelfQuestionDTO.UpdateResponseDTO responseDTO = new SelfQuestionDTO.UpdateResponseDTO("수정 성공");
-        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+        List<Question> lists = requestDto.stream()
+                .map(dto -> selfQuestionService.findQuestion(dto.getId()))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(modelMapper.map(lists, SelfQuestionDTO.ResponseDTO[].class), HttpStatus.OK);
     }
 
     // 모든 질문 조회

@@ -39,7 +39,7 @@ public class SelfQuestionService {
         requestDto.stream()
                 .forEach(dto -> {
                     Question question = findQuestion(dto.getId());
-                    question.update(dto.getQuestion(), dto.getAnswer());
+                    question.update(dto.getQuestion(), dto.getAnswer(), dto.getOrder());
                 });
     }
 

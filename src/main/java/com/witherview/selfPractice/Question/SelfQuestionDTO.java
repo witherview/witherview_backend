@@ -50,6 +50,8 @@ public class SelfQuestionDTO {
         private String question;
 
         private String answer;
+
+        @NotNull(message = "순서는 반드시 입력해야 합니다.")
         private Integer order;
     }
 
@@ -64,10 +66,5 @@ public class SelfQuestionDTO {
     @Getter @Setter
     public static class DeleteResponseDTO {
         private Long id;
-    }
-
-    @Getter @Setter @AllArgsConstructor
-    public static class UpdateResponseDTO {
-        private String message;
     }
 }
