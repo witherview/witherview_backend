@@ -34,8 +34,7 @@ public class QuestionList {
     @Column(nullable = false)
     private String job;
 
-    @NotNull
-    @Column(name = "order_num", nullable = false)
+    @Column(name = "order_num")
     private Integer order;
 
     @OneToMany(mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -56,10 +55,6 @@ public class QuestionList {
 
     protected void updateOwner(User owner) {
         this.owner = owner;
-    }
-
-    public void updateOrder(Integer order) {
-        this.order = order;
     }
 
     public void update(String title, String enterprise, String job) {
