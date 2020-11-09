@@ -42,12 +42,9 @@ public class Question {
         this.belongList = questionList;
     }
 
-    public void updateOrder(Integer order) {
-        this.order = order;
-    }
-
-    public void update(String question, String answer) {
+    public void update(String question, String answer, Integer order) {
         this.question = question;
         this.answer = answer;
+        this.order = order;
     }
 }
