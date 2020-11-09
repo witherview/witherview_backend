@@ -31,9 +31,11 @@ public class SelfQuestionListService {
     }
 
     @Transactional
-    public void updateList(Long id, SelfQuestionListDTO.UpdateDTO requestDto) {
-        QuestionList questionList = findList(id);
-        questionList.update(requestDto.getTitle(), requestDto.getEnterprise(), requestDto.getJob());
+    public void updateList(List<SelfQuestionListDTO.UpdateDTO> requestDto) {
+        requestDto.stream().forEach(dto -> {
+            QuestionList questionList = findList(dto.getId());
+            questionList.update(dto.getTitle(), dto.getEnterprise(), dto.getJob());
+        });
     }
 
     @Transactional

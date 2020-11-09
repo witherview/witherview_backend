@@ -1,4 +1,4 @@
-package com.witherview.selfPractice.Question;
+package com.witherview.selfPractice;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

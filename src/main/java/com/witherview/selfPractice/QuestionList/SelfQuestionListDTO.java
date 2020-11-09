@@ -21,7 +21,6 @@ public class SelfQuestionListDTO {
         @NotBlank(message = "직무 이름은 반드시 입력해야 합니다.")
         private String job;
 
-        @NotNull(message = "순서는 반드시 입력해야 합니다.")
         private Integer order;
 
         public QuestionList toEntity() {
@@ -29,13 +28,15 @@ public class SelfQuestionListDTO {
                     .title(title)
                     .enterprise(enterprise)
                     .job(job)
-                    .order(order)
                     .build();
         }
     }
 
     @Getter @Setter @Builder
     public static class UpdateDTO {
+        @NotNull(message = "질문리스트 아이디는 반드시 입력해야 합니다.")
+        private Long id;
+
         @NotBlank(message = "질문리스트 제목은 반드시 입력해야 합니다.")
         private String title;
 
