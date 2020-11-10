@@ -69,7 +69,8 @@ public class SelfQuestionApiTest extends MockMvcSupporter {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        resultActions.andExpect(jsonPath("$.message").value("수정 성공"));
+        resultActions.andExpect(jsonPath("$[0].question").value(updatedQuestion));
+        resultActions.andExpect(jsonPath("$[0].answer").value(updatedAnswer));
     }
 
     @Test
