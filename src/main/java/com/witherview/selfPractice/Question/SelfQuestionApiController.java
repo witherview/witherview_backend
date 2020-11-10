@@ -70,8 +70,8 @@ public class SelfQuestionApiController {
     }
 
     // 모든 질문 조회
-    @GetMapping(path = "/self/question/{listId}")
-    public ResponseEntity<?> findAllQuestion(@PathVariable Long listId) {
+    @GetMapping(path = "/self/question")
+    public ResponseEntity<?> findAllQuestion(@RequestParam("listId") Long listId) {
         List<Question> lists = selfQuestionService.findAllQuestions(listId);
         return new ResponseEntity<>(modelMapper.map(lists, SelfQuestionDTO.ResponseDTO[].class), HttpStatus.OK);
     }
