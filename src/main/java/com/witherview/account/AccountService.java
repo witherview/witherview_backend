@@ -31,10 +31,7 @@ public class AccountService {
 
     public User login(AccountDTO.LoginDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail());
-        if (user == null) {
-            throw new InvalidLogin();
-        }
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+        if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new InvalidLogin();
         }
         return user;
