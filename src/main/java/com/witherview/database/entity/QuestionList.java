@@ -34,19 +34,14 @@ public class QuestionList {
     @Column(nullable = false)
     private String job;
 
-    @NotNull
-    @Column(name = "order_num", nullable = false)
-    private Integer order;
-
     @OneToMany(mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     @Builder
-    public QuestionList(String title, String enterprise, String job, Integer order) {
+    public QuestionList(String title, String enterprise, String job) {
         this.title = title;
         this.enterprise = enterprise;
         this.job = job;
-        this.order = order;
     }
 
     public void addQuestion(Question question) {
@@ -58,7 +53,9 @@ public class QuestionList {
         this.owner = owner;
     }
 
-    public void updateOrder(Integer order) {
-        this.order = order;
+    public void update(String title, String enterprise, String job) {
+        this.title = title;
+        this.enterprise = enterprise;
+        this.job = job;
     }
 }
