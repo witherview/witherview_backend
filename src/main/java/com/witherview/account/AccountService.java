@@ -1,6 +1,7 @@
 package com.witherview.account;
 
 import com.witherview.account.exception.DuplicateEmail;
+import com.witherview.account.exception.InvalidLogin;
 import com.witherview.account.exception.NotEqualPassword;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.UserRepository;
@@ -26,5 +27,13 @@ public class AccountService {
             throw new DuplicateEmail();
         }
         return userRepository.save(new User(dto.getEmail(), passwordEncoder.encode(dto.getPassword()), dto.getName()));
+    }
+
+    public User login(AccountDTO.LoginDTO dto) {
+        User user = userRepository.findByEmail(dto.getEmail());
+        if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new InvalidLogin();
+        }
+        return user;
     }
 }

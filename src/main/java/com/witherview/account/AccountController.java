@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @RestController
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 public class AccountController {
     private final ModelMapper modelMapper;
     private final AccountService accountService;
+    private final int SESSION_TIMEOUT = 1 * 60 * 60;
 
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,
                                      produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,6 +33,21 @@ public class AccountController {
         }
         User user = accountService.register(registerDTO);
         return new ResponseEntity<>(modelMapper.map(user, AccountDTO.ResponseRegister.class), HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE,
+                                  produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestBody @Valid AccountDTO.LoginDTO loginDTO,
+                                   BindingResult result, HttpSession session) {
+        if (result.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+        User user = accountService.login(loginDTO);
+        AccountSession accountSession = new AccountSession(user.getId(), user.getEmail(), user.getName());
+        session.setAttribute("user", accountSession);
+        session.setMaxInactiveInterval(SESSION_TIMEOUT);
+        return new ResponseEntity<>(modelMapper.map(user, AccountDTO.ResponseLogin.class), HttpStatus.OK);
     }
 
 }

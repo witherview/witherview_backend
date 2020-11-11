@@ -13,8 +13,10 @@ public enum ErrorCode {
     UNSUPPORTED_MEDIA_TYPE(415,"COMMON015", "Unsupported Media Type"),
 
     // AUTH
+    UNAUTHORIZED(401, "AUTH004", "로그인 후 이용해 주세요."),
     DUPLICATE_EMAIL(400, "AUTH001", "중복된 이메일 입니다. 다른 이메일을 사용해 주세요."),
     NOT_EQUAL_PASSWORD(400, "AUTH002", "입력하신 두 비밀번호가 일치하지 않습니다."),
+    INVALID_LOGIN(404, "AUTH003", "입력하신 이메일 혹은 비밀번호가 일치하지 않습니다."),
 
     // Self-Practice
     NOT_FOUND_USER(404, "SELF-PRACTICE001", "해당 유저가 없습니다."),
