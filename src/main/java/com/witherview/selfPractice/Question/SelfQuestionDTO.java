@@ -13,7 +13,7 @@ import java.util.List;
 public class SelfQuestionDTO {
 
     @Getter @Setter
-    public static class SaveDTO {
+    public static class QuestionSaveDTO {
         @NotNull(message = "리스트 아이디는 반드시 입력해야 합니다.")
         private Long listId;
 
@@ -42,7 +42,7 @@ public class SelfQuestionDTO {
     }
 
     @Getter @Setter @Builder
-    public static class UpdateDTO {
+    public static class QuestionUpdateDTO {
         @NotNull(message = "질문 id는 반드시 입력해야 합니다.")
         private Long id;
 

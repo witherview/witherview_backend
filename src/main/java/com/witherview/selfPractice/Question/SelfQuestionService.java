@@ -21,7 +21,7 @@ public class SelfQuestionService {
     private final QuestionRepository questionRepository;
 
     @Transactional
-    public List<Question> save(SelfQuestionDTO.SaveDTO requestDto) {
+    public List<Question> save(SelfQuestionDTO.QuestionSaveDTO requestDto) {
         QuestionList questionList = questionListRepository.findById(requestDto.getListId())
                 .orElseThrow(() -> new NotFoundQuestionList());
 
@@ -35,7 +35,7 @@ public class SelfQuestionService {
     }
 
     @Transactional
-    public void update(List<SelfQuestionDTO.UpdateDTO> requestDto) {
+    public void update(List<SelfQuestionDTO.QuestionUpdateDTO> requestDto) {
         requestDto.stream()
                 .forEach(dto -> {
                     Question question = findQuestion(dto.getId());
