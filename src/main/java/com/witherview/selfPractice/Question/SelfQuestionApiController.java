@@ -4,6 +4,7 @@ import com.witherview.database.entity.Question;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
 import com.witherview.selfPractice.CustomValidator;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Api(tags = "Question API")
 @RequiredArgsConstructor
 @RestController
 public class SelfQuestionApiController {

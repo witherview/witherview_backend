@@ -3,6 +3,7 @@ package com.witherview.account;
 import com.witherview.database.entity.User;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,6 +19,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+@Api(tags = "Account API")
 @RestController
 @RequiredArgsConstructor
 public class AccountController {
