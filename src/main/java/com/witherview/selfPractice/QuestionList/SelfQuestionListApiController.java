@@ -1,5 +1,6 @@
 package com.witherview.selfPractice.QuestionList;
 
+import com.witherview.account.AccountSession;
 import com.witherview.database.entity.QuestionList;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
@@ -24,31 +25,34 @@ public class SelfQuestionListApiController {
     private final ModelMapper modelMapper;
     private final SelfQuestionListService selfQuestionListService;
     private final CustomValidator customValidator;
-    private final long userId = 1; // 임시
 
     // 질문 리스트 등록
     @PostMapping(path = "/self/questionList", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveList(@RequestBody @Valid SelfQuestionListDTO.SaveDTO requestDto, BindingResult result) {
+    public ResponseEntity<?> saveList(@RequestBody @Valid SelfQuestionListDTO.QuestionListSaveDTO requestDto,
+                                      HttpSession session,
+                                      BindingResult result) {
         if(result.hasErrors()) {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
-        QuestionList questionList = selfQuestionListService.saveList(userId, requestDto);
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        QuestionList questionList = selfQuestionListService.saveList(accountSession.getId(), requestDto);
         return new ResponseEntity<>(modelMapper.map(questionList, SelfQuestionListDTO.ResponseDTO.class), HttpStatus.CREATED);
     }
 
     // 모든 질문 리스트 조회
     @GetMapping(path = "/self/questionList")
     public ResponseEntity<?> findList(HttpSession session) {
-        List<QuestionList> lists = selfQuestionListService.findAllLists(userId);
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        List<QuestionList> lists = selfQuestionListService.findAllLists(accountSession.getId());
         return new ResponseEntity<>(modelMapper.map(lists, SelfQuestionListDTO.ResponseDTO[].class), HttpStatus.OK);
     }
 
     // 질문 리스트 수정
     @PatchMapping(path = "/self/questionList", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateList(@RequestBody List<SelfQuestionListDTO.UpdateDTO> requestDto,
+    public ResponseEntity<?> updateList(@RequestBody List<SelfQuestionListDTO.QuestionListUpdateDTO> requestDto,
                                          Errors errors) {
 
         customValidator.validate(requestDto, errors);

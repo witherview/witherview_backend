@@ -27,7 +27,7 @@ public class SelfQuestionApiController {
     // 질문 등록
     @PostMapping(path = "/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveQuestion(@RequestBody @Valid SelfQuestionDTO.SaveDTO requestDto,
+    public ResponseEntity<?> saveQuestion(@RequestBody @Valid SelfQuestionDTO.QuestionSaveDTO requestDto,
                                           BindingResult result,
                                           Errors errors) {
         // requestDTO 객체 검사
@@ -51,7 +51,7 @@ public class SelfQuestionApiController {
     // 질문 수정
     @PatchMapping(path = "/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateQuestion(@RequestBody List<SelfQuestionDTO.UpdateDTO> requestDto,
+    public ResponseEntity<?> updateQuestion(@RequestBody List<SelfQuestionDTO.QuestionUpdateDTO> requestDto,
                                   Errors errors) {
 
         customValidator.validate(requestDto, errors);
