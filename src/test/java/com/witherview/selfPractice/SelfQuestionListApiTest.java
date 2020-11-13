@@ -24,7 +24,7 @@ public class SelfQuestionListApiTest extends SelfPracticeSupporter {
                 .job(job)
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(post("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/questionList")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -49,7 +49,7 @@ public class SelfQuestionListApiTest extends SelfPracticeSupporter {
         List<SelfQuestionListDTO.QuestionListUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/questionList")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +69,7 @@ public class SelfQuestionListApiTest extends SelfPracticeSupporter {
                 .job(job)
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(post("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/questionList")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -89,7 +89,7 @@ public class SelfQuestionListApiTest extends SelfPracticeSupporter {
                 .job(job)
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(post("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/questionList")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -113,7 +113,7 @@ public class SelfQuestionListApiTest extends SelfPracticeSupporter {
         List<SelfQuestionListDTO.QuestionListUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/questionList")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -137,7 +137,7 @@ public class SelfQuestionListApiTest extends SelfPracticeSupporter {
         List<SelfQuestionListDTO.QuestionListUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/questionList")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

@@ -31,7 +31,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
         requestDTO.setListId(listId);
         requestDTO.setQuestions(list);
 
-        ResultActions resultActions = mockMvc.perform(post("/self/question")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/question")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -56,7 +56,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
         List<SelfQuestionDTO.QuestionUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/question")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/question")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -83,7 +83,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
         requestDTO.setListId(listId);
         requestDTO.setQuestions(list);
 
-        ResultActions resultActions = mockMvc.perform(post("/self/question")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/question")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -107,7 +107,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
         List<SelfQuestionDTO.QuestionUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/question")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/question")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -134,7 +134,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
         requestDTO.setListId(listId);
         requestDTO.setQuestions(list);
 
-        ResultActions resultActions = mockMvc.perform(post("/self/question")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/question")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -158,7 +158,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
         List<SelfQuestionDTO.QuestionUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/question")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/question")
                 .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
