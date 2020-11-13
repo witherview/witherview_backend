@@ -31,7 +31,7 @@ public class SelfQuestionApiController {
 
     // 질문 등록
     @ApiOperation(value="질문 등록")
-    @PostMapping(path = "/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(path = "/api/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> saveQuestion(@RequestBody @Valid SelfQuestionDTO.QuestionSaveDTO requestDto,
                                           BindingResult result,
@@ -56,7 +56,7 @@ public class SelfQuestionApiController {
 
     // 질문 수정
     @ApiOperation(value="질문 수정")
-    @PatchMapping(path = "/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PatchMapping(path = "/api/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateQuestion(@RequestBody List<SelfQuestionDTO.QuestionUpdateDTO> requestDto,
                                             @ApiIgnore Errors errors) {
@@ -78,7 +78,7 @@ public class SelfQuestionApiController {
 
     // 모든 질문 조회
     @ApiOperation(value="질문 조회")
-    @GetMapping(path = "/self/question")
+    @GetMapping(path = "/api/self/question")
     public ResponseEntity<?> findAllQuestion(@ApiParam(value = "조회할 질문리스트 id", required = true) @RequestParam("listId") Long listId) {
         List<Question> lists = selfQuestionService.findAllQuestions(listId);
         return new ResponseEntity<>(modelMapper.map(lists, SelfQuestionDTO.ResponseDTO[].class), HttpStatus.OK);
@@ -86,7 +86,7 @@ public class SelfQuestionApiController {
 
     // 질문 삭제
     @ApiOperation(value="질문 삭제")
-    @DeleteMapping(path = "/self/question/{id}")
+    @DeleteMapping(path = "/api/self/question/{id}")
     public ResponseEntity<?> deleteQuestion(@ApiParam(value = "삭제할 질문 id", required = true) @PathVariable Long id) {
         Question deletedQuestion = selfQuestionService.delete(id);
         return new ResponseEntity<>(modelMapper.map(deletedQuestion, SelfQuestionDTO.DeleteResponseDTO.class), HttpStatus.OK);

@@ -33,7 +33,7 @@ public class SelfQuestionListApiController {
 
     // 질문 리스트 등록
     @ApiOperation(value="질문리스트 등록")
-    @PostMapping(path = "/self/questionList", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(path = "/api/self/questionList", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> saveList(@RequestBody @Valid SelfQuestionListDTO.QuestionListSaveDTO requestDto,
                                       BindingResult result,
@@ -49,7 +49,7 @@ public class SelfQuestionListApiController {
 
     // 모든 질문 리스트 조회
     @ApiOperation(value="질문리스트 조회")
-    @GetMapping(path = "/self/questionList")
+    @GetMapping(path = "/api/self/questionList")
     public ResponseEntity<?> findList(@ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         List<QuestionList> lists = selfQuestionListService.findAllLists(accountSession.getId());
@@ -58,7 +58,7 @@ public class SelfQuestionListApiController {
 
     // 질문 리스트 수정
     @ApiOperation(value="질문리스트 수정")
-    @PatchMapping(path = "/self/questionList", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PatchMapping(path = "/api/self/questionList", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateList(@RequestBody List<SelfQuestionListDTO.QuestionListUpdateDTO> requestDto,
                                         @ApiIgnore Errors errors) {
@@ -80,7 +80,7 @@ public class SelfQuestionListApiController {
 
     // 질문 리스트 삭제
     @ApiOperation(value="질문리스트 삭제")
-    @DeleteMapping(path = "/self/questionList/{id}")
+    @DeleteMapping(path = "/api/self/questionList/{id}")
     public ResponseEntity<?> deleteList(@ApiParam(value = "삭제할 질문리스트 id", required = true) @PathVariable Long id) {
         QuestionList deletedList = selfQuestionListService.deleteList(id);
         return new ResponseEntity<>(modelMapper.map(deletedList, SelfQuestionListDTO.DeleteResponseDTO.class), HttpStatus.OK);
