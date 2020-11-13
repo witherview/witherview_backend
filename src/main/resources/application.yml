@@ -18,7 +18,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -26,7 +26,7 @@ spring:
   mvc:
     throw-exception-if-no-handler-found: true
   resources:
-    add-mappings: false
+    add-mappings: true
 
 logging:
   level:
@@ -51,7 +51,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
