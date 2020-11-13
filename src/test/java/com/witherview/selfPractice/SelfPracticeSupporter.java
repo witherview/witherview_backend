@@ -14,12 +14,12 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
     final String title = "개발자 스터디 모집해요.";
     final String enterprise = "kakao";
     final String job = "sw 개발자";
-    final Long listId = (long) 4;
+    final Long listId = (long) 2;
     final String updatedTitle = "기획자 스터디 모집합니다.";
     final String updatedEnterprise = "naver";
 
     // question
-    final Long questionId = (long) 5;
+    final Long questionId = (long) 1;
     final String question = "당신의 주 언어는 무엇인가요?";
     final String answer = "저의 주 언어는 ~~입니다";
     final Integer order = 1;
