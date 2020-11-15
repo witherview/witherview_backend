@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "tbl_question_list")
 public class QuestionList {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,7 +34,7 @@ public class QuestionList {
     @Column(nullable = false)
     private String job;
 
-    @OneToMany(mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     @Builder
