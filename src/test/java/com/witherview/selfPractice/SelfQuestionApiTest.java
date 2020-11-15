@@ -1,10 +1,17 @@
 package com.witherview.selfPractice;
 
+import com.witherview.database.entity.Question;
+import com.witherview.database.entity.QuestionList;
+import com.witherview.database.repository.QuestionRepository;
 import com.witherview.selfPractice.Question.SelfQuestionDTO;
+import com.witherview.selfPractice.exception.NotFoundQuestionList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +22,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class SelfQuestionApiTest extends SelfPracticeSupporter {
+
+    @Autowired
+    QuestionRepository questionRepository;
+
+    @BeforeEach @Transactional
+    public void 미리질문등록() {
+        QuestionList questionList = questionListRepository.findById(listId)
+                .orElseThrow(() -> new NotFoundQuestionList());
+        Question question = new Question("question", "answer", 1);
+        questionList.addQuestion(question);
+        questionRepository.save(question);
+    }
 
     @Test
     public void 질문_등록성공() throws Exception {
@@ -131,7 +150,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
         list.add(questionDTO);
 
         SelfQuestionDTO.QuestionSaveDTO requestDTO = new SelfQuestionDTO.QuestionSaveDTO();
-        requestDTO.setListId(listId);
+        requestDTO.setListId(failedListId);
         requestDTO.setQuestions(list);
 
         ResultActions resultActions = mockMvc.perform(post("/api/self/question")
@@ -149,7 +168,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
     @Test
     public void 질문_수정실패_없는_질문() throws Exception {
         SelfQuestionDTO.QuestionUpdateDTO dto = SelfQuestionDTO.QuestionUpdateDTO.builder()
-                .id(questionId)
+                .id(failedQuestionId)
                 .question(updatedQuestion)
                 .answer(updatedAnswer)
                 .order(order)
