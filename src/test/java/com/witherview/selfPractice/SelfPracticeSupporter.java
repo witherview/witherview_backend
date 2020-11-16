@@ -69,6 +69,5 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
             user.addQuestionList(questionList);
             listId = questionListRepository.save(questionList).getId();
         }
-        System.out.println("list id " + listId);
     }
 }
