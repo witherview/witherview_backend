@@ -34,7 +34,7 @@ public class QuestionList {
     @Column(nullable = false)
     private String job;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     @Builder

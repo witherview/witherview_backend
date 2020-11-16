@@ -47,7 +47,7 @@ public class User extends CreatedBaseEntity {
     @ColumnDefault("0")
     private Byte reliability;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionList> questionLists = new ArrayList<>();
 
     @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
