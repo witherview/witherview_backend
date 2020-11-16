@@ -12,26 +12,27 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 
+@Transactional
 public class SelfPracticeSupporter extends MockMvcSupporter {
     final Long userId = (long)1;
     final String email = "hohoho@witherview.com";
     final String password = "123456";
     final String name = "witherview";
 
+    final Long failedListId = (long) 3;
     // questionlist
+    Long listId = (long) 1;
     final String title = "개발자 스터디 모집해요.";
     final String enterprise = "kakao";
     final String job = "sw 개발자";
-    final Long listId = (long) 1;
-    final Long failedListId = (long) 3;
     final String updatedTitle = "기획자 스터디 모집합니다.";
     final String updatedEnterprise = "naver";
-
     // question
-    final Long questionId = (long) 1;
+    Long questionId = (long) 1;
     final Long failedQuestionId = (long) 3;
     final String question = "당신의 주 언어는 무엇인가요?";
     final String answer = "저의 주 언어는 ~~입니다";
@@ -51,23 +52,23 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
     PasswordEncoder passwordEncoder;
 
     @BeforeEach
-    public void 회원가입and세션생성() {
+    public void 회원가입_세션생성_리스트생성() {
         User user = userRepository.findByEmail(email);
+        // 회원가입
         if (user == null) {
-            userRepository.save(new User(email, passwordEncoder.encode(password), name));
+            user = userRepository.save(new User(email, passwordEncoder.encode(password), name));
         }
-
-        AccountSession accountSession = new AccountSession(userId, email, name);
-        mockHttpSession.setAttribute("user", accountSession);
-    }
-
-    // 질문 test 코드 및 질문리스트 수정 test 코드를 위해 미리 질문리스트 하나 생성해두기
-    @BeforeEach @Transactional
-    public void 미리질문리스트등록() {
+        // 세션생성
+        if(mockHttpSession.getAttribute("user") == null) {
+            AccountSession accountSession = new AccountSession(userId, email, name);
+            mockHttpSession.setAttribute("user", accountSession);
+        }
+        // 리스트생성
         QuestionList questionList = new QuestionList("title", "enterprise", "job");
-        User user = userRepository.findByEmail(email);
-        user.addQuestionList(questionList);
-
-        questionListRepository.save(questionList);
+        if(questionListRepository.count() == 0) {
+            user.addQuestionList(questionList);
+            listId = questionListRepository.save(questionList).getId();
+        }
+        System.out.println("list id " + listId);
     }
 }

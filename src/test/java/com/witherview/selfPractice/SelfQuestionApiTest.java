@@ -21,18 +21,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 public class SelfQuestionApiTest extends SelfPracticeSupporter {
 
     @Autowired
     QuestionRepository questionRepository;
 
-    @BeforeEach @Transactional
+    @BeforeEach
     public void 미리질문등록() {
         QuestionList questionList = questionListRepository.findById(listId)
                 .orElseThrow(() -> new NotFoundQuestionList());
-        Question question = new Question("question", "answer", 1);
-        questionList.addQuestion(question);
-        questionRepository.save(question);
+
+        if(questionRepository.count() == 0) {
+            Question question = new Question("question", "answer", 1);
+            questionList.addQuestion(question);
+            questionId = questionRepository.save(question).getId();
+        }
     }
 
     @Test
