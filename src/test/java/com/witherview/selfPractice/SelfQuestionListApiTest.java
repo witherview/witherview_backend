@@ -104,7 +104,7 @@ public class SelfQuestionListApiTest extends SelfPracticeSupporter {
     @Test
     public void 질문리스트_수정실패_없는_질문리스트() throws Exception {
         SelfQuestionListDTO.QuestionListUpdateDTO dto = SelfQuestionListDTO.QuestionListUpdateDTO.builder()
-                .id(listId)
+                .id(failedListId)
                 .title(updatedTitle)
                 .enterprise(updatedEnterprise)
                 .job(job)
