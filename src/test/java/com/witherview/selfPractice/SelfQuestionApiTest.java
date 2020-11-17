@@ -1,11 +1,17 @@
 package com.witherview.selfPractice;
 
+import com.witherview.database.entity.Question;
+import com.witherview.database.entity.QuestionList;
+import com.witherview.database.repository.QuestionRepository;
 import com.witherview.selfPractice.Question.SelfQuestionDTO;
-import com.witherview.support.MockMvcSupporter;
+import com.witherview.selfPractice.exception.NotFoundQuestionList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +21,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class SelfQuestionApiTest extends MockMvcSupporter {
-    final Long id = (long) 5;
-    final String question = "당신의 주 언어는 무엇인가요?";
-    final String answer = "저의 주 언어는 ~~입니다";
-    final Integer order = 1;
-    final String updatedQuestion = "당신의 입사 후 목표는 무엇인가요?";
-    final String updatedAnswer = "저의 목표는 ~입니다.";
+@Transactional
+public class SelfQuestionApiTest extends SelfPracticeSupporter {
+
+    @Autowired
+    QuestionRepository questionRepository;
+
+    @BeforeEach
+    public void 미리질문등록() {
+        QuestionList questionList = questionListRepository.findById(listId)
+                .orElseThrow(() -> new NotFoundQuestionList());
+
+        if(questionRepository.count() == 0) {
+            Question question = new Question("question", "answer", 1);
+            questionList.addQuestion(question);
+            questionId = questionRepository.save(question).getId();
+        }
+    }
 
     @Test
     public void 질문_등록성공() throws Exception {
@@ -34,11 +50,12 @@ public class SelfQuestionApiTest extends MockMvcSupporter {
         List<SelfQuestionDTO.QuestionDTO> list = new ArrayList<>();
         list.add(questionDTO);
 
-        SelfQuestionDTO.SaveDTO requestDTO = new SelfQuestionDTO.SaveDTO();
-        requestDTO.setListId(id);
+        SelfQuestionDTO.QuestionSaveDTO requestDTO = new SelfQuestionDTO.QuestionSaveDTO();
+        requestDTO.setListId(listId);
         requestDTO.setQuestions(list);
 
-        ResultActions resultActions = mockMvc.perform(post("/self/question")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/question")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(requestDTO)))
@@ -52,17 +69,18 @@ public class SelfQuestionApiTest extends MockMvcSupporter {
 
     @Test
     public void 질문_수정성공() throws Exception {
-        SelfQuestionDTO.UpdateDTO dto = SelfQuestionDTO.UpdateDTO.builder()
-                .id(id)
+        SelfQuestionDTO.QuestionUpdateDTO dto = SelfQuestionDTO.QuestionUpdateDTO.builder()
+                .id(questionId)
                 .question(updatedQuestion)
                 .answer(updatedAnswer)
                 .order(order)
                 .build();
 
-        List<SelfQuestionDTO.UpdateDTO> list = new ArrayList<>();
+        List<SelfQuestionDTO.QuestionUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/question")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/question")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(list)))
@@ -84,11 +102,12 @@ public class SelfQuestionApiTest extends MockMvcSupporter {
         List<SelfQuestionDTO.QuestionDTO> list = new ArrayList<>();
         list.add(questionDTO);
 
-        SelfQuestionDTO.SaveDTO requestDTO = new SelfQuestionDTO.SaveDTO();
-        requestDTO.setListId(id);
+        SelfQuestionDTO.QuestionSaveDTO requestDTO = new SelfQuestionDTO.QuestionSaveDTO();
+        requestDTO.setListId(listId);
         requestDTO.setQuestions(list);
 
-        ResultActions resultActions = mockMvc.perform(post("/self/question")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/question")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(requestDTO)))
@@ -101,17 +120,18 @@ public class SelfQuestionApiTest extends MockMvcSupporter {
 
     @Test
     public void 질문_수정실패_입력값_공백() throws Exception {
-        SelfQuestionDTO.UpdateDTO dto = SelfQuestionDTO.UpdateDTO.builder()
-                .id(id)
+        SelfQuestionDTO.QuestionUpdateDTO dto = SelfQuestionDTO.QuestionUpdateDTO.builder()
+                .id(questionId)
                 .question("")
                 .answer(updatedAnswer)
                 .order(order)
                 .build();
 
-        List<SelfQuestionDTO.UpdateDTO> list = new ArrayList<>();
+        List<SelfQuestionDTO.QuestionUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/question")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/question")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(list)))
@@ -133,11 +153,12 @@ public class SelfQuestionApiTest extends MockMvcSupporter {
         List<SelfQuestionDTO.QuestionDTO> list = new ArrayList<>();
         list.add(questionDTO);
 
-        SelfQuestionDTO.SaveDTO requestDTO = new SelfQuestionDTO.SaveDTO();
-        requestDTO.setListId(id);
+        SelfQuestionDTO.QuestionSaveDTO requestDTO = new SelfQuestionDTO.QuestionSaveDTO();
+        requestDTO.setListId(failedListId);
         requestDTO.setQuestions(list);
 
-        ResultActions resultActions = mockMvc.perform(post("/self/question")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/question")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(requestDTO)))
@@ -150,17 +171,18 @@ public class SelfQuestionApiTest extends MockMvcSupporter {
 
     @Test
     public void 질문_수정실패_없는_질문() throws Exception {
-        SelfQuestionDTO.UpdateDTO dto = SelfQuestionDTO.UpdateDTO.builder()
-                .id(id)
+        SelfQuestionDTO.QuestionUpdateDTO dto = SelfQuestionDTO.QuestionUpdateDTO.builder()
+                .id(failedQuestionId)
                 .question(updatedQuestion)
                 .answer(updatedAnswer)
                 .order(order)
                 .build();
 
-        List<SelfQuestionDTO.UpdateDTO> list = new ArrayList<>();
+        List<SelfQuestionDTO.QuestionUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/question")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/question")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(list)))

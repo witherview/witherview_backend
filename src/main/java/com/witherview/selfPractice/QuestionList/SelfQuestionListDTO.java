@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 public class SelfQuestionListDTO {
 
     @Getter @Setter @Builder
-    public static class SaveDTO {
+    public static class QuestionListSaveDTO {
         @NotBlank(message = "질문리스트 제목은 반드시 입력해야 합니다.")
         private String title;
 
@@ -31,7 +31,7 @@ public class SelfQuestionListDTO {
     }
 
     @Getter @Setter @Builder
-    public static class UpdateDTO {
+    public static class QuestionListUpdateDTO {
         @NotNull(message = "질문리스트 아이디는 반드시 입력해야 합니다.")
         private Long id;
 

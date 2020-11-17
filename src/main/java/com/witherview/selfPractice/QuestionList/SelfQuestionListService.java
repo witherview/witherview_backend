@@ -21,7 +21,7 @@ public class SelfQuestionListService {
     private final UserRepository userRepository;
 
     @Transactional
-    public QuestionList saveList(Long userId, SelfQuestionListDTO.SaveDTO requestDto) {
+    public QuestionList saveList(Long userId, SelfQuestionListDTO.QuestionListSaveDTO requestDto) {
         QuestionList questionList = requestDto.toEntity();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundUser());
@@ -31,7 +31,7 @@ public class SelfQuestionListService {
     }
 
     @Transactional
-    public void updateList(List<SelfQuestionListDTO.UpdateDTO> requestDto) {
+    public void updateList(List<SelfQuestionListDTO.QuestionListUpdateDTO> requestDto) {
         requestDto.stream().forEach(dto -> {
             QuestionList questionList = findList(dto.getId());
             questionList.update(dto.getTitle(), dto.getEnterprise(), dto.getJob());

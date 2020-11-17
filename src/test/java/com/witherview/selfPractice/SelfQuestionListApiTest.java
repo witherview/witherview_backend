@@ -1,7 +1,6 @@
 package com.witherview.selfPractice;
 
 import com.witherview.selfPractice.QuestionList.SelfQuestionListDTO;
-import com.witherview.support.MockMvcSupporter;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -15,24 +14,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class SelfQuestionListApiTest extends MockMvcSupporter {
-
-    final String title = "개발자 스터디 모집해요.";
-    final String enterprise = "kakao";
-    final String job = "sw 개발자";
-    final Long id = (long) 2;
-    final String updatedTitle = "기획자 스터디 모집합니다.";
-    final String updatedEnterprise = "naver";
+public class SelfQuestionListApiTest extends SelfPracticeSupporter {
 
     @Test
     public void 질문리스트_등록성공() throws Exception {
-        SelfQuestionListDTO.SaveDTO dto = SelfQuestionListDTO.SaveDTO.builder()
+        SelfQuestionListDTO.QuestionListSaveDTO dto = SelfQuestionListDTO.QuestionListSaveDTO.builder()
                 .title(title)
                 .enterprise(enterprise)
                 .job(job)
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(post("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/questionList")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -46,17 +39,18 @@ public class SelfQuestionListApiTest extends MockMvcSupporter {
 
     @Test
     public void 질문리스트_수정성공() throws Exception {
-        SelfQuestionListDTO.UpdateDTO dto = SelfQuestionListDTO.UpdateDTO.builder()
-                .id(id)
+        SelfQuestionListDTO.QuestionListUpdateDTO dto = SelfQuestionListDTO.QuestionListUpdateDTO.builder()
+                .id(listId)
                 .title(updatedTitle)
                 .enterprise(updatedEnterprise)
                 .job(job)
                 .build();
 
-        List<SelfQuestionListDTO.UpdateDTO> list = new ArrayList<>();
+        List<SelfQuestionListDTO.QuestionListUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/questionList")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(list)))
@@ -69,13 +63,14 @@ public class SelfQuestionListApiTest extends MockMvcSupporter {
 
     @Test
     public void 질문리스트_등록실패_없는_사용자() throws Exception {
-        SelfQuestionListDTO.SaveDTO dto = SelfQuestionListDTO.SaveDTO.builder()
+        SelfQuestionListDTO.QuestionListSaveDTO dto = SelfQuestionListDTO.QuestionListSaveDTO.builder()
                 .title(title)
                 .enterprise(enterprise)
                 .job(job)
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(post("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/questionList")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -88,13 +83,14 @@ public class SelfQuestionListApiTest extends MockMvcSupporter {
 
     @Test
     public void 질문리스트_등록실패_입력값_공백() throws Exception {
-        SelfQuestionListDTO.SaveDTO dto = SelfQuestionListDTO.SaveDTO.builder()
+        SelfQuestionListDTO.QuestionListSaveDTO dto = SelfQuestionListDTO.QuestionListSaveDTO.builder()
                 .title("")
                 .enterprise(enterprise)
                 .job(job)
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(post("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/questionList")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -107,17 +103,18 @@ public class SelfQuestionListApiTest extends MockMvcSupporter {
 
     @Test
     public void 질문리스트_수정실패_없는_질문리스트() throws Exception {
-        SelfQuestionListDTO.UpdateDTO dto = SelfQuestionListDTO.UpdateDTO.builder()
-                .id(id)
+        SelfQuestionListDTO.QuestionListUpdateDTO dto = SelfQuestionListDTO.QuestionListUpdateDTO.builder()
+                .id(failedListId)
                 .title(updatedTitle)
                 .enterprise(updatedEnterprise)
                 .job(job)
                 .build();
 
-        List<SelfQuestionListDTO.UpdateDTO> list = new ArrayList<>();
+        List<SelfQuestionListDTO.QuestionListUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/questionList")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(list)))
@@ -130,17 +127,18 @@ public class SelfQuestionListApiTest extends MockMvcSupporter {
 
     @Test
     public void 질문리스트_수정실패_입력값_공백() throws Exception {
-        SelfQuestionListDTO.UpdateDTO dto = SelfQuestionListDTO.UpdateDTO.builder()
-                .id(id)
+        SelfQuestionListDTO.QuestionListUpdateDTO dto = SelfQuestionListDTO.QuestionListUpdateDTO.builder()
+                .id(listId)
                 .title("")
                 .enterprise("")
                 .job(job)
                 .build();
 
-        List<SelfQuestionListDTO.UpdateDTO> list = new ArrayList<>();
+        List<SelfQuestionListDTO.QuestionListUpdateDTO> list = new ArrayList<>();
         list.add(dto);
 
-        ResultActions resultActions = mockMvc.perform(patch("/self/questionList")
+        ResultActions resultActions = mockMvc.perform(patch("/api/self/questionList")
+                .session(mockHttpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(list)))
