@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "tbl_question")
 public class Question {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "tbl_question_list")
 public class QuestionList {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
