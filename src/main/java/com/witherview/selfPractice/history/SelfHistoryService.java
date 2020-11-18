@@ -1,10 +1,10 @@
 package com.witherview.selfPractice.history;
 
 import com.witherview.database.entity.QuestionList;
-import com.witherview.database.entity.SelfStudy;
+import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.QuestionListRepository;
-import com.witherview.database.repository.SelfStudyRepository;
+import com.witherview.database.repository.SelfHistoryRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundQuestionList;
 import com.witherview.selfPractice.exception.NotFoundUser;
@@ -20,21 +20,21 @@ import java.util.List;
 public class SelfHistoryService {
     private final UserRepository userRepository;
     private final QuestionListRepository questionListRepository;
-    private final SelfStudyRepository selfStudyRepository;
+    private final SelfHistoryRepository selfHistoryRepository;
 
     @Transactional
-    public SelfStudy save(SelfHistoryDTO.SelfHistorySaveDTO dto, Long userId) {
+    public SelfHistory save(SelfHistoryDTO.SelfHistorySaveDTO dto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
         QuestionList questionList = questionListRepository.findById(dto.getQuestionListId())
                                     .orElseThrow(NotFoundQuestionList::new);
 
-        SelfStudy selfStudy = new SelfStudy(questionList);
-        user.addSelfStudy(selfStudy);
-        return selfStudyRepository.save(selfStudy);
+        SelfHistory selfHistory = new SelfHistory(questionList);
+        user.addSelfHistory(selfHistory);
+        return selfHistoryRepository.save(selfHistory);
     }
 
-    public List<SelfStudy> findAll(Long userId) {
+    public List<SelfHistory> findAll(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
-        return selfStudyRepository.findAllByUserId(user.getId());
+        return selfHistoryRepository.findAllByUserId(user.getId());
     }
 }
