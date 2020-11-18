@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 public class SelfHistoryDTO {
 
@@ -13,7 +14,17 @@ public class SelfHistoryDTO {
         private Long questionListId;
     }
 
+    @Getter @Setter
     public static class SelfHistorySaveResponseDTO {
         private Long id;
+    }
+
+    @Getter @Setter
+    public static class SelfHistoryResponseDTO {
+        private Long id;
+        private Long questionListId;
+        private String questionListEnterprise;
+        private String questionListJob;
+        private LocalDateTime createdAt;
     }
 }

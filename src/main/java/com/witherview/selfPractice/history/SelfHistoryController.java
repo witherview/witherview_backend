@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.List;
 
 @Api(tags = "SelfHistory API")
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class SelfHistoryController {
     @ApiOperation(value="혼자 연습 기록 등록")
     @PostMapping(path = "/api/self/history", consumes = MediaType.APPLICATION_JSON_VALUE,
                                             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveList(@RequestBody @Valid SelfHistoryDTO.SelfHistorySaveDTO dto,
+    public ResponseEntity<?> save(@RequestBody @Valid SelfHistoryDTO.SelfHistorySaveDTO dto,
                                       BindingResult result,
                                       @ApiIgnore HttpSession session) {
         if(result.hasErrors()) {
@@ -41,5 +43,15 @@ public class SelfHistoryController {
         SelfHistory selfHistory = selfHistoryService.save(dto, accountSession.getId());
         return new ResponseEntity<>(modelMapper.map(selfHistory,
                 SelfHistoryDTO.SelfHistorySaveResponseDTO.class), HttpStatus.CREATED);
+    }
+
+    @ApiOperation(value="혼자 연습 기록 조회")
+    @GetMapping(path = "/api/self/history", consumes = MediaType.APPLICATION_JSON_VALUE,
+                                            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getList(@ApiIgnore HttpSession session) {
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        List<SelfHistory> selfHistories = selfHistoryService.findAll(accountSession.getId());
+        return new ResponseEntity<>(modelMapper.map(selfHistories,
+                SelfHistoryDTO.SelfHistoryResponseDTO[].class), HttpStatus.OK);
     }
 }
