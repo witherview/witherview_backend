@@ -1,9 +1,11 @@
 package com.witherview.selfPractice;
 
+import com.witherview.account.AccountSession;
 import com.witherview.selfPractice.QuestionList.SelfQuestionListDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 public class SelfQuestionListApiTest extends SelfPracticeSupporter {
 
     @Test
@@ -68,6 +71,8 @@ public class SelfQuestionListApiTest extends SelfPracticeSupporter {
                 .enterprise(enterprise)
                 .job(job)
                 .build();
+
+        mockHttpSession.setAttribute("user", new AccountSession(userId + 1, email, name));
 
         ResultActions resultActions = mockMvc.perform(post("/api/self/questionList")
                 .session(mockHttpSession)

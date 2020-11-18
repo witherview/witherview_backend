@@ -18,7 +18,7 @@ import javax.transaction.Transactional;
 
 @Transactional
 public class SelfPracticeSupporter extends MockMvcSupporter {
-    final Long userId = (long)1;
+    Long userId = (long)1;
     final String email = "hohoho@witherview.com";
     final String password = "123456";
     final String name = "witherview";
@@ -53,21 +53,17 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
 
     @BeforeEach
     public void 회원가입_세션생성_리스트생성() {
-        User user = userRepository.findByEmail(email);
         // 회원가입
-        if (user == null) {
-            user = userRepository.save(new User(email, passwordEncoder.encode(password), name));
-        }
+        User user = userRepository.save(new User(email, passwordEncoder.encode(password), name));
+        userId = user.getId();
+
         // 세션생성
-        if(mockHttpSession.getAttribute("user") == null) {
-            AccountSession accountSession = new AccountSession(userId, email, name);
-            mockHttpSession.setAttribute("user", accountSession);
-        }
+        AccountSession accountSession = new AccountSession(userId, email, name);
+        mockHttpSession.setAttribute("user", accountSession);
+
         // 리스트생성
         QuestionList questionList = new QuestionList("title", "enterprise", "job");
-        if(questionListRepository.count() == 0) {
-            user.addQuestionList(questionList);
-            listId = questionListRepository.save(questionList).getId();
-        }
+        user.addQuestionList(questionList);
+        listId = questionListRepository.save(questionList).getId();
     }
 }
