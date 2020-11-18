@@ -30,7 +30,7 @@ public class SelfHistoryService {
         QuestionList questionList = questionListRepository.findById(dto.getQuestionListId())
                                     .orElseThrow(NotFoundQuestionList::new);
         if (!user.getId().equals(questionList.getOwner().getId())) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+            throw new BusinessException(ErrorCode.NOT_FOUND_QUESTIONLIST);
         }
 
         SelfHistory selfHistory = new SelfHistory(questionList);

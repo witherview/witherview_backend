@@ -91,9 +91,9 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
-        resultActions.andExpect(jsonPath("$.code").value("COMMON001"));
-        resultActions.andExpect(jsonPath("$.status").value(400));
+        resultActions.andExpect(jsonPath("$.code").value("SELF-PRACTICE002"));
+        resultActions.andExpect(jsonPath("$.status").value(404));
     }
 }
