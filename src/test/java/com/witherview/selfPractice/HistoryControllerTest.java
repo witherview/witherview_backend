@@ -2,8 +2,11 @@ package com.witherview.selfPractice;
 
 import com.witherview.account.AccountSession;
 import com.witherview.database.entity.QuestionList;
+import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
+import com.witherview.database.repository.SelfHistoryRepository;
 import com.witherview.database.repository.UserRepository;
+import com.witherview.selfPractice.exception.NotFoundUser;
 import com.witherview.selfPractice.history.SelfHistoryDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,6 +26,9 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SelfHistoryRepository selfHistoryRepository;
 
     @Test
     public void 히스토리_정상_등록() throws Exception {
@@ -95,5 +100,37 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
 
         resultActions.andExpect(jsonPath("$.code").value("SELF-PRACTICE002"));
         resultActions.andExpect(jsonPath("$.status").value(404));
+    }
+
+    @Test
+    public void 히스토리_요청() throws Exception {
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+
+        QuestionList questionList1 = new QuestionList("title1", "ent1", "job1");
+        QuestionList questionList2 = new QuestionList("title2", "ent2", "job2");
+        QuestionList questionList3 = new QuestionList("title3", "ent3", "job3");
+
+        user.addQuestionList(questionList1);
+        user.addQuestionList(questionList2);
+        user.addQuestionList(questionList3);
+
+        SelfHistory selfHistory1 = new SelfHistory(questionList1);
+        SelfHistory selfHistory2 = new SelfHistory(questionList2);
+        SelfHistory selfHistory3 = new SelfHistory(questionList3);
+
+        user.addSelfHistory(selfHistory1);
+        user.addSelfHistory(selfHistory2);
+        user.addSelfHistory(selfHistory3);
+
+        userRepository.save(user);
+
+        ResultActions resultActions = mockMvc.perform(get("/api/self/history")
+                .session(mockHttpSession)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        resultActions.andExpect(jsonPath("$", hasSize(3)));
     }
 }
