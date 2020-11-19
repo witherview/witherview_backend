@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 public class LoginControllerTest extends AccountSupporter {
 
     @Autowired
@@ -20,10 +22,7 @@ public class LoginControllerTest extends AccountSupporter {
 
     @BeforeEach
     public void 미리_회원가입() {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            userRepository.save(new User(email, passwordEncoder.encode(password), name));
-        }
+        userRepository.save(new User(email, passwordEncoder.encode(password), name));
     }
 
     @Test
@@ -79,7 +78,7 @@ public class LoginControllerTest extends AccountSupporter {
 
     @Test
     public void 로그인_없이_API_접근() throws Exception {
-        ResultActions resultActions = mockMvc.perform(post("/self/question")
+        ResultActions resultActions = mockMvc.perform(post("/api/self/question")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())

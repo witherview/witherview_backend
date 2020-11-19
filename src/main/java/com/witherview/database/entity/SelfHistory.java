@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity @Getter
 @NoArgsConstructor
 @Table(name = "tbl_self_study")
-public class SelfStudy extends CreatedBaseEntity {
+public class SelfHistory extends CreatedBaseEntity {
 
     @Id @GeneratedValue
     private Long id;
@@ -23,7 +23,7 @@ public class SelfStudy extends CreatedBaseEntity {
     private QuestionList questionList;
 
     @Builder
-    public SelfStudy(QuestionList questionList) {
+    public SelfHistory(QuestionList questionList) {
         this.questionList = questionList;
     }
 

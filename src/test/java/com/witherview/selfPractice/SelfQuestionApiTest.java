@@ -30,7 +30,7 @@ public class SelfQuestionApiTest extends SelfPracticeSupporter {
     @BeforeEach
     public void 미리질문등록() {
         QuestionList questionList = questionListRepository.findById(listId)
-                .orElseThrow(() -> new NotFoundQuestionList());
+                .orElseThrow(NotFoundQuestionList::new);
 
         if(questionRepository.count() == 0) {
             Question question = new Question("question", "answer", 1);
