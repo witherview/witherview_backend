@@ -1,6 +1,7 @@
 package com.witherview.configuration;
 
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -16,11 +17,15 @@ import static springfox.documentation.builders.RequestHandlerSelectors.withMetho
 public class SwaggerConfig {
     private String title;
 
+    @Value("${server.host}")
+    private String host;
+
     @Bean
     public Docket apiV1() {
         title = "Witherview API ";
 
         return new Docket(DocumentationType.SWAGGER_2)
+                .host(host)
                 .select()
                 .apis(withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
