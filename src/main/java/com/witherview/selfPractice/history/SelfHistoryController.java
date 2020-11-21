@@ -46,8 +46,7 @@ public class SelfHistoryController {
     }
 
     @ApiOperation(value="혼자 연습 기록 조회")
-    @GetMapping(path = "/api/self/history", consumes = MediaType.APPLICATION_JSON_VALUE,
-                                            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/api/self/history")
     public ResponseEntity<?> getList(@ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         List<SelfHistory> selfHistories = selfHistoryService.findAll(accountSession.getId());
