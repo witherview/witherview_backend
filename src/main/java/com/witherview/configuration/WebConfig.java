@@ -18,6 +18,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("*")
+                .allowedOrigins("http://localhost:3001")
                 .allowCredentials(true);
     }
 
