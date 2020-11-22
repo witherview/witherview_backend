@@ -12,6 +12,9 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         AccountSession accountSession = (AccountSession) request.getSession().getAttribute("user");
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) { // CORS..
+            return true;
+        }
         if (accountSession == null) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
