@@ -13,5 +13,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("*")
                 .allowedOrigins("http://localhost:3001")
                 .allowCredentials(true);
+
+        registry.addMapping("/api/**")
+                .allowedOrigins("*")
+                .allowedOrigins("http://localhost:3001")
+                .allowCredentials(true);
     }
 }
