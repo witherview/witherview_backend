@@ -2,6 +2,12 @@ server:
   port: 8080
   host: localhost
 
+upload:
+  location: /root/videos/
+
+ffmpeg:
+  path: /root/ffmpeg_sources/ffmpeg/
+
 spring:
   datasource:
     username: guest
