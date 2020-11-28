@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @Entity @Getter
 @NoArgsConstructor
 @Table(name = "tbl_question")
-public class Question {
+public class Question extends CreatedBaseEntity {
 
     @Id @GeneratedValue
     private Long id;
