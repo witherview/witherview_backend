@@ -1,13 +1,13 @@
 package com.witherview.selfPractice.Question;
 
 import com.witherview.database.entity.Question;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SelfQuestionDTO {
@@ -61,6 +61,7 @@ public class SelfQuestionDTO {
         private String question;
         private String answer;
         private Integer order;
+        private LocalDateTime modifiedAt;
     }
 
     @Getter @Setter
