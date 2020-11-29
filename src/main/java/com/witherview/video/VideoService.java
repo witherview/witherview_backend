@@ -22,6 +22,9 @@ public class VideoService {
     @Value("${ffmpeg.path}")
     private String ffmpegPath;
 
+    @Value("${server.url}")
+    private String serverUrl;
+
     public String upload(MultipartFile videoFile, String fileName) {
         String originalVideoPath = uploadLocation + fileName + ".webm";
         String convertedVideoPath = uploadLocation + fileName + ".m3u8";
@@ -31,7 +34,7 @@ public class VideoService {
         try {
             FileUtils.copyInputStreamToFile(videoFile.getInputStream(), newVideoFile);
             convertToHls(originalVideoPath, convertedVideoPath);
-            return convertedVideoPath;
+            return serverUrl + fileName + ".m3u8";
         } catch (Exception e) {
             FileUtils.deleteQuietly(newVideoFile);
             throw new NotSavedVideo();
