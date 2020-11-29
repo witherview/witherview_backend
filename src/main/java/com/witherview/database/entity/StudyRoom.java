@@ -15,7 +15,7 @@ import java.util.List;
 @Entity @Getter
 @NoArgsConstructor
 @Table(name = "tbl_study_room")
-public class StudyRoom extends CreatedBaseEntity {
+public class StudyRoom {
 
     @Id @GeneratedValue
     private Long id;
@@ -30,15 +30,23 @@ public class StudyRoom extends CreatedBaseEntity {
 
     @NotBlank
     @Column(nullable = false)
-    private String describe;
+    private String description;
 
-    @NotNull
-    @Column(nullable = false)
-    private Byte nowUserCnt;
+//    @NotNull
+//    @Column(nullable = false)
+//    private Byte nowUserCnt;
+//
+//    @NotNull
+//    @Column(nullable = false)
+//    private Byte maxUserCnt;
 
-    @NotNull
+    @NotBlank
     @Column(nullable = false)
-    private Byte maxUserCnt;
+    private String industry;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String job;
 
     @Column(columnDefinition = "DATE")
     private LocalDate date;
@@ -53,11 +61,13 @@ public class StudyRoom extends CreatedBaseEntity {
     private List<Chat> chats = new ArrayList<>();
 
     @Builder
-    public StudyRoom(String title, String describe, Byte nowUserCnt, Byte maxUserCnt, LocalDate date, LocalTime time) {
+    public StudyRoom(String title, String description,
+                     String industry, String job,
+                     LocalDate date, LocalTime time) {
         this.title = title;
-        this.describe = describe;
-        this.nowUserCnt = nowUserCnt;
-        this.maxUserCnt = maxUserCnt;
+        this.description = description;
+        this.industry = industry;
+        this.job = job;
         this.date = date;
         this.time = time;
     }
@@ -73,5 +83,16 @@ public class StudyRoom extends CreatedBaseEntity {
 
     public void addParticipants(StudyRoomParticipant studyRoomParticipant) {
         this.studyRoomParticipants.add(studyRoomParticipant);
+    }
+
+    public void update(String title, String description,
+                       String industry, String job,
+                       LocalDate date, LocalTime time) {
+        this.title = title;
+        this.description = description;
+        this.industry = industry;
+        this.job = job;
+        this.date = date;
+        this.time = time;
     }
 }
