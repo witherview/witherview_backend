@@ -21,7 +21,10 @@ public enum ErrorCode {
     // Self-Practice
     NOT_FOUND_USER(404, "SELF-PRACTICE001", "해당 유저가 없습니다."),
     NOT_FOUND_QUESTIONLIST(404, "SELF-PRACTICE002", "해당 질문리스트가 없습니다."),
-    NOT_FOUND_QUESTION(404, "SELF-PRACTICE003", "해당 질문이 없습니다.");
+    NOT_FOUND_QUESTION(404, "SELF-PRACTICE003", "해당 질문이 없습니다."),
+
+    // Group-Practice
+    NOT_FOUND_STUDYROOM(404, "GROUP-PRACTICE001", "해당 스터디방이 없습니다.");
 
     private final int status;
     private final String code;
