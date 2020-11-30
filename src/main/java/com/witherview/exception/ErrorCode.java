@@ -24,7 +24,8 @@ public enum ErrorCode {
     NOT_FOUND_QUESTION(404, "SELF-PRACTICE003", "해당 질문이 없습니다."),
 
     // Group-Practice
-    NOT_FOUND_STUDYROOM(404, "GROUP-PRACTICE001", "해당 스터디방이 없습니다.");
+    NOT_FOUND_STUDYROOM(404, "GROUP-PRACTICE001", "해당 스터디방이 없습니다."),
+    ALREADY_JOIN_STUDYROOM(400, "GROUP-PRACTICE001", "이미 참여하고 있는 스터디룸입니다.");
 
     private final int status;
     private final String code;
