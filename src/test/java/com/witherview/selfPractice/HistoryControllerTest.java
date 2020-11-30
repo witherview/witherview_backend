@@ -4,19 +4,17 @@ import com.witherview.account.AccountSession;
 import com.witherview.database.entity.QuestionList;
 import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
-import com.witherview.database.repository.SelfHistoryRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundUser;
-import com.witherview.selfPractice.history.SelfHistoryDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,35 +25,31 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private SelfHistoryRepository selfHistoryRepository;
+    MockMultipartFile file = new MockMultipartFile("video",
+            "video.webm", "video/webm", "test webm".getBytes());
 
     @Test
-    public void 히스토리_정상_등록() throws Exception {
-        SelfHistoryDTO.SelfHistorySaveDTO dto = new SelfHistoryDTO.SelfHistorySaveDTO();
-        dto.setQuestionListId(listId);
-
-        mockMvc.perform(post("/api/self/history")
+    public void 히스토리_등록_실패_정상적인_비디오_파일이_아님() throws Exception {
+        mockMvc.perform(multipart("/api/self/history")
+                .file("videoFile", file.getBytes())
+                .param("questionListId", listId.toString())
                 .session(mockHttpSession)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(dto)))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
     public void 히스토리_등록_실패_유효하지_않은_유저() throws Exception {
-        SelfHistoryDTO.SelfHistorySaveDTO dto = new SelfHistoryDTO.SelfHistorySaveDTO();
-        dto.setQuestionListId(listId);
-
         mockHttpSession.setAttribute("user", new AccountSession(userId + 1, email, name));
 
-        ResultActions resultActions = mockMvc.perform(post("/api/self/history")
+        ResultActions resultActions = mockMvc.perform(multipart("/api/self/history")
+                .file("videoFile", file.getBytes())
+                .param("questionListId", listId.toString())
                 .session(mockHttpSession)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(dto)))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
@@ -65,14 +59,13 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
 
     @Test
     public void 히스토리_등록_실패_유효하지_않은_리스트_아이디() throws Exception {
-        SelfHistoryDTO.SelfHistorySaveDTO dto = new SelfHistoryDTO.SelfHistorySaveDTO();
-        dto.setQuestionListId(listId + 1);
-
-        ResultActions resultActions = mockMvc.perform(post("/api/self/history")
+        long wrongListId = -1L;
+        ResultActions resultActions = mockMvc.perform(multipart("/api/self/history")
+                .file("videoFile", file.getBytes())
+                .param("questionListId", Long.toString(wrongListId))
                 .session(mockHttpSession)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(dto)))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
@@ -87,14 +80,12 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
         user.addQuestionList(questionList);
         userRepository.save(user);
 
-        SelfHistoryDTO.SelfHistorySaveDTO dto = new SelfHistoryDTO.SelfHistorySaveDTO();
-        dto.setQuestionListId(questionList.getId());
-
-        ResultActions resultActions = mockMvc.perform(post("/api/self/history")
+        ResultActions resultActions = mockMvc.perform(multipart("/api/self/history")
+                .file("videoFile", file.getBytes())
+                .param("questionListId", questionList.getId().toString())
                 .session(mockHttpSession)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(dto)))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
@@ -117,6 +108,10 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
         SelfHistory selfHistory1 = new SelfHistory(questionList1);
         SelfHistory selfHistory2 = new SelfHistory(questionList2);
         SelfHistory selfHistory3 = new SelfHistory(questionList3);
+
+        selfHistory1.updateSavedLocation("asd");
+        selfHistory2.updateSavedLocation("asd");
+        selfHistory3.updateSavedLocation("asd");
 
         user.addSelfHistory(selfHistory1);
         user.addSelfHistory(selfHistory2);

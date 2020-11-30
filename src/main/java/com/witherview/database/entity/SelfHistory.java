@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity @Getter
 @NoArgsConstructor
@@ -22,6 +24,9 @@ public class SelfHistory extends CreatedBaseEntity {
     @JoinColumn(name = "question_list_id", nullable = false)
     private QuestionList questionList;
 
+    @NotNull @NotBlank
+    private String savedLocation;
+
     @Builder
     public SelfHistory(QuestionList questionList) {
         this.questionList = questionList;
@@ -29,5 +34,9 @@ public class SelfHistory extends CreatedBaseEntity {
 
     protected void updateUser(User user) {
         this.user = user;
+    }
+
+    public void updateSavedLocation(String savedLocation) {
+        this.savedLocation = savedLocation;
     }
 }
