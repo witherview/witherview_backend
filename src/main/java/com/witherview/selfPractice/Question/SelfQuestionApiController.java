@@ -59,7 +59,7 @@ public class SelfQuestionApiController {
     @PatchMapping(path = "/api/self/question", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateQuestion(@RequestBody List<SelfQuestionDTO.QuestionUpdateDTO> requestDto,
-                                            @ApiIgnore Errors errors) {
+                                  @ApiIgnore Errors errors) {
 
         customValidator.validate(requestDto, errors);
 
