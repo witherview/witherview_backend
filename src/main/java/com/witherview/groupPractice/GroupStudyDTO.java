@@ -66,7 +66,7 @@ public class GroupStudyDTO {
         @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
         private Long id;
 
-        @NotNull(message = "타겟 유저id는 반드시 입력해야 합니다.")
+        @NotNull(message = "타겟 유저아이디는 반드시 입력해야 합니다.")
         private Long targetUser;
 
         @NotNull(message = "점수는 반드시 입력해야 합니다.")

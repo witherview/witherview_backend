@@ -79,7 +79,7 @@ public class GroupStudyController {
 
     @ApiOperation(value="스터디방 삭제")
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteRoom(@ApiParam(value = "삭제할 질문 id", required = true) @PathVariable Long id) {
+    public ResponseEntity<?> deleteRoom(@ApiParam(value = "삭제할 방 id", required = true) @PathVariable Long id) {
         StudyRoom deletedRoom = groupStudyService.deleteRoom(id);
         return new ResponseEntity<>(modelMapper.map(deletedRoom, GroupStudyDTO.DeleteResponseDTO.class), HttpStatus.OK);
     }
@@ -101,7 +101,7 @@ public class GroupStudyController {
 
     @ApiOperation(value="해당 스터디방 참여자 조회")
     @GetMapping(path = "/room/{id}")
-    public ResponseEntity<?> findParticipants(@ApiParam(value = "참여할 방 id", required = true) @PathVariable Long id) {
+    public ResponseEntity<?> findParticipants(@ApiParam(value = "참여 조회할 방 id", required = true) @PathVariable Long id) {
         List<User> lists = groupStudyService.findParticipatedUsers(id);
         return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ParticipantDTO[].class), HttpStatus.OK);
     }
