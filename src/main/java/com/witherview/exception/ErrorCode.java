@@ -25,7 +25,10 @@ public enum ErrorCode {
 
     // Group-Practice
     NOT_FOUND_STUDYROOM(404, "GROUP-PRACTICE001", "해당 스터디방이 없습니다."),
-    ALREADY_JOIN_STUDYROOM(400, "GROUP-PRACTICE001", "이미 참여하고 있는 스터디룸입니다.");
+    ALREADY_JOIN_STUDYROOM(400, "GROUP-PRACTICE001", "이미 참여하고 있는 스터디룸입니다."),
+
+    // Video
+    NOT_SAVED_VIDEO(500, "VIDEO001", "비디오를 저장하는데 실패하였습니다.");
 
     private final int status;
     private final String code;
