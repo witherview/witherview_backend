@@ -40,7 +40,7 @@ public class GroupStudyDTO {
         }
     }
 
-    @Getter @Setter
+    @Getter @Setter @Builder
     public static class StudyUpdateDTO {
         @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
         private Long id;
@@ -61,7 +61,7 @@ public class GroupStudyDTO {
         private LocalTime time;
     }
 
-    @Getter @Setter
+    @Getter @Setter @Builder
     public static class StudyFeedBackDTO {
         @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
         private Long id;
@@ -74,6 +74,12 @@ public class GroupStudyDTO {
 
         @NotNull(message = "합격 여부는 반드시 입력해야 합니다.")
         private Boolean passOrFail;
+    }
+
+    @Getter @Setter
+    public static class StudyJoinDTO {
+        @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
+        private Long id;
     }
 
     @Getter @Setter

@@ -1,6 +1,5 @@
 package com.witherview.groupPractice;
 
-import com.witherview.account.AccountDTO;
 import com.witherview.account.AccountSession;
 import com.witherview.database.entity.StudyFeedback;
 import com.witherview.database.entity.StudyRoom;
@@ -86,18 +85,24 @@ public class GroupStudyController {
     }
 
     @ApiOperation(value="스터디방 참여")
-    @PostMapping(path = "/room/{id}")
-    public ResponseEntity<?> joinRoom(@ApiParam(value = "참여할 방 id", required = true) @PathVariable Long id,
+    @PostMapping(path = "/room", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> joinRoom(@RequestBody @Valid GroupStudyDTO.StudyJoinDTO requestDto,
+                                      BindingResult result,
                                       @ApiIgnore HttpSession session) {
+        if(result.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyRoom studyRoom = groupStudyService.joinRoom(id, accountSession.getId());
+        StudyRoom studyRoom = groupStudyService.joinRoom(requestDto.getId(), accountSession.getId());
         return new ResponseEntity<>(modelMapper.map(studyRoom, GroupStudyDTO.ResponseDTO.class), HttpStatus.OK);
     }
 
     @ApiOperation(value="해당 스터디방 참여자 조회")
     @GetMapping(path = "/room/{id}")
     public ResponseEntity<?> findParticipants(@ApiParam(value = "참여할 방 id", required = true) @PathVariable Long id) {
-        List<User> lists = groupStudyService.findParticipants(id);
+        List<User> lists = groupStudyService.findParticipatedUsers(id);
         return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ParticipantDTO[].class), HttpStatus.OK);
     }
 

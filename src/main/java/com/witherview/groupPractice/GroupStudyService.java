@@ -8,12 +8,15 @@ import com.witherview.database.repository.StudyFeedbackRepository;
 import com.witherview.database.repository.StudyRoomParticipantRepository;
 import com.witherview.database.repository.StudyRoomRepository;
 import com.witherview.database.repository.UserRepository;
+import com.witherview.groupPractice.exception.AlreadyJoinedStudyRoom;
 import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -56,13 +59,17 @@ public class GroupStudyService {
 
     @Transactional
     public StudyRoom joinRoom(Long id, Long userId) {
+        // 이미 참여하고 있는 방인 경우
+        if(findParticipant(id, userId) != null) {
+            throw new AlreadyJoinedStudyRoom();
+        }
+
         StudyRoom studyRoom = findRoom(id);
         User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
         StudyRoomParticipant studyRoomParticipant = StudyRoomParticipant.builder()
                                                                         .studyRoom(studyRoom)
                                                                         .user(user)
                                                                         .build();
-
         studyRoom.addParticipants(studyRoomParticipant);
         user.addParticipatedRoom(studyRoomParticipant);
         return studyRoom;
@@ -93,16 +100,20 @@ public class GroupStudyService {
         return studyFeedbackRepository.save(studyFeedback);
     }
 
-    public List<User> findParticipants(Long id) {
-        return findRoom(id).getStudyRoomParticipants()
-                            .stream()
-                            .map(r -> r.getUser())
-                            .collect(Collectors.toList());
-    }
-
     public StudyRoom findRoom(Long id) {
         return studyRoomRepository.findById(id)
                 .orElseThrow(NotFoundStudyRoom::new);
+    }
+
+    public StudyRoomParticipant findParticipant(Long id, Long userId) {
+        return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId);
+    }
+
+    public List<User> findParticipatedUsers(Long id) {
+        return findRoom(id).getStudyRoomParticipants()
+                .stream()
+                .map(r -> r.getUser())
+                .collect(Collectors.toList());
     }
 
     public List<StudyRoom> findParticipatedRooms(Long userId) {
@@ -118,11 +129,16 @@ public class GroupStudyService {
         // 면접 날짜 가까운 순으로 정렬
         Collections.sort(lists, new Comparator<StudyRoom>() {
             @Override
-            public int compare(StudyRoom o1, StudyRoom o2) {
-                if(o1.getDate().isEqual(o2.getDate())) {
-                    return o2.getTime().isBefore(o1.getTime()) ? 1 : -1;
+            public int compare(StudyRoom r1, StudyRoom r2) {
+                LocalDate r1Date = r1.getDate();
+                LocalDate r2Date = r2.getDate();
+                LocalTime r1Time = r1.getTime();
+                LocalTime r2Time = r2.getTime();
+
+                if(r1Date.isEqual(r2Date)) {
+                    return r2Time.isBefore(r1Time) ? 1 : -1;
                 }
-                return o2.getDate().isBefore(o1.getDate()) ? 1 : -1;
+                return r2Date.isBefore(r1Date) ? 1 : -1;
             }
         });
         return lists;
