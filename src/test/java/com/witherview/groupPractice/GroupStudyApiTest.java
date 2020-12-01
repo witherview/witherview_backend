@@ -89,7 +89,7 @@ public class GroupStudyApiTest extends GroupStudySupporter {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         resultActions.andExpect(jsonPath("$.targetUserId").value(userId2));
         resultActions.andExpect(jsonPath("$.score").value(score.intValue()));
