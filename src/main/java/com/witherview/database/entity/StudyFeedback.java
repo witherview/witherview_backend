@@ -28,10 +28,6 @@ public class StudyFeedback extends CreatedBaseEntity {
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
 
-    @NotBlank
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String feedbackMessage;
-
     @NotNull
     private Byte score;
 
@@ -40,10 +36,9 @@ public class StudyFeedback extends CreatedBaseEntity {
 
     @Builder
     public StudyFeedback(StudyRoom studyRoom, User writtenUser,
-                         String feedbackMessage, Byte score, Boolean passOrFail) {
+                         Byte score, Boolean passOrFail) {
         this.studyRoom = studyRoom;
         this.writtenUser = writtenUser;
-        this.feedbackMessage = feedbackMessage;
         this.score = score;
         this.passOrFail = passOrFail;
     }
