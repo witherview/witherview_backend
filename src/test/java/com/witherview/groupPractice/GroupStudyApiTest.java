@@ -12,8 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -185,6 +184,16 @@ public class GroupStudyApiTest extends GroupStudySupporter {
                 .andExpect(status().isBadRequest());
 
         resultActions.andExpect(jsonPath("$.message").value("이미 참여하고 있는 스터디룸입니다."));
+        resultActions.andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    public void 스터디룸_나가기_실패_참여하고있지_않은_스터디룸() throws Exception {
+        ResultActions resultActions = mockMvc.perform(delete("/api/group/room/" + roomId)
+                .session(mockHttpSession))
+                .andExpect(status().isBadRequest());
+
+        resultActions.andExpect(jsonPath("$.message").value("참여하지 않은 스터디룸입니다."));
         resultActions.andExpect(jsonPath("$.status").value(400));
     }
 }
