@@ -10,6 +10,7 @@ import com.witherview.database.repository.StudyRoomRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.groupPractice.exception.AlreadyJoinedStudyRoom;
 import com.witherview.groupPractice.exception.NotFoundStudyRoom;
+import com.witherview.groupPractice.exception.NotJoinedStudyRoom;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,6 @@ public class GroupStudyService {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
 
         user.addHostedRoom(studyRoom);
-
         return studyRoomRepository.save(studyRoom);
     }
 
@@ -72,11 +72,16 @@ public class GroupStudyService {
                                                                         .build();
         studyRoom.addParticipants(studyRoomParticipant);
         user.addParticipatedRoom(studyRoomParticipant);
+        studyRoomParticipantRepository.save(studyRoomParticipant);
         return studyRoom;
     }
 
     @Transactional
     public StudyRoom leaveRoom(Long id, Long userId) {
+        // 참여하지 않은 방인 경우
+        if(findParticipant(id, userId) == null) {
+            throw new NotJoinedStudyRoom();
+        }
         StudyRoom studyRoom = findRoom(id);
         studyRoomParticipantRepository.deleteByStudyRoomIdAndUserId(id, userId);
         return studyRoom;
@@ -96,7 +101,6 @@ public class GroupStudyService {
                                                     .build();
 
         targetUser.addStudyFeedback(studyFeedback);
-
         return studyFeedbackRepository.save(studyFeedback);
     }
 

@@ -127,6 +127,6 @@ public class GroupStudyController {
 
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         StudyFeedback studyFeedback = groupStudyService.createFeedBack(accountSession.getId(), requestDto);
-        return new ResponseEntity<>(modelMapper.map(studyFeedback, GroupStudyDTO.FeedBackResponseDTO.class), HttpStatus.OK);
+        return new ResponseEntity<>(modelMapper.map(studyFeedback, GroupStudyDTO.FeedBackResponseDTO.class), HttpStatus.CREATED);
     }
 }
