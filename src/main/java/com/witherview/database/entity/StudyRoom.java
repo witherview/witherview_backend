@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -40,12 +39,10 @@ public class StudyRoom {
 //    @Column(nullable = false)
 //    private Byte maxUserCnt;
 
-    @NotBlank
-    @Column(nullable = false)
+    @Column(columnDefinition = "varchar(50) default '무관'")
     private String industry;
 
-    @NotBlank
-    @Column(nullable = false)
+    @Column(columnDefinition = "varchar(50) default '무관'")
     private String job;
 
     @Column(columnDefinition = "DATE")

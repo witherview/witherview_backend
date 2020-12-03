@@ -39,6 +39,7 @@ public class SelfHistoryService {
 
         SelfHistory selfHistory = new SelfHistory(questionList);
         user.addSelfHistory(selfHistory);
+        selfHistory.updateSavedLocation("temp");
         selfHistoryRepository.save(selfHistory);
         String savedLocation = videoService.upload(videoFile,
                                            accountSession.getEmail() + "/self/" + selfHistory.getId());

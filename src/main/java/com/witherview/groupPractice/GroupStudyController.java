@@ -64,8 +64,8 @@ public class GroupStudyController {
 
     @ApiOperation(value="스터디방 조회")
     @GetMapping
-    public ResponseEntity<?> findAllRooms() {
-        List<StudyRoom> lists = groupStudyService.findAllRooms();
+    public ResponseEntity<?> findAllRooms(@RequestParam("page") Integer current) {
+        List<StudyRoom> lists = groupStudyService.findRooms(current);
         return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ResponseDTO[].class), HttpStatus.OK);
     }
 

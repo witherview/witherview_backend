@@ -34,7 +34,7 @@ public class VideoService {
         try {
             FileUtils.copyInputStreamToFile(videoFile.getInputStream(), newVideoFile);
             convertToHls(originalVideoPath, convertedVideoPath);
-            return serverUrl + fileName + ".m3u8";
+            return serverUrl + "videos/" + fileName + ".m3u8";
         } catch (Exception e) {
             FileUtils.deleteQuietly(newVideoFile);
             throw new NotSavedVideo();
