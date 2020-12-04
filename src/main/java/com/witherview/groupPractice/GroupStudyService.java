@@ -71,6 +71,7 @@ public class GroupStudyService {
                                                                         .user(user)
                                                                         .build();
         studyRoom.addParticipants(studyRoomParticipant);
+        studyRoom.increaseNowUserCnt();
         user.addParticipatedRoom(studyRoomParticipant);
         studyRoomParticipantRepository.save(studyRoomParticipant);
         return studyRoom;
@@ -83,6 +84,7 @@ public class GroupStudyService {
             throw new NotJoinedStudyRoom();
         }
         StudyRoom studyRoom = findRoom(id);
+        studyRoom.decreaseNowUserCnt();
         studyRoomParticipantRepository.deleteByStudyRoomIdAndUserId(id, userId);
         return studyRoom;
     }
