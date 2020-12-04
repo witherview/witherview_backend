@@ -39,10 +39,10 @@ public class User {
     private String subJob;
 
     @ColumnDefault("0")
-    private Integer studyCnt;
+    private Long studyCnt;
 
     @ColumnDefault("0")
-    private Integer selfPracticeCnt;
+    private Long selfPracticeCnt;
 
     @ColumnDefault("0")
     private Byte reliability;
