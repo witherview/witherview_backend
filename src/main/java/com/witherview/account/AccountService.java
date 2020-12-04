@@ -71,7 +71,7 @@ public class AccountService {
                 .mapToDouble(StudyFeedback::getScore)
                 .average()
                 .orElse(0);
-        long passCnt = feedbackList
+        Long passCnt = feedbackList
                 .stream()
                 .filter(StudyFeedback::getPassOrFail)
                 .count();
