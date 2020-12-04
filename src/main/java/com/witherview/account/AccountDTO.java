@@ -60,7 +60,7 @@ public class AccountDTO {
         private Long groupStudyCnt;
         private Long selfPracticeCnt;
         private Long questionListCnt;
-        private Double interviewScore;
+        private String interviewScore;
         private Long passCnt;
         private Long failCnt;
     }

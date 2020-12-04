@@ -71,7 +71,7 @@ public class AccountService {
         responseMyInfo.setGroupStudyCnt(studyCnt);
         responseMyInfo.setPassCnt(passCnt);
         responseMyInfo.setFailCnt(failCnt);
-        responseMyInfo.setInterviewScore(interviewScore);
+        responseMyInfo.setInterviewScore(String.format("%.1f", interviewScore));
         responseMyInfo.setQuestionListCnt(questionListCnt);
         return responseMyInfo;
     }
