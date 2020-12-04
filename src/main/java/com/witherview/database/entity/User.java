@@ -39,9 +39,6 @@ public class User {
     private String subJob;
 
     @ColumnDefault("0")
-    private Long studyCnt;
-
-    @ColumnDefault("0")
     private Long selfPracticeCnt;
 
     @ColumnDefault("0")
