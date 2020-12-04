@@ -58,7 +58,7 @@ public class AccountController {
     }
 
     @ApiOperation(value="내 정보")
-    @GetMapping(path = "/myinfo")
+    @GetMapping(path = "/api/myinfo")
     public ResponseEntity<?> myInfo(@ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         AccountDTO.ResponseMyInfo info = accountService.myInfo(accountSession.getId());
