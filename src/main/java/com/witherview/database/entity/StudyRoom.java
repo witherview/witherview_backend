@@ -1,11 +1,15 @@
 package com.witherview.database.entity;
 
+import com.witherview.groupPractice.exception.AlreadyFullStudyRoom;
+import com.witherview.groupPractice.exception.EmptyStudyRoom;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -31,18 +35,18 @@ public class StudyRoom {
     @Column(nullable = false)
     private String description;
 
-//    @NotNull
-//    @Column(nullable = false)
-//    private Byte nowUserCnt;
-//
-//    @NotNull
-//    @Column(nullable = false)
-//    private Byte maxUserCnt;
+    @NotNull
+    @Column(nullable = false)
+    private Integer nowUserCnt;
 
-    @Column(columnDefinition = "varchar(50) default '무관'")
+    @NotNull
+    @Column(nullable = false)
+    private Integer maxUserCnt;
+
+    @ColumnDefault("'무관'")
     private String industry;
 
-    @Column(columnDefinition = "varchar(50) default '무관'")
+    @ColumnDefault("'무관'")
     private String job;
 
     @Column(columnDefinition = "DATE")
@@ -67,6 +71,8 @@ public class StudyRoom {
         this.job = job;
         this.date = date;
         this.time = time;
+        this.nowUserCnt = 0;
+        this.maxUserCnt = 2;
     }
 
     protected void updateHost(User host) {
@@ -91,5 +97,15 @@ public class StudyRoom {
         this.job = job;
         this.date = date;
         this.time = time;
+    }
+
+    public void increaseNowUserCnt() {
+        if(this.nowUserCnt + 1 > this.maxUserCnt) throw new AlreadyFullStudyRoom();
+        this.nowUserCnt++;
+    }
+
+    public void decreaseNowUserCnt() {
+        if(this.nowUserCnt - 1 <= 0) throw new EmptyStudyRoom();
+        this.nowUserCnt--;
     }
 }
