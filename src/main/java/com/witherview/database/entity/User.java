@@ -69,6 +69,10 @@ public class User {
         this.name = name;
     }
 
+    public void increaseSelfPracticeCnt() {
+        this.selfPracticeCnt += 1;
+    }
+
     public void addQuestionList(QuestionList questionList) {
         questionList.updateOwner(this);
         this.questionLists.add(questionList);
