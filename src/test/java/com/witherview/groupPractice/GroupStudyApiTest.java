@@ -48,6 +48,8 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         resultActions.andExpect(jsonPath("$.job").value(job1));
         resultActions.andExpect(jsonPath("$.date").value(date2.toString()));
         resultActions.andExpect(jsonPath("$.time").value(time2.toString()));
+        resultActions.andExpect(jsonPath("$.nowUserCnt").value(1));
+        resultActions.andExpect(jsonPath("$.maxUserCnt").value(2));
     }
 
     @Test
