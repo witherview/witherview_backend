@@ -39,10 +39,10 @@ public class User {
     private String subJob;
 
     @ColumnDefault("0")
-    private Long selfPracticeCnt;
+    private Long selfPracticeCnt = 0L;
 
     @ColumnDefault("0")
-    private Byte reliability;
+    private Byte reliability = 0;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionList> questionLists = new ArrayList<>();
