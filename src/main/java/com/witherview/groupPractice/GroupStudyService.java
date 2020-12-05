@@ -13,13 +13,12 @@ import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.groupPractice.exception.NotJoinedStudyRoom;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +31,7 @@ public class GroupStudyService {
     private final StudyFeedbackRepository studyFeedbackRepository;
     private final StudyRoomParticipantRepository studyRoomParticipantRepository;
     private final UserRepository userRepository;
+    private final int pageSize = 6;
 
     @Transactional
     public StudyRoom saveRoom(Long userId, GroupStudyDTO.StudyCreateDTO requestDto) {
@@ -71,6 +71,7 @@ public class GroupStudyService {
                                                                         .user(user)
                                                                         .build();
         studyRoom.addParticipants(studyRoomParticipant);
+        studyRoom.increaseNowUserCnt();
         user.addParticipatedRoom(studyRoomParticipant);
         studyRoomParticipantRepository.save(studyRoomParticipant);
         return studyRoom;
@@ -83,6 +84,7 @@ public class GroupStudyService {
             throw new NotJoinedStudyRoom();
         }
         StudyRoom studyRoom = findRoom(id);
+        studyRoom.decreaseNowUserCnt();
         studyRoomParticipantRepository.deleteByStudyRoomIdAndUserId(id, userId);
         return studyRoom;
     }
@@ -128,23 +130,10 @@ public class GroupStudyService {
                     .collect(Collectors.toList());
     }
 
-    public List<StudyRoom> findAllRooms() {
-        List<StudyRoom> lists = studyRoomRepository.findAll();
-        // 면접 날짜 가까운 순으로 정렬
-        Collections.sort(lists, new Comparator<StudyRoom>() {
-            @Override
-            public int compare(StudyRoom r1, StudyRoom r2) {
-                LocalDate r1Date = r1.getDate();
-                LocalDate r2Date = r2.getDate();
-                LocalTime r1Time = r1.getTime();
-                LocalTime r2Time = r2.getTime();
+    public List<StudyRoom> findRooms(Integer current) {
+        int page = current == null ? 0 : current;
+        Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("date", "time").ascending());
 
-                if(r1Date.isEqual(r2Date)) {
-                    return r2Time.isBefore(r1Time) ? 1 : -1;
-                }
-                return r2Date.isBefore(r1Date) ? 1 : -1;
-            }
-        });
-        return lists;
+        return studyRoomRepository.findAll(pageRequest).getContent();
     }
 }

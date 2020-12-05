@@ -4,6 +4,7 @@ import com.witherview.database.entity.StudyRoom;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,15 +15,16 @@ public class GroupStudyDTO {
     @Getter @Setter @Builder
     public static class StudyCreateDTO {
         @NotBlank(message = "방 제목은 반드시 입력해야 합니다.")
+        @Length(min = 1, message = "방 제목은 1자 이상이어야 합니다.")
+        @Length(max = 20, message = "방 제목은 20자 이하여야 합니다.")
         private String title;
 
         @NotBlank(message = "방 설명은 반드시 입력해야 합니다.")
+        @Length(min = 1, message = "방 설명은 1자 이상이어야 합니다.")
+        @Length(max = 100, message = "방 설명은 100자 이하여야 합니다.")
         private String description;
 
-        @NotBlank(message = "산업 이름은 반드시 입력해야 합니다.")
         private String industry;
-
-        @NotBlank(message = "직무 이름은 반드시 입력해야 합니다.")
         private String job;
 
         private LocalDate date;
@@ -51,10 +53,7 @@ public class GroupStudyDTO {
         @NotBlank(message = "방 설명은 반드시 입력해야 합니다.")
         private String description;
 
-        @NotBlank(message = "산업 이름은 반드시 입력해야 합니다.")
         private String industry;
-
-        @NotBlank(message = "직무 이름은 반드시 입력해야 합니다.")
         private String job;
 
         private LocalDate date;
@@ -91,6 +90,8 @@ public class GroupStudyDTO {
         private String job;
         private LocalDate date;
         private LocalTime time;
+        private Integer nowUserCnt;
+        private Integer maxUserCnt;
     }
 
     @Getter @Setter

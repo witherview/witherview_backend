@@ -24,9 +24,11 @@ public enum ErrorCode {
     NOT_FOUND_QUESTION(404, "SELF-PRACTICE003", "해당 질문이 없습니다."),
 
     // Group-Practice
-    NOT_FOUND_STUDYROOM(404, "GROUP-PRACTICE001", "해당 스터디방이 없습니다."),
+    NOT_FOUND_STUDYROOM(404, "GROUP-PRACTICE001", "해당 스터디룸이 없습니다."),
     ALREADY_JOIN_STUDYROOM(400, "GROUP-PRACTICE002", "이미 참여하고 있는 스터디룸입니다."),
     NOT_JOIN_STUDYROOM(400, "GROUP-PRACTICE003", "참여하지 않은 스터디룸입니다."),
+    ALREADY_FULL_STUDYROOM(400, "GROUP-PRACTICE004", "이미 스터디룸이 꽉 차 있습니다."),
+    EMPTY_STUDYROOM(400, "GROUP-PRACTICE005", "스터디룸에 참여자가 없으면 안됩니다."),
 
     // Video
     NOT_SAVED_VIDEO(500, "VIDEO001", "비디오를 저장하는데 실패하였습니다.");
