@@ -6,6 +6,7 @@ import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.history.SelfHistoryDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,15 +42,31 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
     }
 
     @Test
+    public void 히스토리_등록_성공() throws Exception {
+        SelfHistoryDTO.SelfHistoryRequestDTO dto = new SelfHistoryDTO.SelfHistoryRequestDTO();
+        dto.setQuestionListId(listId);
+
+        mockMvc.perform(post("/api/self/history")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(dto))
+                .session(mockHttpSession))
+                .andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+    @Test
     public void 히스토리_등록_실패_유효하지_않은_유저() throws Exception {
         mockHttpSession.setAttribute("user", new AccountSession(userId + 1, email, name));
 
-        ResultActions resultActions = mockMvc.perform(multipart("/api/self/history")
-                .file("videoFile", file.getBytes())
-                .param("questionListId", listId.toString())
-                .session(mockHttpSession)
+        SelfHistoryDTO.SelfHistoryRequestDTO dto = new SelfHistoryDTO.SelfHistoryRequestDTO();
+        dto.setQuestionListId(listId);
+
+        ResultActions resultActions = mockMvc.perform(post("/api/self/history")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(dto))
+                .session(mockHttpSession))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
@@ -59,13 +76,16 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
 
     @Test
     public void 히스토리_등록_실패_유효하지_않은_리스트_아이디() throws Exception {
-        long wrongListId = -1L;
-        ResultActions resultActions = mockMvc.perform(multipart("/api/self/history")
-                .file("videoFile", file.getBytes())
-                .param("questionListId", Long.toString(wrongListId))
-                .session(mockHttpSession)
+        long wrongListId = 0L;
+
+        SelfHistoryDTO.SelfHistoryRequestDTO dto = new SelfHistoryDTO.SelfHistoryRequestDTO();
+        dto.setQuestionListId(wrongListId);
+
+        ResultActions resultActions = mockMvc.perform(post("/api/self/history")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(dto))
+                .session(mockHttpSession))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
@@ -80,12 +100,14 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
         user.addQuestionList(questionList);
         userRepository.save(user);
 
-        ResultActions resultActions = mockMvc.perform(multipart("/api/self/history")
-                .file("videoFile", file.getBytes())
-                .param("questionListId", questionList.getId().toString())
-                .session(mockHttpSession)
+        SelfHistoryDTO.SelfHistoryRequestDTO dto = new SelfHistoryDTO.SelfHistoryRequestDTO();
+        dto.setQuestionListId(questionList.getId());
+
+        ResultActions resultActions = mockMvc.perform(post("/api/self/history")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(dto))
+                .session(mockHttpSession))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
