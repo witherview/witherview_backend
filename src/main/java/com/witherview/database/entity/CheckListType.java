@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,11 @@ public class CheckListType {
     @NotNull
     @NotBlank
     private String checkListType;
+
+    @Builder
+    public CheckListType(String checkListType) {
+        this.checkListType = checkListType;
+    }
 
     @OneToMany(mappedBy = "checkListType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CheckList> checkLists = new ArrayList<>();

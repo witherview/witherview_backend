@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,6 +23,11 @@ public class CheckList {
 
     @NotNull @NotBlank
     private String checkList;
+
+    @Builder
+    public CheckList(String checkList) {
+        this.checkList = checkList;
+    }
 
     protected void updateCheckListType(CheckListType checkListType) {
         this.checkListType = checkListType;
