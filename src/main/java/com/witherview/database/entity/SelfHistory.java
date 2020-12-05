@@ -24,7 +24,6 @@ public class SelfHistory extends CreatedBaseEntity {
     @JoinColumn(name = "question_list_id", nullable = false)
     private QuestionList questionList;
 
-    @NotNull @NotBlank
     private String savedLocation;
 
     @Builder

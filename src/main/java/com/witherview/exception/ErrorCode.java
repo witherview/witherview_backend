@@ -30,6 +30,9 @@ public enum ErrorCode {
     ALREADY_FULL_STUDYROOM(400, "GROUP-PRACTICE004", "이미 스터디룸이 꽉 차 있습니다."),
     EMPTY_STUDYROOM(400, "GROUP-PRACTICE005", "스터디룸에 참여자가 없으면 안됩니다."),
 
+    // Self-History
+    NOT_FOUND_HISTORY(404, "SELF-HISTORY001", "해당 혼자 연습 내역이 없습니다."),
+
     // Video
     NOT_SAVED_VIDEO(500, "VIDEO001", "비디오를 저장하는데 실패하였습니다.");
 
