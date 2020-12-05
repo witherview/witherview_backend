@@ -2,6 +2,7 @@ package com.witherview.selfPractice.CheckList;
 
 import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
+import com.witherview.selfPractice.exception.NotFoundCheckList;
 import com.witherview.selfPractice.exception.NotFoundHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class SelfCheckService {
     private final SelfHistoryRepository selfHistoryRepository;
     private final SelfCheckRepository selfCheckRepository;
     private final CheckListTypeRepository checkListTypeRepository;
+    private final CheckListRepository checkListRepository;
 
     @Transactional
     public List<SelfCheck> save(SelfCheckDTO.SelfCheckRequestDTO requestDto) {
@@ -25,6 +27,7 @@ public class SelfCheckService {
 
         return requestDto.getCheckLists().stream()
                 .map(dto -> {
+                    findCheckList(dto.getCheckListId());
                     SelfCheck selfCheck = dto.toEntity();
                     selfHistory.addSelfCheck(selfCheck);
                     return selfCheckRepository.save(selfCheck);
@@ -64,5 +67,9 @@ public class SelfCheckService {
                 .orElseThrow(NotFoundHistory::new);
 
         return selfHistory.getSelfCheckList();
+    }
+
+    public CheckList findCheckList(Long id) {
+        return checkListRepository.findById(id).orElseThrow(NotFoundCheckList::new);
     }
 }
