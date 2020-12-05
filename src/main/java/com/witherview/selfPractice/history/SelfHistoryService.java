@@ -44,6 +44,7 @@ public class SelfHistoryService {
         String savedLocation = videoService.upload(videoFile,
                                            accountSession.getEmail() + "/self/" + selfHistory.getId());
         selfHistory.updateSavedLocation(savedLocation);
+        user.increaseSelfPracticeCnt();
         return selfHistory;
     }
 

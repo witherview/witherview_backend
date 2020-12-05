@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,4 +57,11 @@ public class AccountController {
         return new ResponseEntity<>(modelMapper.map(user, AccountDTO.ResponseLogin.class), HttpStatus.OK);
     }
 
+    @ApiOperation(value="내 정보")
+    @GetMapping(path = "/api/myinfo")
+    public ResponseEntity<?> myInfo(@ApiIgnore HttpSession session) {
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        AccountDTO.ResponseMyInfo info = accountService.myInfo(accountSession.getId());
+        return new ResponseEntity<>(modelMapper.map(info, AccountDTO.ResponseMyInfo.class), HttpStatus.OK);
+    }
 }

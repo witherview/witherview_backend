@@ -54,4 +54,14 @@ public class AccountDTO {
         private String email;
         private String name;
     }
+
+    @Getter @Setter
+    public static class ResponseMyInfo {
+        private Long groupStudyCnt;
+        private Long selfPracticeCnt;
+        private Long questionListCnt;
+        private String interviewScore;
+        private Long passCnt;
+        private Long failCnt;
+    }
 }

@@ -39,10 +39,7 @@ public class User {
     private String subJob;
 
     @ColumnDefault("0")
-    private Integer studyCnt;
-
-    @ColumnDefault("0")
-    private Integer selfPracticeCnt;
+    private Long selfPracticeCnt;
 
     @ColumnDefault("0")
     private Byte reliability;
@@ -67,6 +64,10 @@ public class User {
         this.email = email;
         this.password = password;
         this.name = name;
+    }
+
+    public void increaseSelfPracticeCnt() {
+        this.selfPracticeCnt += 1;
     }
 
     public void addQuestionList(QuestionList questionList) {
