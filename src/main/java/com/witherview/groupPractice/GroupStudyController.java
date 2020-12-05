@@ -64,9 +64,17 @@ public class GroupStudyController {
 
     @ApiOperation(value="스터디방 조회")
     @GetMapping
-    public ResponseEntity<?> findAllRooms() {
-        List<StudyRoom> lists = groupStudyService.findAllRooms();
+    public ResponseEntity<?> findAllRooms(@ApiParam(value = "조회할 page (디폴트 값 = 0)")
+                                              @RequestParam(value = "page", required = false) Integer current) {
+        List<StudyRoom> lists = groupStudyService.findRooms(current);
         return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ResponseDTO[].class), HttpStatus.OK);
+    }
+
+    @ApiOperation(value="특정 스터디방 조회")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findSpecificRoom(@ApiParam(value = "조회할 방 id") @PathVariable Long id) {
+        StudyRoom studyRoom = groupStudyService.findRoom(id);
+        return new ResponseEntity<>(modelMapper.map(studyRoom, GroupStudyDTO.ResponseDTO.class), HttpStatus.OK);
     }
 
     @ApiOperation(value="특정 유저가 참여한 스터디방 조회")
