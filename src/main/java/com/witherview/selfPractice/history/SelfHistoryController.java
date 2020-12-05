@@ -24,15 +24,26 @@ public class SelfHistoryController {
     private final SelfHistoryService selfHistoryService;
 
     @ApiOperation(value="혼자 연습 기록 등록")
-    @PostMapping(path = "/api/self/history", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    @PostMapping(path = "/api/self/history", consumes = MediaType.APPLICATION_JSON_VALUE,
                                              produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> save(@RequestParam("videoFile") MultipartFile videoFile,
-                                  @RequestParam("questionListId") Long questionListId,
+    public ResponseEntity<?> save(SelfHistoryDTO.SelfHistoryRequestDTO dto,
                                   @ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        SelfHistory selfHistory = selfHistoryService.save(videoFile, questionListId, accountSession);
+        SelfHistory selfHistory = selfHistoryService.save(dto.getQuestionListId(), accountSession);
         return new ResponseEntity<>(modelMapper.map(selfHistory,
                 SelfHistoryDTO.SelfHistorySaveResponseDTO.class), HttpStatus.CREATED);
+    }
+
+    @ApiOperation(value="혼자 연습 영상 등록")
+    @PostMapping(path = "/api/self/history/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+                                                   produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
+                                         @RequestParam("historyId") Long historyId,
+                                         @ApiIgnore HttpSession session) {
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        SelfHistory selfHistory = selfHistoryService.uploadVideo(videoFile, historyId, accountSession);
+        return new ResponseEntity<>(modelMapper.map(selfHistory,
+                SelfHistoryDTO.SelfHistorySaveResponseDTO.class), HttpStatus.OK);
     }
 
     @ApiOperation(value="혼자 연습 기록 조회")
