@@ -90,6 +90,8 @@ public class GroupStudyDTO {
         private String job;
         private LocalDate date;
         private LocalTime time;
+        private Integer nowUserCnt;
+        private Integer maxUserCnt;
     }
 
     @Getter @Setter

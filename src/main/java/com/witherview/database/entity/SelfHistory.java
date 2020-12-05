@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity @Getter
 @NoArgsConstructor
@@ -24,8 +24,10 @@ public class SelfHistory extends CreatedBaseEntity {
     @JoinColumn(name = "question_list_id", nullable = false)
     private QuestionList questionList;
 
-    @NotNull @NotBlank
     private String savedLocation;
+
+    @OneToMany(mappedBy = "selfHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SelfCheck> selfCheckList = new ArrayList<>();
 
     @Builder
     public SelfHistory(QuestionList questionList) {
@@ -38,5 +40,10 @@ public class SelfHistory extends CreatedBaseEntity {
 
     public void updateSavedLocation(String savedLocation) {
         this.savedLocation = savedLocation;
+    }
+
+    public void addSelfCheck(SelfCheck selfCheck) {
+        selfCheck.updateSelfHistory(this);
+        this.selfCheckList.add(selfCheck);
     }
 }

@@ -39,13 +39,10 @@ public class User {
     private String subJob;
 
     @ColumnDefault("0")
-    private Integer studyCnt;
+    private Long selfPracticeCnt = 0L;
 
     @ColumnDefault("0")
-    private Integer selfPracticeCnt;
-
-    @ColumnDefault("0")
-    private Byte reliability;
+    private Byte reliability = 0;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionList> questionLists = new ArrayList<>();
@@ -67,6 +64,10 @@ public class User {
         this.email = email;
         this.password = password;
         this.name = name;
+    }
+
+    public void increaseSelfPracticeCnt() {
+        this.selfPracticeCnt += 1;
     }
 
     public void addQuestionList(QuestionList questionList) {

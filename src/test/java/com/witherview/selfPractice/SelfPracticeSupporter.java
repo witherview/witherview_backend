@@ -2,17 +2,17 @@ package com.witherview.selfPractice;
 
 import com.witherview.account.AccountSession;
 import com.witherview.database.entity.QuestionList;
+import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.QuestionListRepository;
+import com.witherview.database.repository.SelfHistoryRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import com.witherview.support.MockMvcSupporter;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 
@@ -40,6 +40,8 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
     final String updatedQuestion = "당신의 입사 후 목표는 무엇인가요?";
     final String updatedAnswer = "저의 목표는 ~입니다.";
 
+    Long selfHistoryId = (long) 1;
+
     final MockHttpSession mockHttpSession = new MockHttpSession();
 
     @Autowired
@@ -47,6 +49,9 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
 
     @Autowired
     QuestionListRepository questionListRepository;
+
+    @Autowired
+    SelfHistoryRepository selfHistoryRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -65,5 +70,10 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
         QuestionList questionList = new QuestionList("title", "enterprise", "job");
         user.addQuestionList(questionList);
         listId = questionListRepository.save(questionList).getId();
+
+        SelfHistory selfHistory = new SelfHistory(questionList);
+        user.addSelfHistory(selfHistory);
+        user.increaseSelfPracticeCnt();
+        selfHistoryId = selfHistoryRepository.save(selfHistory).getId();
     }
 }
