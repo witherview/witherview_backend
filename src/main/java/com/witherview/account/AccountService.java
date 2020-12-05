@@ -46,8 +46,8 @@ public class AccountService {
         list.add("우리 회사 경쟁사는 어디라고 생각하나요? 그 경쟁사보다 우리가 더 나은 점은 무엇인가요?");
         list.add("우리 회사가 속한 산업의 전망이 어떻게 될 것 같나요?"); list.add("입사 후 우리 회사에서 이루고자 하는 목표가 있나요?");
         list.add("마지막으로 하고 싶은 이야기나 질문 있으신가요?");
-        for (int i = 1; i <= list.size(); i++) {
-            questionList.addQuestion(new Question(list.get(i), "", i));
+        for (int i = 0; i < list.size(); i++) {
+            questionList.addQuestion(new Question(list.get(i), "", i + 1));
         }
         user.addQuestionList(questionList);
         return userRepository.save(user);
