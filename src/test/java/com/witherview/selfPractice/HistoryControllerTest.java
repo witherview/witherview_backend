@@ -30,9 +30,9 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
 
     @Test
     public void 히스토리_등록_실패_정상적인_비디오_파일이_아님() throws Exception {
-        mockMvc.perform(multipart("/api/self/history")
+        mockMvc.perform(multipart("/api/self/history/video")
                 .file("videoFile", file.getBytes())
-                .param("questionListId", listId.toString())
+                .param("historyId", selfHistoryId.toString())
                 .session(mockHttpSession)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -48,7 +48,7 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
                 .file("videoFile", file.getBytes())
                 .param("questionListId", listId.toString())
                 .session(mockHttpSession)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isNotFound());
@@ -64,7 +64,7 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
                 .file("videoFile", file.getBytes())
                 .param("questionListId", Long.toString(wrongListId))
                 .session(mockHttpSession)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isNotFound());
@@ -84,7 +84,7 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
                 .file("videoFile", file.getBytes())
                 .param("questionListId", questionList.getId().toString())
                 .session(mockHttpSession)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isNotFound());
@@ -126,6 +126,6 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        resultActions.andExpect(jsonPath("$", hasSize(3)));
+        resultActions.andExpect(jsonPath("$", hasSize(4)));
     }
 }
