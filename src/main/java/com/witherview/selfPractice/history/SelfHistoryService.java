@@ -7,8 +7,7 @@ import com.witherview.database.entity.User;
 import com.witherview.database.repository.QuestionListRepository;
 import com.witherview.database.repository.SelfHistoryRepository;
 import com.witherview.database.repository.UserRepository;
-import com.witherview.exception.BusinessException;
-import com.witherview.exception.ErrorCode;
+import com.witherview.selfPractice.exception.NotFoundHistory;
 import com.witherview.selfPractice.exception.NotFoundQuestionList;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import com.witherview.video.VideoService;
@@ -29,22 +28,30 @@ public class SelfHistoryService {
     private final VideoService videoService;
 
     @Transactional
-    public SelfHistory save(MultipartFile videoFile, Long questionListId, AccountSession accountSession) {
+    public SelfHistory save(Long questionListId, AccountSession accountSession) {
         User user = userRepository.findById(accountSession.getId()).orElseThrow(NotFoundUser::new);
         QuestionList questionList = questionListRepository.findById(questionListId)
-                                    .orElseThrow(NotFoundQuestionList::new);
+                .orElseThrow(NotFoundQuestionList::new);
         if (!user.getId().equals(questionList.getOwner().getId())) {
             throw new NotFoundQuestionList();
         }
-
         SelfHistory selfHistory = new SelfHistory(questionList);
         user.addSelfHistory(selfHistory);
-        selfHistory.updateSavedLocation("temp");
         selfHistoryRepository.save(selfHistory);
+        user.increaseSelfPracticeCnt();
+        return selfHistory;
+    }
+
+    @Transactional
+    public SelfHistory uploadVideo(MultipartFile videoFile, Long historyId, AccountSession accountSession) {
+        User user = userRepository.findById(accountSession.getId()).orElseThrow(NotFoundUser::new);
+        SelfHistory selfHistory = selfHistoryRepository.findById(historyId).orElseThrow(NotFoundHistory::new);
+        if (!user.getId().equals(selfHistory.getUser().getId())) {
+            throw new NotFoundHistory();
+        }
         String savedLocation = videoService.upload(videoFile,
                                            accountSession.getEmail() + "/self/" + selfHistory.getId());
         selfHistory.updateSavedLocation(savedLocation);
-        user.increaseSelfPracticeCnt();
         return selfHistory;
     }
 
