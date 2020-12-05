@@ -172,7 +172,7 @@ public class GroupStudyApiTest extends GroupStudySupporter {
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
-        resultActions.andExpect(jsonPath("$.message").value("해당 스터디방이 없습니다."));
+        resultActions.andExpect(jsonPath("$.message").value("해당 스터디룸이 없습니다."));
         resultActions.andExpect(jsonPath("$.status").value(404));
     }
 
