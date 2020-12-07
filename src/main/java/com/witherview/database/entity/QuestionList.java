@@ -37,6 +37,9 @@ public class QuestionList {
     @OneToMany(mappedBy = "belongList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "questionList", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SelfHistory> selfHistories = new ArrayList<>();
+
     @Builder
     public QuestionList(String title, String enterprise, String job) {
         this.title = title;
@@ -47,6 +50,10 @@ public class QuestionList {
     public void addQuestion(Question question) {
         question.updateBelongList(this);
         this.questions.add(question);
+    }
+
+    public void addSelfHistory(SelfHistory selfHistory) {
+        this.selfHistories.add(selfHistory);
     }
 
     protected void updateOwner(User owner) {
