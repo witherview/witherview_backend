@@ -79,8 +79,8 @@ public class SelfCheckApiTest extends SelfPracticeSupporter {
                 .session(mockHttpSession))
                 .andExpect(status().isOk());
 
-        resultActions.andExpect(jsonPath("$[0].checkListId").value(checkListId));
-        resultActions.andExpect(jsonPath("$[0].is").value(checkListType));
+        resultActions.andExpect(jsonPath("$[0].checkListTypeId").value(checkListTypeId));
+        resultActions.andExpect(jsonPath("$[0].checkListType").value(checkListType));
         resultActions.andExpect(jsonPath("$[0].checkLists[0].checkList").value(checkListValue));
     }
 
