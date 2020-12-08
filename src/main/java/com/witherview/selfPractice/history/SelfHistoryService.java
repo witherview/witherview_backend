@@ -37,6 +37,7 @@ public class SelfHistoryService {
         }
         SelfHistory selfHistory = new SelfHistory(questionList);
         user.addSelfHistory(selfHistory);
+        questionList.addSelfHistory(selfHistory);
         selfHistoryRepository.save(selfHistory);
         user.increaseSelfPracticeCnt();
         return selfHistory;
