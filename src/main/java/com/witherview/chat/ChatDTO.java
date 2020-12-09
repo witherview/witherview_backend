@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class ChatDTO {
     @Getter @Setter
-    public static class ChatMessageDTO {
+    public static class MessageDTO {
         private String id = UUID.randomUUID().toString(); // message id
         private Long roomId; // 방 번호
         private String type; // 메세지 타입
@@ -16,7 +16,7 @@ public class ChatDTO {
     }
 
     @Getter @Setter
-    public static class ChatFeedBackDTO {
+    public static class FeedBackDTO {
         private String id = UUID.randomUUID().toString(); // message id
         private Long roomId; // 방 번호
         private String sender; // 피드백 보낸사람

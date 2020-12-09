@@ -11,12 +11,12 @@ public class ChatController {
     private final SimpMessageSendingOperations messagingTemplate;
 
     @MessageMapping("/chat")
-    public void message(ChatDTO.ChatMessageDTO message) {
+    public void message(ChatDTO.MessageDTO message) {
         messagingTemplate.convertAndSend("/sub/room/" + message.getRoomId(), message);
     }
 
     @MessageMapping("/feedback")
-    public void feedback(ChatDTO.ChatFeedBackDTO feedback) {
-        messagingTemplate.convertAndSend("/sub/feedback" + feedback.getRoomId(), feedback);
+    public void feedback(ChatDTO.FeedBackDTO feedback) {
+        messagingTemplate.convertAndSend("/sub/feedback/" + feedback.getRoomId(), feedback);
     }
 }
