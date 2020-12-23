@@ -1,13 +1,12 @@
 package com.witherview.groupPractice;
 
+import com.witherview.account.AccountSession;
 import com.witherview.database.entity.StudyRoom;
 import com.witherview.database.entity.StudyRoomParticipant;
 import com.witherview.database.entity.User;
-import com.witherview.database.repository.StudyRoomRepository;
 import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 public class GroupStudyApiTest extends GroupStudySupporter {
-
-    @Autowired
-    StudyRoomRepository studyRoomRepository;
 
     @Test
     public void 스터디룸_등록성공() throws Exception {
@@ -78,6 +74,16 @@ public class GroupStudyApiTest extends GroupStudySupporter {
 
     @Test
     public void 스터디_피드백_등록_성공() throws Exception {
+        StudyRoom studyRoom = studyRoomRepository.findById(roomId).orElseThrow(NotFoundStudyRoom::new);
+        User user = userRepository.findById(userId2).orElseThrow(NotFoundUser::new);
+        StudyRoomParticipant studyRoomParticipant = StudyRoomParticipant.builder()
+                .studyRoom(studyRoom)
+                .user(user)
+                .build();
+
+        studyRoom.addParticipants(studyRoomParticipant);
+        user.addParticipatedRoom(studyRoomParticipant);
+
         GroupStudyDTO.StudyFeedBackDTO dto = GroupStudyDTO.StudyFeedBackDTO.builder()
                 .id(roomId)
                 .targetUser(userId2)
@@ -100,6 +106,9 @@ public class GroupStudyApiTest extends GroupStudySupporter {
 
     @Test
     public void 스터디방_참여_성공() throws Exception {
+        AccountSession accountSession = new AccountSession(userId2, email2, name2);
+        mockHttpSession.setAttribute("user", accountSession);
+
         GroupStudyDTO.StudyJoinDTO dto = new GroupStudyDTO.StudyJoinDTO();
         dto.setId(roomId);
 
@@ -177,17 +186,52 @@ public class GroupStudyApiTest extends GroupStudySupporter {
     }
 
     @Test
-    public void 스터디룸_참여_실패_이미_참여하고있는_스터디룸() throws Exception {
-        StudyRoom studyRoom = studyRoomRepository.findById(roomId).orElseThrow(NotFoundStudyRoom::new);
-        User user = userRepository.findById(userId1).orElseThrow(NotFoundUser::new);
-        StudyRoomParticipant studyRoomParticipant = StudyRoomParticipant.builder()
-                .studyRoom(studyRoom)
-                .user(user)
+    public void 스터디_피드백_등록_실패_참여하지_않는_스터디룸() throws Exception {
+        AccountSession accountSession = new AccountSession(userId2, email2, name2);
+        mockHttpSession.setAttribute("user", accountSession);
+
+        GroupStudyDTO.StudyFeedBackDTO dto = GroupStudyDTO.StudyFeedBackDTO.builder()
+                .id(roomId)
+                .targetUser(userId1)
+                .score(score)
+                .passOrFail(passOrFail)
                 .build();
 
-        studyRoom.addParticipants(studyRoomParticipant);
-        user.addParticipatedRoom(studyRoomParticipant);
+        ResultActions resultActions = mockMvc.perform(post("/api/group/feedback")
+                .session(mockHttpSession)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
 
+        resultActions.andExpect(jsonPath("$.message").value("참여하지 않은 스터디룸입니다."));
+        resultActions.andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    public void 스터디_피드백_등록_실패_참여하지_않는_유저에대한_피드백() throws Exception {
+        GroupStudyDTO.StudyFeedBackDTO dto = GroupStudyDTO.StudyFeedBackDTO.builder()
+                .id(roomId)
+                .targetUser(userId2)
+                .score(score)
+                .passOrFail(passOrFail)
+                .build();
+
+        ResultActions resultActions = mockMvc.perform(post("/api/group/feedback")
+                .session(mockHttpSession)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        resultActions.andExpect(jsonPath("$.message").value("스터디룸에 참여하지 않은 사람에게 피드백을 줄 수 없습니다."));
+        resultActions.andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    public void 스터디룸_참여_실패_이미_참여하고있는_스터디룸() throws Exception {
         GroupStudyDTO.StudyJoinDTO dto = new GroupStudyDTO.StudyJoinDTO();
         dto.setId(roomId);
 
@@ -205,11 +249,27 @@ public class GroupStudyApiTest extends GroupStudySupporter {
 
     @Test
     public void 스터디룸_나가기_실패_참여하고있지_않은_스터디룸() throws Exception {
+        AccountSession accountSession = new AccountSession(userId2, email2, name2);
+        mockHttpSession.setAttribute("user", accountSession);
+
         ResultActions resultActions = mockMvc.perform(delete("/api/group/room/" + roomId)
                 .session(mockHttpSession))
                 .andExpect(status().isBadRequest());
 
         resultActions.andExpect(jsonPath("$.message").value("참여하지 않은 스터디룸입니다."));
+        resultActions.andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    public void 스터디룸_삭제_실패_해당_스터디룸의_호스트가_아님() throws Exception {
+        AccountSession accountSession = new AccountSession(userId2, email2, name2);
+        mockHttpSession.setAttribute("user", accountSession);
+
+        ResultActions resultActions = mockMvc.perform(delete("/api/group/" + roomId)
+                .session(mockHttpSession))
+                .andExpect(status().isBadRequest());
+
+        resultActions.andExpect(jsonPath("$.message").value("해당 스터디룸의 호스트가 아닙니다."));
         resultActions.andExpect(jsonPath("$.status").value(400));
     }
 }
