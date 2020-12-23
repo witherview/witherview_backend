@@ -96,6 +96,7 @@ public class GroupStudyDTO {
 
     @Getter @Setter
     public static class ParticipantDTO {
+        private Long id;
         private String email;
         private String name;
     }
