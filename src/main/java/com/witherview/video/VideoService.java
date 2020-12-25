@@ -48,7 +48,6 @@ public class VideoService {
                 .setInput(inputPath)
                 .addOutput(outputPath)
                 .addExtraArgs("-c:v", "libx264")
-                .addExtraArgs("-c:a", "copy")
                 .addExtraArgs("-start_number", "0")
                 .addExtraArgs("-hls_list_size", "0")
                 .addExtraArgs("-hls_time", "10")
