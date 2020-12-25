@@ -224,10 +224,10 @@ public class GroupStudyApiTest extends GroupStudySupporter {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
         resultActions.andExpect(jsonPath("$.message").value("스터디룸에 참여하지 않은 사람에게 피드백을 줄 수 없습니다."));
-        resultActions.andExpect(jsonPath("$.status").value(400));
+        resultActions.andExpect(jsonPath("$.status").value(404));
     }
 
     @Test
