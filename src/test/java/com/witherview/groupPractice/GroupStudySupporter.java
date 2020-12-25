@@ -2,6 +2,7 @@ package com.witherview.groupPractice;
 
 import com.witherview.account.AccountSession;
 import com.witherview.database.entity.StudyRoom;
+import com.witherview.database.entity.StudyRoomParticipant;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.StudyRoomRepository;
 import com.witherview.database.repository.UserRepository;
@@ -67,5 +68,13 @@ public class GroupStudySupporter extends MockMvcSupporter {
         StudyRoom studyRoom = new StudyRoom(title1, description1, industry1, job1, date1, time1);
         user1.addHostedRoom(studyRoom);
         roomId = studyRoomRepository.save(studyRoom).getId();
+
+        StudyRoomParticipant studyRoomParticipant = StudyRoomParticipant.builder()
+                .studyRoom(studyRoom)
+                .user(user1)
+                .build();
+
+        studyRoom.addParticipants(studyRoomParticipant);
+        user1.addParticipatedRoom(studyRoomParticipant);
     }
 }

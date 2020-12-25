@@ -29,6 +29,8 @@ public enum ErrorCode {
     NOT_JOIN_STUDYROOM(400, "GROUP-PRACTICE003", "참여하지 않은 스터디룸입니다."),
     ALREADY_FULL_STUDYROOM(400, "GROUP-PRACTICE004", "이미 스터디룸이 꽉 차 있습니다."),
     EMPTY_STUDYROOM(400, "GROUP-PRACTICE005", "스터디룸에 참여자가 없으면 안됩니다."),
+    NOT_CREATED_FEEDBACK(404, "GROUP-PRACTICE006", "스터디룸에 참여하지 않은 사람에게 피드백을 줄 수 없습니다."),
+    NOT_STUDYROOM_HOST(400, "GROUP-PRACTICE007", "해당 스터디룸의 호스트가 아닙니다."),
 
     // Self-History
     NOT_FOUND_HISTORY(404, "SELF-HISTORY001", "해당 혼자 연습 내역이 없습니다."),

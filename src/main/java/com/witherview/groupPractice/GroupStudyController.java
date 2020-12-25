@@ -50,14 +50,16 @@ public class GroupStudyController {
     @ApiOperation(value="스터디방 수정")
     @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateQuestion(@RequestBody @Valid GroupStudyDTO.StudyUpdateDTO requestDto,
-                                            BindingResult result) {
+                                            BindingResult result,
+                                            @ApiIgnore HttpSession session) {
 
         if(result.hasErrors()) {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        groupStudyService.updateRoom(accountSession.getId(), requestDto);
 
-        groupStudyService.updateRoom(requestDto);
         StudyRoom studyRoom = groupStudyService.findRoom(requestDto.getId());
         return new ResponseEntity<>(modelMapper.map(studyRoom, GroupStudyDTO.ResponseDTO.class), HttpStatus.OK);
     }
@@ -87,8 +89,10 @@ public class GroupStudyController {
 
     @ApiOperation(value="스터디방 삭제")
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteRoom(@ApiParam(value = "삭제할 방 id", required = true) @PathVariable Long id) {
-        StudyRoom deletedRoom = groupStudyService.deleteRoom(id);
+    public ResponseEntity<?> deleteRoom(@ApiParam(value = "삭제할 방 id", required = true) @PathVariable Long id,
+                                        @ApiIgnore HttpSession session) {
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        StudyRoom deletedRoom = groupStudyService.deleteRoom(id, accountSession.getId());
         return new ResponseEntity<>(modelMapper.map(deletedRoom, GroupStudyDTO.DeleteResponseDTO.class), HttpStatus.OK);
     }
 

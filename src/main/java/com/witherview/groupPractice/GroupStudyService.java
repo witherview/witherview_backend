@@ -8,9 +8,7 @@ import com.witherview.database.repository.StudyFeedbackRepository;
 import com.witherview.database.repository.StudyRoomParticipantRepository;
 import com.witherview.database.repository.StudyRoomRepository;
 import com.witherview.database.repository.UserRepository;
-import com.witherview.groupPractice.exception.AlreadyJoinedStudyRoom;
-import com.witherview.groupPractice.exception.NotFoundStudyRoom;
-import com.witherview.groupPractice.exception.NotJoinedStudyRoom;
+import com.witherview.groupPractice.exception.*;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -43,16 +41,24 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public void updateRoom(GroupStudyDTO.StudyUpdateDTO requestDto) {
+    public void updateRoom(Long userId, GroupStudyDTO.StudyUpdateDTO requestDto) {
         StudyRoom studyRoom = findRoom(requestDto.getId());
+
+        if(studyRoom.getHost().getId() != userId) {
+            throw new NotStudyRoomHost();
+        }
         studyRoom.update(requestDto.getTitle(), requestDto.getDescription(),
                         requestDto.getIndustry(), requestDto.getJob(),
                         requestDto.getDate(), requestDto.getTime());
     }
 
     @Transactional
-    public StudyRoom deleteRoom(Long id) {
+    public StudyRoom deleteRoom(Long id, Long userId) {
         StudyRoom studyRoom = findRoom(id);
+
+        if(studyRoom.getHost().getId() != userId) {
+            throw new NotStudyRoomHost();
+        }
         studyRoomRepository.delete(studyRoom);
         return studyRoom;
     }
@@ -95,6 +101,12 @@ public class GroupStudyService {
         User writtenUser = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
         User targetUser = userRepository.findById(requestDto.getTargetUser()).orElseThrow(NotFoundUser::new);
 
+        if(findParticipant(requestDto.getId(), writtenUser.getId()) == null) {
+            throw new NotJoinedStudyRoom();
+        }
+        if(findParticipant(requestDto.getId(), targetUser.getId()) == null) {
+            throw new NotCreatedFeedback();
+        }
         StudyFeedback studyFeedback = StudyFeedback.builder()
                                                     .studyRoom(studyRoom)
                                                     .writtenUser(writtenUser)
