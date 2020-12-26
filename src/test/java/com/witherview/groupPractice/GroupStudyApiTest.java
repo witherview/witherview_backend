@@ -143,6 +143,36 @@ public class GroupStudyApiTest extends GroupStudySupporter {
     }
 
     @Test
+    public void 특정스터디룸_참여자_조회성공() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/api/group/room/" + roomId)
+                .session(mockHttpSession))
+                .andExpect(status().isOk());
+
+        resultActions.andExpect(jsonPath("$[0].id").value(userId1));
+        resultActions.andExpect(jsonPath("$[0].email").value(email1));
+        resultActions.andExpect(jsonPath("$[0].name").value(name1));
+        resultActions.andExpect(jsonPath("$[0].groupStudyCnt").value(1));
+        resultActions.andExpect(jsonPath("$[0].reliability").value(70));
+        resultActions.andExpect(jsonPath("$[0].isHost").value(true));
+
+        resultActions.andExpect(jsonPath("$[1].id").value(userId3));
+        resultActions.andExpect(jsonPath("$[1].email").value(email3));
+        resultActions.andExpect(jsonPath("$[1].name").value(name3));
+        resultActions.andExpect(jsonPath("$[1].groupStudyCnt").value(1));
+        resultActions.andExpect(jsonPath("$[1].reliability").value(70));
+        resultActions.andExpect(jsonPath("$[1].isHost").value(false));
+    }
+
+    @Test
+    public void 스터디룸_삭제_성공() throws Exception {
+        ResultActions resultActions = mockMvc.perform(delete("/api/group/" + roomId)
+                .session(mockHttpSession))
+                .andExpect(status().isOk());
+
+        resultActions.andExpect(jsonPath("$.id").value(roomId));
+    }
+
+    @Test
     public void 스터디룸_등록실패_유효하지_않은_사용자() throws Exception {
         GroupStudyDTO.StudyCreateDTO dto = GroupStudyDTO.StudyCreateDTO.builder()
                 .title(title2)
