@@ -113,4 +113,10 @@ public class GroupStudyDTO {
     public static class DeleteResponseDTO {
         private Long id;
     }
+
+    @Getter @Setter
+    public static class VideoSaveResponseDTO {
+        private Long id;
+        private String savedLocation;
+    }
 }
