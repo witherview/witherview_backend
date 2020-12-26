@@ -17,30 +17,32 @@ import java.util.concurrent.Executors;
 
 @Component
 public class EncodingTaskQueue {
-
     private static Integer CONFIG_CPU_LOAD_PERCENTAGE;
     private static Integer CONFIG_THREAD_WAIT_SECONDS;
+    private static Integer ENCODING_MAXIMUM_ATTEMPT_COUNT;
     private static String FFMPEG_PATH;
 
+    @Value("${task.queue.maximum-attempt-count}")
+    public void setConfigMaximumAttemptCount(Integer c) {
+        ENCODING_MAXIMUM_ATTEMPT_COUNT = c;
+    }
     @Value("${task.queue.cpu.limit-percentage}")
     public void setConfigCpuLoadPercentage(Integer p) {
         CONFIG_CPU_LOAD_PERCENTAGE = p;
     }
-
     @Value("${task.queue.thread.wait-milliseconds}")
     public void setConfigThreadWaitSeconds(Integer s) {
         CONFIG_THREAD_WAIT_SECONDS = s;
     }
-
     @Value("${ffmpeg.path}")
     public void setFfmpegPath(String p) {
         FFMPEG_PATH = p;
     }
 
-    private static Queue<String> queue = new LinkedList<>();
+    private static Queue<EncodingTask> queue = new LinkedList<>();
     private static ExecutorService executorService = Executors.newFixedThreadPool(1);
     public static void addAndRun(String path) {
-        queue.add(path);
+        queue.add(new EncodingTask(path, 1));
         run();
     }
 
@@ -82,12 +84,12 @@ public class EncodingTaskQueue {
                 run();
                 return;
             }
-            String path = queue.poll();
-            if (path != null) {
+            EncodingTask encodingTask = queue.poll();
+            if (encodingTask != null && encodingTask.getAttemptedCount() <= ENCODING_MAXIMUM_ATTEMPT_COUNT) {
                 try {
-                    encode(path);
+                    encode(encodingTask.getPath());
                 } catch (IOException e) {
-                    queue.add(path);
+                    queue.add(new EncodingTask(encodingTask.getPath(), encodingTask.getAttemptedCount() + 1));
                     try {
                         Thread.sleep(CONFIG_THREAD_WAIT_SECONDS);
                     } catch (InterruptedException ie) {

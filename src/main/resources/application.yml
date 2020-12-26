@@ -11,6 +11,7 @@ ffmpeg:
 
 task:
   queue:
+    maximum-attempt-count: 5
     cpu:
       limit-percentage: 40
     thread:
