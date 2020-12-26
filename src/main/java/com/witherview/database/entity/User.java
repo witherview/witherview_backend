@@ -42,7 +42,7 @@ public class User {
     private Long selfPracticeCnt = 0L;
 
     @ColumnDefault("0")
-    private Byte reliability = 0;
+    private Byte reliability = 70;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionList> questionLists = new ArrayList<>();
