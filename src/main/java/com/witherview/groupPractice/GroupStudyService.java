@@ -11,6 +11,7 @@ import com.witherview.database.repository.UserRepository;
 import com.witherview.groupPractice.exception.*;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -108,7 +109,7 @@ public class GroupStudyService {
             throw new NotCreatedFeedback();
         }
         StudyFeedback studyFeedback = StudyFeedback.builder()
-                                                    .studyRoom(studyRoom)
+                                                    .studyRoom(studyRoom.getId())
                                                     .writtenUser(writtenUser)
                                                     .score(requestDto.getScore())
                                                     .passOrFail(requestDto.getPassOrFail())
@@ -127,10 +128,29 @@ public class GroupStudyService {
         return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId);
     }
 
-    public List<User> findParticipatedUsers(Long id) {
-        return findRoom(id).getStudyRoomParticipants()
+    public List<GroupStudyDTO.ParticipantDTO> findParticipatedUsers(Long id) {
+        StudyRoom studyRoom = findRoom(id);
+        ModelMapper modelMapper = new ModelMapper();
+
+        return studyRoom.getStudyRoomParticipants()
                 .stream()
-                .map(r -> r.getUser())
+                .map(r -> {
+                    User user = r.getUser();
+                    GroupStudyDTO.ParticipantDTO responseDto = modelMapper.map(user, GroupStudyDTO.ParticipantDTO.class);
+
+                    if(studyRoom.getHost().getId() == user.getId()) responseDto.setIsHost(true);
+                    else responseDto.setIsHost(false);
+
+                    Long studyCnt = (long) user
+                            .getStudyFeedbacks()
+                            .stream()
+                            .map(StudyFeedback::getStudyRoom)
+                            .collect(Collectors.toSet())
+                            .size();
+
+                    responseDto.setGroupStudyCnt(studyCnt);
+                    return responseDto;
+                })
                 .collect(Collectors.toList());
     }
 
