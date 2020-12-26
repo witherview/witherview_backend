@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Entity @Getter
@@ -24,9 +23,8 @@ public class StudyFeedback extends CreatedBaseEntity {
     @JoinColumn(name = "written_user_id", nullable = false)
     private User writtenUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_room_id", nullable = false)
-    private StudyRoom studyRoom;
+    @NotNull
+    private Long studyRoom;
 
     @NotNull
     private Byte score;
@@ -35,7 +33,7 @@ public class StudyFeedback extends CreatedBaseEntity {
     private Boolean passOrFail;
 
     @Builder
-    public StudyFeedback(StudyRoom studyRoom, User writtenUser,
+    public StudyFeedback(Long studyRoom, User writtenUser,
                          Byte score, Boolean passOrFail) {
         this.studyRoom = studyRoom;
         this.writtenUser = writtenUser;
