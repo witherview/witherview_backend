@@ -120,6 +120,9 @@ public class GroupStudyService {
     public StudyVideo uploadVideo(MultipartFile videoFile, Long studyRoomId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
         findRoom(studyRoomId);
+        if (findParticipant(studyRoomId, userId) == null) {
+            throw new NotJoinedStudyRoom();
+        }
         StudyVideo studyVideo = new StudyVideo();
         String savedLocation = videoService.upload(videoFile,
                 user.getEmail() + "/group/" + studyRoomId);
