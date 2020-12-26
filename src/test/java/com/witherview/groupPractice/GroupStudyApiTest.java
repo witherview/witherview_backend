@@ -8,6 +8,7 @@ import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -271,5 +272,38 @@ public class GroupStudyApiTest extends GroupStudySupporter {
 
         resultActions.andExpect(jsonPath("$.message").value("해당 스터디룸의 호스트가 아닙니다."));
         resultActions.andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    public void 스터디_영상_등록_실패_없는_스터디룸_룸아이디가_이상할_때() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("video",
+                "video.webm", "video/webm", "test webm".getBytes());
+
+        ResultActions resultActions = mockMvc.perform(multipart("/api/group/video")
+                .file("videoFile", file.getBytes())
+                .param("studyRoomId", "0")
+                .session(mockHttpSession))
+                .andExpect(status().isNotFound());
+
+        resultActions.andExpect(jsonPath("$.status").value(404));
+        resultActions.andExpect(jsonPath("$.code").value("GROUP-PRACTICE001"));
+    }
+
+    @Test
+    public void 스터디_영상_등록_참여하지_않은_스터디룸() throws Exception {
+        AccountSession accountSession = new AccountSession(userId2, email2, name2);
+        mockHttpSession.setAttribute("user", accountSession);
+
+        MockMultipartFile file = new MockMultipartFile("video",
+                "video.webm", "video/webm", "test webm".getBytes());
+
+        ResultActions resultActions = mockMvc.perform(multipart("/api/group/video")
+                .file("videoFile", file.getBytes())
+                .param("studyRoomId", roomId.toString())
+                .session(mockHttpSession))
+                .andExpect(status().isBadRequest());
+
+        resultActions.andExpect(jsonPath("$.status").value(400));
+        resultActions.andExpect(jsonPath("$.code").value("GROUP-PRACTICE003"));
     }
 }
