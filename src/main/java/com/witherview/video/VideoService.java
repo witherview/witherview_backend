@@ -19,9 +19,6 @@ public class VideoService {
     @Value("${upload.location}")
     private String uploadLocation;
 
-    @Value("${ffmpeg.path}")
-    private String ffmpegPath;
-
     @Value("${server.url}")
     private String serverUrl;
 
