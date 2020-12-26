@@ -6,6 +6,7 @@ import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -14,11 +15,12 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Component
 public class EncodingTaskQueue {
 
-    private static Integer CONFIG_CPU_LOAD_PERCENTAGE = 10;
-    private static Integer CONFIG_THREAD_WAIT_SECONDS = 1000;
-    private static String ffmpegPath;
+    private static Integer CONFIG_CPU_LOAD_PERCENTAGE;
+    private static Integer CONFIG_THREAD_WAIT_SECONDS;
+    private static String FFMPEG_PATH;
 
     @Value("${task.queue.cpu.limit-percentage}")
     public void setConfigCpuLoadPercentage(Integer p) {
@@ -31,8 +33,8 @@ public class EncodingTaskQueue {
     }
 
     @Value("${ffmpeg.path}")
-    public void setFfmpegPath(String path) {
-        ffmpegPath = path;
+    public void setFfmpegPath(String p) {
+        FFMPEG_PATH = p;
     }
 
     private static Queue<String> queue = new LinkedList<>();
@@ -50,9 +52,8 @@ public class EncodingTaskQueue {
     private static void encode(String path) throws IOException {
         String inputPath = path + ".webm";
         String outputPath = path + ".m3u8";
-
-        FFmpeg ffmpeg = new FFmpeg(ffmpegPath + "ffmpeg");		// ffmpeg 파일 경로
-        FFprobe ffprobe = new FFprobe(ffmpegPath + "ffprobe");	// ffprobe 파일 경로
+        FFmpeg ffmpeg = new FFmpeg(FFMPEG_PATH + "ffmpeg");		// ffmpeg 파일 경로
+        FFprobe ffprobe = new FFprobe(FFMPEG_PATH + "ffprobe");	// ffprobe 파일 경로
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(inputPath)
                 .addOutput(outputPath)
@@ -87,6 +88,11 @@ public class EncodingTaskQueue {
                     encode(path);
                 } catch (IOException e) {
                     queue.add(path);
+                    try {
+                        Thread.sleep(CONFIG_THREAD_WAIT_SECONDS);
+                    } catch (InterruptedException ie) {
+                        ie.printStackTrace();
+                    }
                     run();
                 }
             }
