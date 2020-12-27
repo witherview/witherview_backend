@@ -22,7 +22,8 @@ public class LoginControllerTest extends AccountSupporter {
 
     @BeforeEach
     public void 미리_회원가입() {
-        userRepository.save(new User(email, passwordEncoder.encode(password), name));
+        userRepository.save(new User(email, passwordEncoder.encode(password), name,
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
     }
 
     @Test

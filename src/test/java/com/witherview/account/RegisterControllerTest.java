@@ -21,6 +21,10 @@ public class RegisterControllerTest extends AccountSupporter {
         dto.setPassword(password);
         dto.setPasswordConfirm(passwordConfirm);
         dto.setName(name);
+        dto.setMainIndustry("주 관심산업");
+        dto.setSubIndustry("부 관심산업");
+        dto.setMainJob("주 관심직무");
+        dto.setSubJob("부 관심직무");
 
         ResultActions resultActions = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -35,13 +39,18 @@ public class RegisterControllerTest extends AccountSupporter {
 
     @Test
     public void 회원가입_실패케이스_이메일_중복() throws Exception {
-        userRepository.save(new User(email + "2", password, name));
+        userRepository.save(new User(email + "2", password, name,
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
 
         AccountDTO.RegisterDTO dto = new AccountDTO.RegisterDTO();
         dto.setEmail(email + "2");
         dto.setPassword(password);
         dto.setPasswordConfirm(passwordConfirm);
         dto.setName(name);
+        dto.setMainIndustry("주 관심산업");
+        dto.setSubIndustry("부 관심산업");
+        dto.setMainJob("주 관심직무");
+        dto.setSubJob("부 관심직무");
 
         ResultActions resultActions = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -60,6 +69,10 @@ public class RegisterControllerTest extends AccountSupporter {
         dto.setPassword(password);
         dto.setPasswordConfirm(passwordConfirm);
         dto.setName(name);
+        dto.setMainIndustry("주 관심산업");
+        dto.setSubIndustry("부 관심산업");
+        dto.setMainJob("주 관심직무");
+        dto.setSubJob("부 관심직무");
 
         ResultActions resultActions = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -80,6 +93,10 @@ public class RegisterControllerTest extends AccountSupporter {
         dto.setPassword(password);
         dto.setPasswordConfirm(passwordConfirm + "1");
         dto.setName(name);
+        dto.setMainIndustry("주 관심산업");
+        dto.setSubIndustry("부 관심산업");
+        dto.setMainJob("주 관심직무");
+        dto.setSubJob("부 관심직무");
 
         ResultActions resultActions = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -98,6 +115,10 @@ public class RegisterControllerTest extends AccountSupporter {
         dto.setPassword(password);
         dto.setPasswordConfirm(passwordConfirm);
         dto.setName("a");
+        dto.setMainIndustry("주 관심산업");
+        dto.setSubIndustry("부 관심산업");
+        dto.setMainJob("주 관심직무");
+        dto.setSubJob("부 관심직무");
 
         ResultActions resultActions = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -59,7 +59,8 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
     @BeforeEach
     public void 회원가입_세션생성_리스트생성() {
         // 회원가입
-        User user = userRepository.save(new User(email, passwordEncoder.encode(password), name));
+        User user = userRepository.save(new User(email, passwordEncoder.encode(password), name,
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
         userId = user.getId();
 
         // 세션생성

@@ -63,13 +63,16 @@ public class GroupStudySupporter extends MockMvcSupporter {
     @BeforeEach
     public void 회원가입_세션생성_스터디룸생성() {
         // 회원가입
-        User user1 = userRepository.save(new User(email1, passwordEncoder.encode(password1), name1));
+        User user1 = userRepository.save(new User(email1, passwordEncoder.encode(password1), name1,
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
         userId1 = user1.getId();
 
-        User user2 = userRepository.save(new User(email2, passwordEncoder.encode(password2), name2));
+        User user2 = userRepository.save(new User(email2, passwordEncoder.encode(password2), name2,
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
         userId2 = user2.getId();
 
-        User user3 = userRepository.save(new User(email3, passwordEncoder.encode(password3), name3));
+        User user3 = userRepository.save(new User(email3, passwordEncoder.encode(password3), name3,
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
         userId3 = user3.getId();
 
         // 세션생성
