@@ -90,6 +90,10 @@ public class AccountService {
         responseMyInfo.setFailCnt(failCnt);
         responseMyInfo.setInterviewScore(String.format("%.1f", interviewScore));
         responseMyInfo.setQuestionListCnt(questionListCnt);
+        responseMyInfo.setMainIndustry(user.getMainIndustry());
+        responseMyInfo.setSubIndustry(user.getSubIndustry());
+        responseMyInfo.setMainJob(user.getMainJob());
+        responseMyInfo.setSubJob(user.getSubJob());
         return responseMyInfo;
     }
 }

@@ -79,5 +79,9 @@ public class AccountDTO {
         private String interviewScore;
         private Long passCnt;
         private Long failCnt;
+        private String mainIndustry;
+        private String subIndustry;
+        private String mainJob;
+        private String subJob;
     }
 }
