@@ -28,6 +28,18 @@ public class AccountDTO {
         @Length(min = 2, message = "이름은 2자 이상이어야 합니다.")
         @Length(max = 20, message = "이름은 20자 이하여야 합니다.")
         private String name;
+
+        @NotBlank(message = "주 관심산업은 반드시 입력해야 합니다.")
+        private String mainIndustry;
+
+        @NotBlank(message = "부 관심산업은 반드시 입력해야 합니다.")
+        private String subIndustry;
+
+        @NotBlank(message = "주 관심직무는 반드시 입력해야 합니다.")
+        private String mainJob;
+
+        @NotBlank(message = "부 관심직무는 반드시 입력해야 합니다.")
+        private String subJob;
     }
 
     @Getter @Setter
@@ -47,6 +59,10 @@ public class AccountDTO {
         private Long id;
         private String email;
         private String name;
+        private String mainIndustry;
+        private String subIndustry;
+        private String mainJob;
+        private String subJob;
     }
 
     @Getter @Setter
@@ -63,5 +79,9 @@ public class AccountDTO {
         private String interviewScore;
         private Long passCnt;
         private Long failCnt;
+        private String mainIndustry;
+        private String subIndustry;
+        private String mainJob;
+        private String subJob;
     }
 }

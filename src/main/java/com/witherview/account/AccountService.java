@@ -31,7 +31,8 @@ public class AccountService {
         if (findUser != null) {
             throw new DuplicateEmail();
         }
-        User user = new User(dto.getEmail(), passwordEncoder.encode(dto.getPassword()), dto.getName());
+        User user = new User(dto.getEmail(), passwordEncoder.encode(dto.getPassword()), dto.getName(),
+                             dto.getMainIndustry(), dto.getSubIndustry(), dto.getMainJob(), dto.getSubJob());
         String title = "기본 질문 리스트";
         String enterprise = "공통";
         String job = "공통";
@@ -89,6 +90,10 @@ public class AccountService {
         responseMyInfo.setFailCnt(failCnt);
         responseMyInfo.setInterviewScore(String.format("%.1f", interviewScore));
         responseMyInfo.setQuestionListCnt(questionListCnt);
+        responseMyInfo.setMainIndustry(user.getMainIndustry());
+        responseMyInfo.setSubIndustry(user.getSubIndustry());
+        responseMyInfo.setMainJob(user.getMainJob());
+        responseMyInfo.setSubJob(user.getSubJob());
         return responseMyInfo;
     }
 }

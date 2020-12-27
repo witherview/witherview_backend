@@ -21,6 +21,10 @@ public class RegisterServiceTest extends AccountSupporter {
         dto.setName(name);
         dto.setPassword(password);
         dto.setPasswordConfirm(password);
+        dto.setMainIndustry("주 관심산업");
+        dto.setSubIndustry("부 관심산업");
+        dto.setMainJob("주 관심직무");
+        dto.setSubJob("부 관심직무");
 
         Long registerdUserId = accountService.register(dto).getId();
         User user = userRepository.findById(registerdUserId).orElseThrow(NotFoundUser::new);

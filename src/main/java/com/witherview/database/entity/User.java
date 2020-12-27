@@ -63,10 +63,15 @@ public class User {
     private List<StudyVideo> studyVideos = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, String name) {
+    public User(String email, String password, String name,
+                String mainIndustry, String subIndustry, String mainJob, String subJob) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.mainIndustry = mainIndustry;
+        this.subIndustry = subIndustry;
+        this.mainJob = mainJob;
+        this.subJob = subJob;
     }
 
     public void increaseSelfPracticeCnt() {
