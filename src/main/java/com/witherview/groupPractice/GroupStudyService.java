@@ -1,15 +1,10 @@
 package com.witherview.groupPractice;
 
-import com.witherview.database.entity.StudyFeedback;
-import com.witherview.database.entity.StudyRoom;
-import com.witherview.database.entity.StudyRoomParticipant;
-import com.witherview.database.entity.User;
-import com.witherview.database.repository.StudyFeedbackRepository;
-import com.witherview.database.repository.StudyRoomParticipantRepository;
-import com.witherview.database.repository.StudyRoomRepository;
-import com.witherview.database.repository.UserRepository;
+import com.witherview.database.entity.*;
+import com.witherview.database.repository.*;
 import com.witherview.groupPractice.exception.*;
 import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.video.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +26,8 @@ public class GroupStudyService {
     private final StudyFeedbackRepository studyFeedbackRepository;
     private final StudyRoomParticipantRepository studyRoomParticipantRepository;
     private final UserRepository userRepository;
+    private final StudyVideoRepository studyVideoRepository;
+    private final VideoService videoService;
     private final int pageSize = 6;
 
     @Transactional
@@ -117,6 +115,21 @@ public class GroupStudyService {
 
         targetUser.addStudyFeedback(studyFeedback);
         return studyFeedbackRepository.save(studyFeedback);
+    }
+
+    @Transactional
+    public StudyVideo uploadVideo(MultipartFile videoFile, Long studyRoomId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        findRoom(studyRoomId);
+        if (findParticipant(studyRoomId, userId) == null) {
+            throw new NotJoinedStudyRoom();
+        }
+        StudyVideo studyVideo = new StudyVideo();
+        String savedLocation = videoService.upload(videoFile,
+                user.getEmail() + "/group/" + studyRoomId);
+        user.addStudyVideo(studyVideo);
+        studyVideo.updateSavedLocation(savedLocation);
+        return studyVideoRepository.save(studyVideo);
     }
 
     public StudyRoom findRoom(Long id) {

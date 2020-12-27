@@ -59,6 +59,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelfHistory> selfHistories = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudyVideo> studyVideos = new ArrayList<>();
+
     @Builder
     public User(String email, String password, String name) {
         this.email = email;
@@ -92,5 +95,10 @@ public class User {
     public void addSelfHistory(SelfHistory selfHistory) {
         selfHistory.updateUser(this);
         this.selfHistories.add(selfHistory);
+    }
+
+    public void addStudyVideo(StudyVideo studyVideo) {
+        studyVideo.updateUser(this);
+        this.studyVideos.add(studyVideo);
     }
 }

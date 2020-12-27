@@ -26,21 +26,6 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
     @Autowired
     private UserRepository userRepository;
 
-    MockMultipartFile file = new MockMultipartFile("video",
-            "video.webm", "video/webm", "test webm".getBytes());
-
-    @Test
-    public void 히스토리_등록_실패_정상적인_비디오_파일이_아님() throws Exception {
-        mockMvc.perform(multipart("/api/self/history/video")
-                .file("videoFile", file.getBytes())
-                .param("historyId", selfHistoryId.toString())
-                .session(mockHttpSession)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andDo(print())
-                .andExpect(status().isInternalServerError());
-    }
-
     @Test
     public void 히스토리_등록_성공() throws Exception {
         SelfHistoryDTO.SelfHistoryRequestDTO dto = new SelfHistoryDTO.SelfHistoryRequestDTO();

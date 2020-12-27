@@ -9,6 +9,14 @@ upload:
 ffmpeg:
   path: /root/ffmpeg_sources/ffmpeg/
 
+task:
+  queue:
+    maximum-attempt-count: 5
+    cpu:
+      limit-percentage: 40
+    thread:
+      wait-milliseconds: 3000
+
 spring:
   datasource:
     username: guest
