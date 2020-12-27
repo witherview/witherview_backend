@@ -73,31 +73,35 @@ public class EncodingTaskQueue {
         executor.createJob(builder).run();
     }
 
+    private static void sleep() {
+        try {
+            Thread.sleep(CONFIG_THREAD_WAIT_SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void run() {
         executorService.submit(() -> {
             if (canProgress()) {
-                try {
-                    Thread.sleep(CONFIG_THREAD_WAIT_SECONDS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                sleep();
                 run();
                 return;
             }
-            EncodingTask encodingTask = queue.poll();
-            if (encodingTask != null && encodingTask.getAttemptedCount() <= ENCODING_MAXIMUM_ATTEMPT_COUNT) {
-                try {
-                    encode(encodingTask.getPath());
-                } catch (IOException e) {
-                    queue.add(new EncodingTask(encodingTask.getPath(), encodingTask.getAttemptedCount() + 1));
-                    try {
-                        Thread.sleep(CONFIG_THREAD_WAIT_SECONDS);
-                    } catch (InterruptedException ie) {
-                        ie.printStackTrace();
-                    }
-                    run();
-                }
-            }
+            goEncode();
         });
+    }
+
+    private static void goEncode() {
+        EncodingTask encodingTask = queue.poll();
+        if (encodingTask != null && encodingTask.getAttemptedCount() <= ENCODING_MAXIMUM_ATTEMPT_COUNT) {
+            try {
+                encode(encodingTask.getPath());
+            } catch (IOException e) {
+                queue.add(new EncodingTask(encodingTask.getPath(), encodingTask.getAttemptedCount() + 1));
+                sleep();
+                run();
+            }
+        }
     }
 }
