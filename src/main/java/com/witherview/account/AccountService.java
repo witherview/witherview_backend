@@ -79,7 +79,6 @@ public class AccountService {
         Long studyCnt = (long) feedbackList
                 .stream()
                 .map(StudyFeedback::getStudyRoom)
-                .map(StudyRoom::getId)
                 .collect(Collectors.toSet())
                 .size();
         Long questionListCnt = (long) user.getQuestionLists().size();

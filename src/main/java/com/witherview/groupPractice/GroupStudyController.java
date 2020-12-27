@@ -114,7 +114,7 @@ public class GroupStudyController {
     @ApiOperation(value="해당 스터디방 참여자 조회")
     @GetMapping(path = "/room/{id}")
     public ResponseEntity<?> findParticipants(@ApiParam(value = "참여 조회할 방 id", required = true) @PathVariable Long id) {
-        List<User> lists = groupStudyService.findParticipatedUsers(id);
+        List<GroupStudyDTO.ParticipantDTO> lists = groupStudyService.findParticipatedUsers(id);
         return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ParticipantDTO[].class), HttpStatus.OK);
     }
 
