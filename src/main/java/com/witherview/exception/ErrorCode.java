@@ -34,6 +34,7 @@ public enum ErrorCode {
 
     // Self-History
     NOT_FOUND_HISTORY(404, "SELF-HISTORY001", "해당 혼자 연습 내역이 없습니다."),
+    NOT_DELETED_FILE(500, "SELF_HISTORY002", "혼자 연습 영상 삭제에 실패하였습니다"),
 
     // Self-Check
     NOT_FOUND_CHECKLIST(404, "SELF-CHECK001", "해당 체크리스트가 없습니다."),
