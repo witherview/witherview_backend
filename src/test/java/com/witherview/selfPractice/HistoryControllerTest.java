@@ -101,6 +101,49 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
     }
 
     @Test
+    public void 히스토리_삭제_성공() throws Exception {
+        ResultActions resultActions = mockMvc.perform(delete("/api/self/history/" + selfHistoryId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .session(mockHttpSession))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        resultActions.andExpect(jsonPath("$.id").value(selfHistoryId));
+    }
+
+    @Test
+    public void 히스토리_삭제_실패_없는_연습내역() throws Exception {
+        ResultActions resultActions = mockMvc.perform(delete("/api/self/history/0")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .session(mockHttpSession))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+
+        resultActions.andExpect(jsonPath("$.code").value("SELF-HISTORY001"));
+        resultActions.andExpect(jsonPath("$.status").value(404));
+    }
+
+    @Test
+    public void 히스토리_삭제_실패_본인의_연습내역이_아님() throws Exception {
+        User user = new User("hohoho2@witherview.com", "pass2", "name2",
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무");
+        userRepository.save(user);
+        mockHttpSession.setAttribute("user", new AccountSession(user.getId(), user.getEmail(), user.getName()));
+
+        ResultActions resultActions = mockMvc.perform(delete("/api/self/history/" + selfHistoryId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .session(mockHttpSession))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+
+        resultActions.andExpect(jsonPath("$.code").value("SELF-HISTORY001"));
+        resultActions.andExpect(jsonPath("$.status").value(404));
+    }
+
+    @Test
     public void 히스토리_요청() throws Exception {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
 
