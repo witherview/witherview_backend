@@ -6,6 +6,7 @@ import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ public class SelfHistoryController {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         SelfHistory selfHistory = selfHistoryService.save(dto.getQuestionListId(), accountSession);
         return new ResponseEntity<>(modelMapper.map(selfHistory,
-                SelfHistoryDTO.SelfHistorySaveResponseDTO.class), HttpStatus.CREATED);
+                SelfHistoryDTO.SelfHistoryDefaultResponseDTO.class), HttpStatus.CREATED);
     }
 
     @ApiOperation(value="혼자 연습 영상 등록")
@@ -52,7 +53,7 @@ public class SelfHistoryController {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         SelfHistory selfHistory = selfHistoryService.uploadVideo(videoFile, historyId, accountSession);
         return new ResponseEntity<>(modelMapper.map(selfHistory,
-                SelfHistoryDTO.SelfHistorySaveResponseDTO.class), HttpStatus.OK);
+                SelfHistoryDTO.SelfHistoryDefaultResponseDTO.class), HttpStatus.OK);
     }
 
     @ApiOperation(value="혼자 연습 기록 조회")
@@ -62,5 +63,15 @@ public class SelfHistoryController {
         List<SelfHistory> selfHistories = selfHistoryService.findAll(accountSession.getId());
         return new ResponseEntity<>(modelMapper.map(selfHistories,
                 SelfHistoryDTO.SelfHistoryResponseDTO[].class), HttpStatus.OK);
+    }
+
+    @ApiOperation(value="혼자 연습 기록 삭제")
+    @DeleteMapping(path = "/api/self/history/{id}")
+    public ResponseEntity<?> deleteHistory(@ApiParam(value = "삭제할 내역 id", required = true) @PathVariable Long id,
+                                           @ApiIgnore HttpSession session) {
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        SelfHistory selfHistory = selfHistoryService.deleteHistory(accountSession.getId(), id);
+        return new ResponseEntity<>(modelMapper.map(selfHistory,
+                SelfHistoryDTO.SelfHistoryDefaultResponseDTO.class), HttpStatus.OK);
     }
 }

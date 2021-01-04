@@ -14,7 +14,7 @@ public class SelfHistoryDTO {
     }
 
     @Getter @Setter
-    public static class SelfHistorySaveResponseDTO {
+    public static class SelfHistoryDefaultResponseDTO {
         private Long id;
     }
 
