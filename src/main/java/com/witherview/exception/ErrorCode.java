@@ -41,7 +41,10 @@ public enum ErrorCode {
     NOT_FOUND_CHECKLIST_TYPE(404, "SELF-CHECK002", "해당 체크리스트 타입이 없습니다."),
 
     // Video
-    NOT_SAVED_VIDEO(500, "VIDEO001", "비디오를 저장하는데 실패하였습니다.");
+    NOT_SAVED_VIDEO(500, "VIDEO001", "비디오를 저장하는데 실패하였습니다."),
+
+    // chat
+    NOT_SAVED_FEEDBACKCHAT(500, "CHAT001", "피드메세지 저장에 실패하였습니다.");
 
     private final int status;
     private final String code;
