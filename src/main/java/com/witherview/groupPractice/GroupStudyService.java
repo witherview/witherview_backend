@@ -109,6 +109,9 @@ public class GroupStudyService {
         if(findParticipant(requestDto.getStudyRoomId(), targetUser.getId()) == null) {
             throw new NotCreatedFeedback();
         }
+        if(studyHistory.getUser().getId() != targetUser.getId()) {
+            throw new NotOwnedStudyHistory();
+        }
         StudyFeedback studyFeedback = StudyFeedback.builder()
                                                     .targetUser(targetUser)
                                                     .writtenUser(writtenUser)
