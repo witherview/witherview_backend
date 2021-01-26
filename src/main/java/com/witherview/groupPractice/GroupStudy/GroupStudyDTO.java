@@ -1,4 +1,4 @@
-package com.witherview.groupPractice;
+package com.witherview.groupPractice.GroupStudy;
 
 import com.witherview.database.entity.StudyRoom;
 import lombok.Builder;
@@ -119,24 +119,5 @@ public class GroupStudyDTO {
     @Getter @Setter
     public static class DeleteResponseDTO {
         private Long id;
-    }
-
-    @Getter @Setter
-    public static class HistoryCreatedResponseDTO {
-        private Long id;
-    }
-
-    @Getter @Setter
-    public static class HistoryResponseDTO {
-        private Long id;
-        private Long studyRoom;
-        private String savedLocation;
-        private LocalDateTime createdAt;
-    }
-
-    @Getter @Setter
-    public static class VideoSaveResponseDTO {
-        private Long id;
-        private String savedLocation;
     }
 }

@@ -1,4 +1,4 @@
-package com.witherview.groupPractice;
+package com.witherview.groupPractice.GroupStudy;
 
 import com.witherview.account.AccountSession;
 import com.witherview.database.entity.*;
@@ -139,32 +139,5 @@ public class GroupStudyController {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         StudyFeedback studyFeedback = groupStudyService.createFeedBack(accountSession.getId(), requestDto);
         return new ResponseEntity<>(modelMapper.map(studyFeedback, GroupStudyDTO.FeedBackResponseDTO.class), HttpStatus.CREATED);
-    }
-
-    @ApiOperation(value = "스터디 녹화 등록")
-    @PostMapping(path = "/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-                                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
-                                         @RequestParam("studyHistoryId") Long studyHistoryId,
-                                         @ApiIgnore HttpSession session) {
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyHistory studyHistory = groupStudyService.uploadVideo(videoFile, studyHistoryId, accountSession.getId());
-        return new ResponseEntity<>(modelMapper.map(studyHistory, GroupStudyDTO.HistoryResponseDTO.class), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "스터디 연습 내역 등록")
-    @PostMapping(path = "/history", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveStudyHistory(@RequestBody @Valid GroupStudyDTO.StudyRequestDTO requestDto,
-                                              BindingResult result,
-                                              @ApiIgnore HttpSession session) {
-        if(result.hasErrors()) {
-            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        }
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyHistory studyHistory = groupStudyService.saveStudyHistory(requestDto.getId(), accountSession.getId());
-        return new ResponseEntity<>(modelMapper.map(studyHistory,
-                GroupStudyDTO.HistoryCreatedResponseDTO.class), HttpStatus.CREATED);
     }
 }

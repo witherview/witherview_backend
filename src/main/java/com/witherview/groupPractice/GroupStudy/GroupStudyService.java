@@ -1,10 +1,9 @@
-package com.witherview.groupPractice;
+package com.witherview.groupPractice.GroupStudy;
 
 import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
 import com.witherview.groupPractice.exception.*;
 import com.witherview.selfPractice.exception.NotFoundUser;
-import com.witherview.video.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,9 +24,7 @@ public class GroupStudyService {
     private final StudyFeedbackRepository studyFeedbackRepository;
     private final StudyRoomParticipantRepository studyRoomParticipantRepository;
     private final UserRepository userRepository;
-    private final StudyVideoRepository studyVideoRepository;
     private final StudyHistoryRepository studyHistoryRepository;
-    private final VideoService videoService;
     private final int pageSize = 6;
 
     @Transactional
@@ -98,7 +94,8 @@ public class GroupStudyService {
     @Transactional
     public StudyFeedback createFeedBack(Long userId, GroupStudyDTO.StudyFeedBackDTO requestDto) {
         findRoom(requestDto.getStudyRoomId());
-        StudyHistory studyHistory = findStudyHistory(requestDto.getHistoryId());
+        StudyHistory studyHistory = studyHistoryRepository.findById(requestDto.getHistoryId())
+                .orElseThrow(NotFoundStudyHistory::new);;
 
         User writtenUser = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
         User targetUser = userRepository.findById(requestDto.getTargetUser()).orElseThrow(NotFoundUser::new);
@@ -123,35 +120,6 @@ public class GroupStudyService {
         return studyFeedbackRepository.save(studyFeedback);
     }
 
-    @Transactional
-    public StudyHistory uploadVideo(MultipartFile videoFile, Long historyId, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
-        StudyHistory studyHistory = findStudyHistory(historyId);
-
-        if (!user.getId().equals(studyHistory.getUser().getId())) {
-            throw new NotOwnedStudyHistory();
-        }
-        String savedLocation = videoService.upload(videoFile,
-                user.getEmail() + "/group/" + historyId);
-        studyHistory.updateSavedLocation(savedLocation);
-        return studyHistory;
-    }
-
-    @Transactional
-    public StudyHistory saveStudyHistory(Long studyRoomId, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
-        findRoom(studyRoomId);
-
-        if (findParticipant(studyRoomId, userId) == null) {
-            throw new NotJoinedStudyRoom();
-        }
-
-        StudyHistory studyHistory = StudyHistory.builder().studyRoom(studyRoomId).build();
-        user.addStudyHistory(studyHistory);
-        user.increaseGroupPracticeCnt();
-        return studyHistoryRepository.save(studyHistory);
-    }
-
     public StudyRoom findRoom(Long id) {
         return studyRoomRepository.findById(id)
                 .orElseThrow(NotFoundStudyRoom::new);
@@ -159,11 +127,6 @@ public class GroupStudyService {
 
     public StudyRoomParticipant findParticipant(Long id, Long userId) {
         return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId);
-    }
-
-    public StudyHistory findStudyHistory(Long id) {
-        return studyHistoryRepository.findById(id)
-                .orElseThrow(NotFoundStudyHistory::new);
     }
 
     public List<GroupStudyDTO.ParticipantDTO> findParticipatedUsers(Long id) {

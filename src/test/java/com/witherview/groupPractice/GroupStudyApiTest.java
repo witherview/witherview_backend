@@ -4,6 +4,7 @@ import com.witherview.account.AccountSession;
 import com.witherview.database.entity.StudyRoom;
 import com.witherview.database.entity.StudyRoomParticipant;
 import com.witherview.database.entity.User;
+import com.witherview.groupPractice.GroupStudy.GroupStudyDTO;
 import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import org.junit.jupiter.api.Test;
@@ -335,7 +336,7 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         MockMultipartFile file = new MockMultipartFile("video",
                 "video.webm", "video/webm", "test webm".getBytes());
 
-        ResultActions resultActions = mockMvc.perform(multipart("/api/group/video")
+        ResultActions resultActions = mockMvc.perform(multipart("/api/group/history/video")
                 .file("videoFile", file.getBytes())
                 .param("studyHistoryId", "0")
                 .session(mockHttpSession))
@@ -353,7 +354,7 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         MockMultipartFile file = new MockMultipartFile("video",
                 "video.webm", "video/webm", "test webm".getBytes());
 
-        ResultActions resultActions = mockMvc.perform(multipart("/api/group/video")
+        ResultActions resultActions = mockMvc.perform(multipart("/api/group/history/video")
                 .file("videoFile", file.getBytes())
                 .param("studyHistoryId", studyHistoryId1.toString())
                 .session(mockHttpSession))
