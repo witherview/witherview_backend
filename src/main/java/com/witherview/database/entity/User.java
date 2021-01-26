@@ -42,6 +42,9 @@ public class User {
     private Long selfPracticeCnt = 0L;
 
     @ColumnDefault("0")
+    private Long groupPracticeCnt = 0L;
+
+    @ColumnDefault("0")
     private Byte reliability = 70;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -53,14 +56,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoomParticipant> participatedStudyRooms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StudyFeedback> studyFeedbacks = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudyHistory> studyHistories = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelfHistory> selfHistories = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StudyVideo> studyVideos = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String name,
@@ -78,6 +78,10 @@ public class User {
         this.selfPracticeCnt += 1;
     }
 
+    public void increaseGroupPracticeCnt() {
+        this.groupPracticeCnt += 1;
+    }
+
     public void addQuestionList(QuestionList questionList) {
         questionList.updateOwner(this);
         this.questionLists.add(questionList);
@@ -88,9 +92,9 @@ public class User {
         this.hostedStudyRooms.add(studyRoom);
     }
 
-    public void addStudyFeedback(StudyFeedback studyFeedback) {
-        studyFeedback.updateTargetUser(this);
-        this.studyFeedbacks.add(studyFeedback);
+    public void addStudyHistory(StudyHistory studyHistory) {
+        studyHistory.updateUser(this);
+        this.studyHistories.add(studyHistory);
     }
 
     public void addParticipatedRoom(StudyRoomParticipant participatedStudyRoom) {
@@ -100,10 +104,5 @@ public class User {
     public void addSelfHistory(SelfHistory selfHistory) {
         selfHistory.updateUser(this);
         this.selfHistories.add(selfHistory);
-    }
-
-    public void addStudyVideo(StudyVideo studyVideo) {
-        studyVideo.updateUser(this);
-        this.studyVideos.add(studyVideo);
     }
 }
