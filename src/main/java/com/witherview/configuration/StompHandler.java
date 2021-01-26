@@ -23,10 +23,13 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         // websocket 연결 후 subscribe 시 존재하는 방 구독하는지 체크
         if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            String type = message.getHeaders().get("simpDestination").toString().split("/")[2];
             String room = message.getHeaders().get("simpDestination").toString().split("/")[3];
-            Long roomId = Long.parseLong(room);
+
+            Long id = Long.parseLong(room);
             try {
-                groupStudyService.findRoom(roomId);
+                if(type.equals("feedback")) groupStudyService.findStudyHistory(id);
+                else groupStudyService.findRoom(id);
             } catch (Exception e) {
                 throw new MessagingException(e.getMessage());
             }
