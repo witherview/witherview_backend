@@ -86,7 +86,8 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         user.addParticipatedRoom(studyRoomParticipant);
 
         GroupStudyDTO.StudyFeedBackDTO dto = GroupStudyDTO.StudyFeedBackDTO.builder()
-                .id(roomId)
+                .studyRoomId(roomId)
+                .historyId(studyHistoryId2)
                 .targetUser(userId2)
                 .score(score)
                 .passOrFail(passOrFail)
@@ -110,7 +111,7 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         AccountSession accountSession = new AccountSession(userId2, email2, name2);
         mockHttpSession.setAttribute("user", accountSession);
 
-        GroupStudyDTO.StudyJoinDTO dto = new GroupStudyDTO.StudyJoinDTO();
+        GroupStudyDTO.StudyRequestDTO dto = new GroupStudyDTO.StudyRequestDTO();
         dto.setId(roomId);
 
         ResultActions resultActions = mockMvc.perform(post("/api/group/room")
@@ -152,14 +153,14 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         resultActions.andExpect(jsonPath("$[0].id").value(userId1));
         resultActions.andExpect(jsonPath("$[0].email").value(email1));
         resultActions.andExpect(jsonPath("$[0].name").value(name1));
-        resultActions.andExpect(jsonPath("$[0].groupStudyCnt").value(1));
+        resultActions.andExpect(jsonPath("$[0].groupPracticeCnt").value(1));
         resultActions.andExpect(jsonPath("$[0].reliability").value(70));
         resultActions.andExpect(jsonPath("$[0].isHost").value(true));
 
         resultActions.andExpect(jsonPath("$[1].id").value(userId3));
         resultActions.andExpect(jsonPath("$[1].email").value(email3));
         resultActions.andExpect(jsonPath("$[1].name").value(name3));
-        resultActions.andExpect(jsonPath("$[1].groupStudyCnt").value(1));
+        resultActions.andExpect(jsonPath("$[1].groupPracticeCnt").value(0));
         resultActions.andExpect(jsonPath("$[1].reliability").value(70));
         resultActions.andExpect(jsonPath("$[1].isHost").value(false));
     }
@@ -196,10 +197,11 @@ public class GroupStudyApiTest extends GroupStudySupporter {
     }
 
     @Test
-    public void 스터디_피드백_등록_실패_존재하지_않는_스터디룸() throws Exception {
+    public void 스터디_피드백_등록_실패_존재하지_않는_스터디() throws Exception {
         GroupStudyDTO.StudyFeedBackDTO dto = GroupStudyDTO.StudyFeedBackDTO.builder()
-                .id((long) 400)
-                .targetUser(userId2)
+                .studyRoomId((long) 400)
+                .historyId(studyHistoryId2)
+                .targetUser(userId3)
                 .score(score)
                 .passOrFail(passOrFail)
                 .build();
@@ -222,7 +224,8 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         mockHttpSession.setAttribute("user", accountSession);
 
         GroupStudyDTO.StudyFeedBackDTO dto = GroupStudyDTO.StudyFeedBackDTO.builder()
-                .id(roomId)
+                .studyRoomId(roomId)
+                .historyId(studyHistoryId2)
                 .targetUser(userId1)
                 .score(score)
                 .passOrFail(passOrFail)
@@ -243,7 +246,8 @@ public class GroupStudyApiTest extends GroupStudySupporter {
     @Test
     public void 스터디_피드백_등록_실패_참여하지_않는_유저에대한_피드백() throws Exception {
         GroupStudyDTO.StudyFeedBackDTO dto = GroupStudyDTO.StudyFeedBackDTO.builder()
-                .id(roomId)
+                .studyRoomId(roomId)
+                .historyId(studyHistoryId2)
                 .targetUser(userId2)
                 .score(score)
                 .passOrFail(passOrFail)
@@ -262,8 +266,30 @@ public class GroupStudyApiTest extends GroupStudySupporter {
     }
 
     @Test
+    public void 스터디_피드백_등록_실패_스터디_연습내역의_타겟대상이_아님() throws Exception {
+        GroupStudyDTO.StudyFeedBackDTO dto = GroupStudyDTO.StudyFeedBackDTO.builder()
+                .studyRoomId(roomId)
+                .historyId(studyHistoryId2)
+                .targetUser(userId1)
+                .score(score)
+                .passOrFail(passOrFail)
+                .build();
+
+        ResultActions resultActions = mockMvc.perform(post("/api/group/feedback")
+                .session(mockHttpSession)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        resultActions.andExpect(jsonPath("$.message").value("해당 스터디 연습 내역의 타겟 유저가 아닙니다."));
+        resultActions.andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
     public void 스터디룸_참여_실패_이미_참여하고있는_스터디룸() throws Exception {
-        GroupStudyDTO.StudyJoinDTO dto = new GroupStudyDTO.StudyJoinDTO();
+        GroupStudyDTO.StudyRequestDTO dto = new GroupStudyDTO.StudyRequestDTO();
         dto.setId(roomId);
 
         ResultActions resultActions = mockMvc.perform(post("/api/group/room")
@@ -305,22 +331,22 @@ public class GroupStudyApiTest extends GroupStudySupporter {
     }
 
     @Test
-    public void 스터디_영상_등록_실패_없는_스터디룸_룸아이디가_이상할_때() throws Exception {
+    public void 스터디_영상_등록_실패_없는_스터디_연습내역() throws Exception {
         MockMultipartFile file = new MockMultipartFile("video",
                 "video.webm", "video/webm", "test webm".getBytes());
 
         ResultActions resultActions = mockMvc.perform(multipart("/api/group/video")
                 .file("videoFile", file.getBytes())
-                .param("studyRoomId", "0")
+                .param("studyHistoryId", "0")
                 .session(mockHttpSession))
                 .andExpect(status().isNotFound());
 
         resultActions.andExpect(jsonPath("$.status").value(404));
-        resultActions.andExpect(jsonPath("$.code").value("GROUP-PRACTICE001"));
+        resultActions.andExpect(jsonPath("$.code").value("GROUP-HISTORY001"));
     }
 
     @Test
-    public void 스터디_영상_등록_참여하지_않은_스터디룸() throws Exception {
+    public void 스터디_영상_등록_실패_해당_유저의_연습내역_아닌경우() throws Exception {
         AccountSession accountSession = new AccountSession(userId2, email2, name2);
         mockHttpSession.setAttribute("user", accountSession);
 
@@ -329,11 +355,11 @@ public class GroupStudyApiTest extends GroupStudySupporter {
 
         ResultActions resultActions = mockMvc.perform(multipart("/api/group/video")
                 .file("videoFile", file.getBytes())
-                .param("studyRoomId", roomId.toString())
+                .param("studyHistoryId", studyHistoryId1.toString())
                 .session(mockHttpSession))
                 .andExpect(status().isBadRequest());
 
         resultActions.andExpect(jsonPath("$.status").value(400));
-        resultActions.andExpect(jsonPath("$.code").value("GROUP-PRACTICE003"));
+        resultActions.andExpect(jsonPath("$.code").value("GROUP-HISTORY002"));
     }
 }
