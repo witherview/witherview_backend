@@ -27,6 +27,7 @@ public class GroupStudyService {
     private final StudyRoomParticipantRepository studyRoomParticipantRepository;
     private final UserRepository userRepository;
     private final StudyVideoRepository studyVideoRepository;
+    private final StudyHistoryRepository studyHistoryRepository;
     private final VideoService videoService;
     private final int pageSize = 6;
 
@@ -96,40 +97,56 @@ public class GroupStudyService {
 
     @Transactional
     public StudyFeedback createFeedBack(Long userId, GroupStudyDTO.StudyFeedBackDTO requestDto) {
-        StudyRoom studyRoom = findRoom(requestDto.getId());
+        findRoom(requestDto.getStudyRoomId());
+        StudyHistory studyHistory = findStudyHistory(requestDto.getHistoryId());
+
         User writtenUser = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
         User targetUser = userRepository.findById(requestDto.getTargetUser()).orElseThrow(NotFoundUser::new);
 
-        if(findParticipant(requestDto.getId(), writtenUser.getId()) == null) {
+        if(findParticipant(requestDto.getStudyRoomId(), writtenUser.getId()) == null) {
             throw new NotJoinedStudyRoom();
         }
-        if(findParticipant(requestDto.getId(), targetUser.getId()) == null) {
+        if(findParticipant(requestDto.getStudyRoomId(), targetUser.getId()) == null) {
             throw new NotCreatedFeedback();
         }
         StudyFeedback studyFeedback = StudyFeedback.builder()
-                                                    .studyRoom(studyRoom.getId())
+                                                    .targetUser(targetUser)
                                                     .writtenUser(writtenUser)
                                                     .score(requestDto.getScore())
                                                     .passOrFail(requestDto.getPassOrFail())
                                                     .build();
 
-        targetUser.addStudyFeedback(studyFeedback);
+        studyHistory.addStudyFeedBack(studyFeedback);
         return studyFeedbackRepository.save(studyFeedback);
     }
 
     @Transactional
-    public StudyVideo uploadVideo(MultipartFile videoFile, Long studyRoomId, Long userId) {
+    public StudyHistory uploadVideo(MultipartFile videoFile, Long historyId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        StudyHistory studyHistory = findStudyHistory(historyId);
+
+        if (!user.getId().equals(studyHistory.getUser().getId())) {
+            throw new NotOwnedStudyHistory();
+        }
+        String savedLocation = videoService.upload(videoFile,
+                user.getEmail() + "/group/" + historyId);
+        studyHistory.updateSavedLocation(savedLocation);
+        return studyHistory;
+    }
+
+    @Transactional
+    public StudyHistory saveStudyHistory(Long studyRoomId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
         findRoom(studyRoomId);
+
         if (findParticipant(studyRoomId, userId) == null) {
             throw new NotJoinedStudyRoom();
         }
-        StudyVideo studyVideo = new StudyVideo();
-        String savedLocation = videoService.upload(videoFile,
-                user.getEmail() + "/group/" + studyRoomId);
-        user.addStudyVideo(studyVideo);
-        studyVideo.updateSavedLocation(savedLocation);
-        return studyVideoRepository.save(studyVideo);
+
+        StudyHistory studyHistory = StudyHistory.builder().studyRoom(studyRoomId).build();
+        user.addStudyHistory(studyHistory);
+        user.increaseGroupPracticeCnt();
+        return studyHistoryRepository.save(studyHistory);
     }
 
     public StudyRoom findRoom(Long id) {
@@ -139,6 +156,11 @@ public class GroupStudyService {
 
     public StudyRoomParticipant findParticipant(Long id, Long userId) {
         return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId);
+    }
+
+    public StudyHistory findStudyHistory(Long id) {
+        return studyHistoryRepository.findById(id)
+                .orElseThrow(NotFoundStudyHistory::new);
     }
 
     public List<GroupStudyDTO.ParticipantDTO> findParticipatedUsers(Long id) {
@@ -154,14 +176,6 @@ public class GroupStudyService {
                     if(studyRoom.getHost().getId() == user.getId()) responseDto.setIsHost(true);
                     else responseDto.setIsHost(false);
 
-                    Long studyCnt = (long) user
-                            .getStudyFeedbacks()
-                            .stream()
-                            .map(StudyFeedback::getStudyRoom)
-                            .collect(Collectors.toSet())
-                            .size();
-
-                    responseDto.setGroupStudyCnt(studyCnt);
                     return responseDto;
                 })
                 .collect(Collectors.toList());

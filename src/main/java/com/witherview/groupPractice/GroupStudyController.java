@@ -1,10 +1,7 @@
 package com.witherview.groupPractice;
 
 import com.witherview.account.AccountSession;
-import com.witherview.database.entity.StudyFeedback;
-import com.witherview.database.entity.StudyRoom;
-import com.witherview.database.entity.StudyVideo;
-import com.witherview.database.entity.User;
+import com.witherview.database.entity.*;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
 import io.swagger.annotations.Api;
@@ -100,7 +97,7 @@ public class GroupStudyController {
 
     @ApiOperation(value="스터디방 참여")
     @PostMapping(path = "/room", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> joinRoom(@RequestBody @Valid GroupStudyDTO.StudyJoinDTO requestDto,
+    public ResponseEntity<?> joinRoom(@RequestBody @Valid GroupStudyDTO.StudyRequestDTO requestDto,
                                       BindingResult result,
                                       @ApiIgnore HttpSession session) {
         if(result.hasErrors()) {
@@ -148,10 +145,26 @@ public class GroupStudyController {
     @PostMapping(path = "/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
                                   produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
-                                         @RequestParam("studyRoomId") Long studyRoomId,
+                                         @RequestParam("studyHistoryId") Long studyHistoryId,
                                          @ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyVideo studyVideo = groupStudyService.uploadVideo(videoFile, studyRoomId, accountSession.getId());
-        return new ResponseEntity<>(modelMapper.map(studyVideo, GroupStudyDTO.VideoSaveResponseDTO.class), HttpStatus.OK);
+        StudyHistory studyHistory = groupStudyService.uploadVideo(videoFile, studyHistoryId, accountSession.getId());
+        return new ResponseEntity<>(modelMapper.map(studyHistory, GroupStudyDTO.HistoryResponseDTO.class), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "스터디 연습 내역 등록")
+    @PostMapping(path = "/history", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> saveStudyHistory(@RequestBody @Valid GroupStudyDTO.StudyRequestDTO requestDto,
+                                              BindingResult result,
+                                              @ApiIgnore HttpSession session) {
+        if(result.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        StudyHistory studyHistory = groupStudyService.saveStudyHistory(requestDto.getId(), accountSession.getId());
+        return new ResponseEntity<>(modelMapper.map(studyHistory,
+                GroupStudyDTO.HistoryCreatedResponseDTO.class), HttpStatus.CREATED);
     }
 }

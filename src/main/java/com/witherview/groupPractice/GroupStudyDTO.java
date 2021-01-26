@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class GroupStudyDTO {
@@ -62,8 +63,11 @@ public class GroupStudyDTO {
 
     @Getter @Setter @Builder
     public static class StudyFeedBackDTO {
-        @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
-        private Long id;
+        @NotNull(message = " 아이디는 반드시 입력해야 합니다.")
+        private Long studyRoomId;
+
+        @NotNull(message = "스터디 연습내역 아이디는 반드시 입력해야 합니다.")
+        private Long historyId;
 
         @NotNull(message = "타겟 유저아이디는 반드시 입력해야 합니다.")
         private Long targetUser;
@@ -76,7 +80,7 @@ public class GroupStudyDTO {
     }
 
     @Getter @Setter
-    public static class StudyJoinDTO {
+    public static class StudyRequestDTO {
         @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
         private Long id;
     }
@@ -99,7 +103,7 @@ public class GroupStudyDTO {
         private Long id;
         private String email;
         private String name;
-        private Long groupStudyCnt;
+        private Long groupPracticeCnt;
         private Byte reliability;
         private Boolean isHost;
     }
@@ -115,6 +119,19 @@ public class GroupStudyDTO {
     @Getter @Setter
     public static class DeleteResponseDTO {
         private Long id;
+    }
+
+    @Getter @Setter
+    public static class HistoryCreatedResponseDTO {
+        private Long id;
+    }
+
+    @Getter @Setter
+    public static class HistoryResponseDTO {
+        private Long id;
+        private Long studyRoom;
+        private String savedLocation;
+        private LocalDateTime createdAt;
     }
 
     @Getter @Setter
