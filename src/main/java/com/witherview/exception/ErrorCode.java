@@ -32,6 +32,10 @@ public enum ErrorCode {
     NOT_CREATED_FEEDBACK(404, "GROUP-PRACTICE006", "스터디룸에 참여하지 않은 사람에게 피드백을 줄 수 없습니다."),
     NOT_STUDYROOM_HOST(400, "GROUP-PRACTICE007", "해당 스터디룸의 호스트가 아닙니다."),
 
+    // group-History
+    NOT_FOUND_STUDYHISTORY(404, "GROUP-HISTORY001", "해당 스터디 연습 내역이 없습니다."),
+    NOT_OWNED_STUDYHISTORY(400, "GROUP-HISTORY002", "해당 스터디 연습 내역의 타겟 유저가 아닙니다."),
+
     // Self-History
     NOT_FOUND_HISTORY(404, "SELF-HISTORY001", "해당 혼자 연습 내역이 없습니다."),
     NOT_DELETED_FILE(500, "SELF_HISTORY002", "혼자 연습 영상 삭제에 실패하였습니다"),
