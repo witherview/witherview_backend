@@ -1,10 +1,7 @@
-package com.witherview.groupPractice;
+package com.witherview.groupPractice.GroupStudy;
 
 import com.witherview.account.AccountSession;
-import com.witherview.database.entity.StudyFeedback;
-import com.witherview.database.entity.StudyRoom;
-import com.witherview.database.entity.StudyVideo;
-import com.witherview.database.entity.User;
+import com.witherview.database.entity.*;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
 import io.swagger.annotations.Api;
@@ -100,7 +97,7 @@ public class GroupStudyController {
 
     @ApiOperation(value="스터디방 참여")
     @PostMapping(path = "/room", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> joinRoom(@RequestBody @Valid GroupStudyDTO.StudyJoinDTO requestDto,
+    public ResponseEntity<?> joinRoom(@RequestBody @Valid GroupStudyDTO.StudyRequestDTO requestDto,
                                       BindingResult result,
                                       @ApiIgnore HttpSession session) {
         if(result.hasErrors()) {
@@ -142,16 +139,5 @@ public class GroupStudyController {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         StudyFeedback studyFeedback = groupStudyService.createFeedBack(accountSession.getId(), requestDto);
         return new ResponseEntity<>(modelMapper.map(studyFeedback, GroupStudyDTO.FeedBackResponseDTO.class), HttpStatus.CREATED);
-    }
-
-    @ApiOperation(value = "스터디 녹화 등록")
-    @PostMapping(path = "/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-                                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
-                                         @RequestParam("studyRoomId") Long studyRoomId,
-                                         @ApiIgnore HttpSession session) {
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyVideo studyVideo = groupStudyService.uploadVideo(videoFile, studyRoomId, accountSession.getId());
-        return new ResponseEntity<>(modelMapper.map(studyVideo, GroupStudyDTO.VideoSaveResponseDTO.class), HttpStatus.OK);
     }
 }

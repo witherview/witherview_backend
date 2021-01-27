@@ -65,7 +65,10 @@ public class AccountService {
     public AccountDTO.ResponseMyInfo myInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
         AccountDTO.ResponseMyInfo responseMyInfo = new AccountDTO.ResponseMyInfo();
-        List<StudyFeedback> feedbackList = user.getStudyFeedbacks();
+        List<StudyFeedback> feedbackList = new ArrayList<>();
+        user.getStudyHistories()
+                .stream()
+                .forEach(v -> v.getStudyFeedbacks().forEach(e -> feedbackList.add(e)));
 
         Double interviewScore = feedbackList
                 .stream()
@@ -77,15 +80,10 @@ public class AccountService {
                 .filter(StudyFeedback::getPassOrFail)
                 .count();
         Long failCnt = feedbackList.size() - passCnt;
-        Long studyCnt = (long) feedbackList
-                .stream()
-                .map(StudyFeedback::getStudyRoom)
-                .collect(Collectors.toSet())
-                .size();
         Long questionListCnt = (long) user.getQuestionLists().size();
 
         responseMyInfo.setSelfPracticeCnt(user.getSelfPracticeCnt());
-        responseMyInfo.setGroupStudyCnt(studyCnt);
+        responseMyInfo.setGroupStudyCnt(user.getGroupPracticeCnt());
         responseMyInfo.setPassCnt(passCnt);
         responseMyInfo.setFailCnt(failCnt);
         responseMyInfo.setInterviewScore(String.format("%.1f", interviewScore));

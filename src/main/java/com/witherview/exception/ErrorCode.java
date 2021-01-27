@@ -32,6 +32,10 @@ public enum ErrorCode {
     NOT_CREATED_FEEDBACK(404, "GROUP-PRACTICE006", "스터디룸에 참여하지 않은 사람에게 피드백을 줄 수 없습니다."),
     NOT_STUDYROOM_HOST(400, "GROUP-PRACTICE007", "해당 스터디룸의 호스트가 아닙니다."),
 
+    // group-History
+    NOT_FOUND_STUDYHISTORY(404, "GROUP-HISTORY001", "해당 스터디 연습 내역이 없습니다."),
+    NOT_OWNED_STUDYHISTORY(400, "GROUP-HISTORY002", "해당 스터디 연습 내역의 타겟 유저가 아닙니다."),
+
     // Self-History
     NOT_FOUND_HISTORY(404, "SELF-HISTORY001", "해당 혼자 연습 내역이 없습니다."),
     NOT_DELETED_FILE(500, "SELF_HISTORY002", "혼자 연습 영상 삭제에 실패하였습니다"),
@@ -41,7 +45,10 @@ public enum ErrorCode {
     NOT_FOUND_CHECKLIST_TYPE(404, "SELF-CHECK002", "해당 체크리스트 타입이 없습니다."),
 
     // Video
-    NOT_SAVED_VIDEO(500, "VIDEO001", "비디오를 저장하는데 실패하였습니다.");
+    NOT_SAVED_VIDEO(500, "VIDEO001", "비디오를 저장하는데 실패하였습니다."),
+
+    // chat
+    NOT_SAVED_FEEDBACKCHAT(500, "CHAT001", "피드메세지 저장에 실패하였습니다.");
 
     private final int status;
     private final String code;

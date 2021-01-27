@@ -5,14 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
-@Entity @Getter
+@Entity
+@Getter
 @NoArgsConstructor
-@Table(name = "tbl_study_feedback")
-public class StudyFeedback extends CreatedBaseEntity {
-
-    @Id @GeneratedValue
+@Table(name = "tbl_feedback_chat")
+public class FeedBackChat {
+    @Id
+    @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,22 +30,19 @@ public class StudyFeedback extends CreatedBaseEntity {
     @JoinColumn(name = "study_history_id", nullable = false)
     private StudyHistory studyHistory;
 
-    @NotNull
-    private Byte score;
+    @NotBlank
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String message;
 
-    @NotNull
-    private Boolean passOrFail;
+    @NotNull @Column(nullable = false)
+    private LocalDateTime createdAt;
 
     @Builder
-    public StudyFeedback(User targetUser, User writtenUser,
-                         Byte score, Boolean passOrFail) {
-        this.targetUser = targetUser;
-        this.writtenUser = writtenUser;
-        this.score = score;
-        this.passOrFail = passOrFail;
-    }
-
-    protected void updateStudyHistory(StudyHistory studyHistory) {
+    public FeedBackChat(StudyHistory studyHistory, User writtenUser, User targetUser, String message, LocalDateTime createdAt) {
         this.studyHistory = studyHistory;
+        this.writtenUser = writtenUser;
+        this.targetUser = targetUser;
+        this.message = message;
+        this.createdAt = createdAt;
     }
 }

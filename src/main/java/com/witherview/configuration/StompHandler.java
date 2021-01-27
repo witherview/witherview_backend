@@ -1,6 +1,7 @@
 package com.witherview.configuration;
 
-import com.witherview.groupPractice.GroupStudyService;
+import com.witherview.groupPractice.GroupStudy.GroupStudyService;
+import com.witherview.groupPractice.history.StudyHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StompHandler implements ChannelInterceptor {
     private final GroupStudyService groupStudyService;
+    private final StudyHistoryService studyHistoryService;
 
     // websocket을 통해 들어온 요청이 처리 되기전 실행된다.
     @Override
@@ -23,10 +25,13 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         // websocket 연결 후 subscribe 시 존재하는 방 구독하는지 체크
         if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            String type = message.getHeaders().get("simpDestination").toString().split("/")[2];
             String room = message.getHeaders().get("simpDestination").toString().split("/")[3];
-            Long roomId = Long.parseLong(room);
+
+            Long id = Long.parseLong(room);
             try {
-                groupStudyService.findRoom(roomId);
+                if(type.equals("feedback")) studyHistoryService.findStudyHistory(id);
+                else groupStudyService.findRoom(id);
             } catch (Exception e) {
                 throw new MessagingException(e.getMessage());
             }
