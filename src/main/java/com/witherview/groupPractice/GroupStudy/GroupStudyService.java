@@ -161,4 +161,11 @@ public class GroupStudyService {
 
         return studyRoomRepository.findAll(pageRequest).getContent();
     }
+
+    public List<StudyRoom> findCategoryRooms(String category, Integer current) {
+        int page = current == null ? 0 : current;
+        Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("date", "time").ascending());
+
+        return studyRoomRepository.findAllByCategory(pageRequest, category);
+    }
 }
