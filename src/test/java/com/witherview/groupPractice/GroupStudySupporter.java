@@ -30,6 +30,7 @@ public class GroupStudySupporter extends MockMvcSupporter {
     final String title1 = "네이버 빅데이터 플랫폼 스터디 모집합니다.";
     final String description1 =  "코딩테스트 합격자만 신청바랍니다!!!!";
     final String industry1 = "it서비스";
+    final String category1 = "이공계_사기업";
     final String job1 = "개발자";
     final LocalDate date1 = LocalDate.parse("2020-12-03");
     final LocalTime time1 = LocalTime.parse("15:00:01");
@@ -83,7 +84,7 @@ public class GroupStudySupporter extends MockMvcSupporter {
         mockHttpSession.setAttribute("user", accountSession);
 
         // 스터디룸생성
-        StudyRoom studyRoom = new StudyRoom(title1, description1, industry1, job1, date1, time1);
+        StudyRoom studyRoom = new StudyRoom(title1, description1, category1, industry1, job1, date1, time1);
         user1.addHostedRoom(studyRoom);
         roomId = studyRoomRepository.save(studyRoom).getId();
 

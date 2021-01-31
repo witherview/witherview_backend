@@ -43,6 +43,9 @@ public class StudyRoom {
     @Column(nullable = false)
     private Integer maxUserCnt;
 
+    @ColumnDefault("'자유_기타'")
+    private String category;
+
     @ColumnDefault("'무관'")
     private String industry;
 
@@ -63,10 +66,11 @@ public class StudyRoom {
 
     @Builder
     public StudyRoom(String title, String description,
-                     String industry, String job,
+                     String category, String industry, String job,
                      LocalDate date, LocalTime time) {
         this.title = title;
         this.description = description;
+        this.category = category;
         this.industry = industry;
         this.job = job;
         this.date = date;

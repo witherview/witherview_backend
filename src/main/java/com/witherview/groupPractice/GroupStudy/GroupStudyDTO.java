@@ -9,7 +9,6 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class GroupStudyDTO {
@@ -25,6 +24,7 @@ public class GroupStudyDTO {
         @Length(max = 100, message = "방 설명은 100자 이하여야 합니다.")
         private String description;
 
+        private String category;
         private String industry;
         private String job;
 
@@ -35,6 +35,7 @@ public class GroupStudyDTO {
             return StudyRoom.builder()
                     .title(title)
                     .description(description)
+                    .category(category)
                     .industry(industry)
                     .job(job)
                     .date(date)
@@ -54,6 +55,7 @@ public class GroupStudyDTO {
         @NotBlank(message = "방 설명은 반드시 입력해야 합니다.")
         private String description;
 
+        private String category;
         private String industry;
         private String job;
 
@@ -90,6 +92,7 @@ public class GroupStudyDTO {
         private Long id;
         private String title;
         private String description;
+        private String category;
         private String industry;
         private String job;
         private LocalDate date;

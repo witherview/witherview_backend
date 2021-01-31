@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
@@ -108,6 +107,15 @@ public class GroupStudyController {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         StudyRoom studyRoom = groupStudyService.joinRoom(requestDto.getId(), accountSession.getId());
         return new ResponseEntity<>(modelMapper.map(studyRoom, GroupStudyDTO.ResponseDTO.class), HttpStatus.OK);
+    }
+
+    @ApiOperation(value="특정 카테고리 별 스터디방 조회")
+    @GetMapping("/room")
+    public ResponseEntity<?> findCategoryRooms(@ApiParam(value = "조회할 방 카테고리") @RequestParam String category,
+                                               @ApiParam(value = "조회할 page (디폴트 값 = 0)")
+                                               @RequestParam(value = "page", required = false) Integer current) {
+        List<StudyRoom> lists = groupStudyService.findCategoryRooms(category, current);
+        return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ResponseDTO[].class), HttpStatus.OK);
     }
 
     @ApiOperation(value="해당 스터디방 참여자 조회")

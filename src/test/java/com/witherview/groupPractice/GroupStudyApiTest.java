@@ -26,6 +26,7 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         GroupStudyDTO.StudyCreateDTO dto = GroupStudyDTO.StudyCreateDTO.builder()
                 .title(title2)
                 .description(description2)
+                .category(category1)
                 .industry(industry1)
                 .job(job1)
                 .date(date2)
@@ -164,6 +165,21 @@ public class GroupStudyApiTest extends GroupStudySupporter {
         resultActions.andExpect(jsonPath("$[1].groupPracticeCnt").value(0));
         resultActions.andExpect(jsonPath("$[1].reliability").value(70));
         resultActions.andExpect(jsonPath("$[1].isHost").value(false));
+    }
+
+    @Test
+    public void 스터디룸_카테고리별_조회성공() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/api/group/room?category=" + "이공계_사기업")
+                .session(mockHttpSession))
+                .andExpect(status().isOk());
+
+        resultActions.andExpect(jsonPath("$[0].title").value(title1));
+        resultActions.andExpect(jsonPath("$[0].description").value(description1));
+        resultActions.andExpect(jsonPath("$[0].category").value(category1));
+        resultActions.andExpect(jsonPath("$[0].industry").value(industry1));
+        resultActions.andExpect(jsonPath("$[0].job").value(job1));
+        resultActions.andExpect(jsonPath("$[0].date").value(date1.toString()));
+        resultActions.andExpect(jsonPath("$[0].time").value(time1.toString()));
     }
 
     @Test
