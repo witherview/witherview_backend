@@ -3,14 +3,18 @@ package com.witherview.account;
 import com.witherview.account.exception.DuplicateEmail;
 import com.witherview.account.exception.InvalidLogin;
 import com.witherview.account.exception.NotEqualPassword;
+import com.witherview.account.exception.NotSavedProfileImg;
 import com.witherview.database.entity.*;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +25,12 @@ import java.util.stream.Collectors;
 public class AccountService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${upload.img-location}")
+    private String uploadLocation;
+
+    @Value("${server.url}")
+    private String serverUrl;
 
     @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
@@ -54,6 +64,30 @@ public class AccountService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public void updateMyInfo(Long userId, AccountDTO.UpdateMyInfoDTO dto) {
+        User user = findUser(userId);
+        user.update(dto.getName(), dto.getMainIndustry(), dto.getSubIndustry(),
+                dto.getMainJob(), dto.getSubJob());
+    }
+
+    @Transactional
+    public User uploadProfile(Long userId, MultipartFile profileImg) {
+        User user = findUser(userId);
+        String fileOriName = profileImg.getOriginalFilename();
+        String orgFileExtension = fileOriName.substring(fileOriName.lastIndexOf("."));
+        String profileName = userId + orgFileExtension;
+
+        File newImg = new File(uploadLocation, profileName);
+        try {
+            profileImg.transferTo(newImg);
+            user.uploadImg(serverUrl + "profiles/" + userId);
+        } catch(Exception e) {
+            throw new NotSavedProfileImg();
+        }
+        return user;
+    }
+
     public User login(AccountDTO.LoginDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail());
         if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
@@ -63,7 +97,7 @@ public class AccountService {
     }
 
     public AccountDTO.ResponseMyInfo myInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = findUser(userId);
         AccountDTO.ResponseMyInfo responseMyInfo = new AccountDTO.ResponseMyInfo();
         List<StudyFeedback> feedbackList = new ArrayList<>();
         user.getStudyHistories()
@@ -93,5 +127,9 @@ public class AccountService {
         responseMyInfo.setMainJob(user.getMainJob());
         responseMyInfo.setSubJob(user.getSubJob());
         return responseMyInfo;
+    }
+
+    public User findUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(NotFoundUser::new);
     }
 }
