@@ -19,4 +19,4 @@
 
 ---
 
-**PM:** [김병헌](https://github.com/kbh18) / **Designer:** [이은비](https://github.com/2lanbi) / **Backend Engineer:** [성재호](https://github.com/sjh2428), [문예은](https://github.com/MoonYeeun) / **Frontend Engineer:** [박기태](https://github.com/SkynI25), [김찬호](https://github.com/Lavegaa), [이용재](https://github.com/dididy)
+**PM:** [김병헌](https://github.com/kbh18) / **Designer:** [이은비](https://github.com/2lanbi) / **Backend Engineer:** [성재호](https://github.com/sjh2428), [문예은](https://github.com/MoonYeeun), [이동건](https://github.com/inspirit941) / **Frontend Engineer:** [박기태](https://github.com/SkynI25), [김찬호](https://github.com/Lavegaa), [이용재](https://github.com/dididy)
