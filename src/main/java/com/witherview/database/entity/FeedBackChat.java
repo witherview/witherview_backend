@@ -20,8 +20,11 @@ public class FeedBackChat {
     @Id
     private String id;
     // compoundKey
+    @NotNull(message = "피드백 보낸사람 아이디는 반드시 입력해야 합니다.")
     private Long targetUserId;
+    @NotNull(message = "피드백 받는사람 아이디는 반드시 입력해야 합니다.")
     private Long writtenUserId;
+    @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
     private Long studyHistoryId;
 
     private String targetUserName;
@@ -29,8 +32,7 @@ public class FeedBackChat {
     @NotBlank
     private String message;
 
-    private LocalTime createdAt; // 영상 시작하고 몇 분에 달린 comment인지.
-    @Builder.Default
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalTime createdAt; // 영상 시작하고 몇 분에 달린 comment인지?
+    private LocalDateTime timestamp;
 
 }
