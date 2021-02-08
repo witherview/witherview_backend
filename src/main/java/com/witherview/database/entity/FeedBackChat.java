@@ -26,9 +26,8 @@ public class FeedBackChat {
     private Long writtenUserId;
     @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
     private Long studyHistoryId;
-
-    private String targetUserName;
-    private String writtenUserName;
+    
+//    private String writtenUserName;
     @NotBlank
     private String message;
 

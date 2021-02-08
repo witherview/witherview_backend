@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 public class ChatDTO {
@@ -20,7 +21,7 @@ public class ChatDTO {
 
     @Getter @Setter
     public static class FeedBackDTO {
-        private String id = UUID.randomUUID().toString(); // message id
+        private String id;
 
         @NotNull(message = "스터디 연습내역 아이디는 반드시 입력해야 합니다.")
         private Long studyHistoryId; // 방 번호
@@ -34,7 +35,9 @@ public class ChatDTO {
         @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
         private String message; // 피드백
 
-        private String createdAt;
+        private LocalTime createdAt;
+        // todo: 이동건. createdAt 쓰임새가 명확해지면 제거해야 할 수도 있는 값.
+        private LocalDateTime timestamp;
     }
 
     @Getter @Setter
