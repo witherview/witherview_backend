@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -76,12 +76,12 @@ public class AccountService {
         User user = findUser(userId);
         String fileOriName = profileImg.getOriginalFilename();
         String orgFileExtension = fileOriName.substring(fileOriName.lastIndexOf("."));
-        String profileName = userId + orgFileExtension;
+        String profileName = userId + "_" + UUID.randomUUID() + orgFileExtension;
 
         File newImg = new File(uploadLocation, profileName);
         try {
             profileImg.transferTo(newImg);
-            user.uploadImg(serverUrl + "profiles/" + userId);
+            user.uploadImg(serverUrl + "profiles/" + profileName);
         } catch(Exception e) {
             throw new NotSavedProfileImg();
         }
