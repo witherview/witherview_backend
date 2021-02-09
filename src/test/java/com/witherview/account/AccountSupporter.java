@@ -1,13 +1,20 @@
 package com.witherview.account;
 
+import com.witherview.database.entity.User;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.support.MockMvcSupporter;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.transaction.Transactional;
+
+@Transactional
 public abstract class AccountSupporter extends MockMvcSupporter {
     final String mainIndustry1 = "IT서비스";
     final String email = "hohoho@witherview.com";
+    final String email1 = "hahaha@witherview.com";
     final String password = "123456";
     final String passwordConfirm = "123456";
     final String name = "위더뷰";
@@ -29,4 +36,18 @@ public abstract class AccountSupporter extends MockMvcSupporter {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    public void 회원가입_세션생성_스터디룸생성() {
+        // 회원가입
+        userId = userRepository.save(new User(email1, passwordEncoder.encode(password), name,
+                mainIndustry1, subIndustry1, mainJob1, subJob1)).getId();
+
+        // 세션생성
+        AccountSession accountSession = new AccountSession(userId, email1, name);
+        mockHttpSession.setAttribute("user", accountSession);
+    }
 }

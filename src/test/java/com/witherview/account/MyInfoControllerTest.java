@@ -1,11 +1,7 @@
 package com.witherview.account;
 
-import com.witherview.database.entity.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -14,19 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class MyInfoControllerTest extends AccountSupporter {
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @BeforeEach
-    public void 미리_회원가입() {
-        userId = userRepository.save(new User(email, passwordEncoder.encode(password), name,
-                mainIndustry1, subIndustry1, mainJob1, subJob1)).getId();
-
-        // 세션생성
-        AccountSession accountSession = new AccountSession(userId, email, name);
-        mockHttpSession.setAttribute("user", accountSession);
-    }
-
     @Test
     public void 마이페이지_조회_성공() throws Exception {
         ResultActions resultActions = mockMvc.perform(get("/api/myinfo")
