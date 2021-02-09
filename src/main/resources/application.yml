@@ -5,6 +5,7 @@ server:
 
 upload:
   location: /root/videos/
+  img-location: /root/profiles/
 
 ffmpeg:
   path: /root/ffmpeg_sources/ffmpeg/
