@@ -1,0 +1,36 @@
+# 실행 방법
+# 파일이 있는 디렉토리에서 docker-compose up -d 로 실행합니다. 개발용 서버들을 한 번에 실행해 줍니다.
+# 종료는 docker-compose down -v.
+
+version: "3" # 파일 규격 버전
+services: # 이 항목 밑에 실행하려는 컨테이너 들을 정의
+  db: # 서비스 명
+    image: mysql:5.7 # 사용할 이미지
+    container_name: mysql # 컨테이너 이름 설정
+    ports:
+      - "3306:3306" # 접근 포트 설정 (컨테이너 외부:컨테이너 내부)
+    environment: # -e 옵션
+      MYSQL_ROOT_PASSWORD: "1234"  # MYSQL 패스워드 설정 옵션
+    command: # 명령어 실행
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - "./initCmd:/docker-entrypoint-initdb.d"
+
+  redis:
+    image: redis
+    container_name: redis
+    command: redis-server --port 6379
+    restart: always
+    ports:
+      - 6379:6379
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: 1234
