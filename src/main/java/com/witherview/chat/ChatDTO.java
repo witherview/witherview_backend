@@ -1,5 +1,7 @@
 package com.witherview.chat;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +21,7 @@ public class ChatDTO {
         private String contents; // 메세지
     }
 
-    @Getter @Setter
+    @Getter @Setter @AllArgsConstructor
     public static class FeedBackDTO {
         private String id;
 

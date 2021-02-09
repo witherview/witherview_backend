@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 
-@Getter @NoArgsConstructor @Builder
+@Getter @NoArgsConstructor @Builder @AllArgsConstructor
 @Document
 @CompoundIndex(def = "{'writtenUserId': 1 , 'studyHistoryId': -1, 'targetUserId': 1}")
 public class FeedBackChat {

@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,44 +43,23 @@ public class ChatService {
     // 캐싱 용도로 피드백메세지 레디스에 임시 저장
     @Transactional
     public ChatDTO.FeedBackDTO saveRedis(Long studyHistoryId, ChatDTO.FeedBackDTO message) {
-        message.setCreatedAt(LocalDateTime.now().toString());
-
+        message.setCreatedAt(LocalTime.now());
+        message.setTimestamp(LocalDateTime.now()); // 프런트 레벨에서 timestamp 찍기 vs 서버에서 찍기.
         redisTemplate.opsForList().rightPush(studyHistoryId.toString(), gson.toJson(message));
         return message;
     }
-
-    @Transactional
+    
     public List<FeedBackChat> saveFeedbackMessage(ChatDTO.SaveDTO requestDto) {
         String historyId = requestDto.getStudyHistoryId().toString();
 
-        List<FeedBackChat> lists =  redisTemplate.opsForList().range(historyId, 0, -1)
+        Iterable<FeedBackChat> lists =  redisTemplate.opsForList().range(historyId, 0, -1)
                 .stream()
-                .map(message -> {
-                    try{
-                        ChatDTO.FeedBackDTO dto =  objectMapper.readValue(message.toString(), ChatDTO.FeedBackDTO.class);
-
-                        User writtenUser = findUser(dto.getWrittenUserId());
-                        User targetUser = findUser(dto.getTargetUserId());
-                        StudyHistory studyHistory = findStudyHistory(dto.getStudyHistoryId());
-
-                        FeedBackChat feedBackChat = FeedBackChat.builder()
-                                .studyHistory(studyHistory)
-                                .writtenUser(writtenUser)
-                                .targetUser(targetUser)
-                                .message(dto.getMessage())
-                                .createdAt(LocalDateTime.parse(dto.getCreatedAt()))
-                                .build();
-
-                        return feedBackChatRepository.save(feedBackChat);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        throw new NotSavedFeedBackChat();
-                    }
-                })
+                .map(message -> (FeedBackChat) message )
                 .collect(Collectors.toList());
-
+        // todo: 이동건.작동여부 불확실
+        feedBackChatRepository.insert(lists);
         redisTemplate.delete(historyId);
-        return lists;
+        return (List) lists.iterator();
     }
 
     public List<FeedBackChat> getFeedbackMessage(Long historyId, Long userId, Integer idx) {
