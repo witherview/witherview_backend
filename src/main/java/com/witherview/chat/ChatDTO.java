@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ChatDTO {
     @Getter @Setter
     public static class MessageDTO {
-        private String id = UUID.randomUUID().toString(); // message id
+        private String id; // message id - mongoDB에 저장할 경우 따로 uuid 필요 없음
         private Long roomId; // 방 번호
         private String type; // 메세지 타입
         private String sender; // 메세지 보낸사람

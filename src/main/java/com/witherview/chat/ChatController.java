@@ -15,7 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +41,9 @@ public class ChatController {
     private final ModelMapper modelMapper;
 
     @MessageMapping("/chat")
-    public void message(ChatDTO.MessageDTO message) {
-        messagingTemplate.convertAndSend("/sub/room/" + message.getRoomId(), message);
+    public ChatDTO.MessageDTO message(@Payload ChatDTO.MessageDTO message) {
+        messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), message);
+        return message;
     }
 
     @MessageMapping("/feedback")
