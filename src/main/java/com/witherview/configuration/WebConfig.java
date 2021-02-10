@@ -12,10 +12,16 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${upload.location}")
     private String uploadLocation;
 
+    @Value("${upload.img-location}")
+    private String uploadImgLocation;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/videos/**")
                 .addResourceLocations("file:///" + uploadLocation);
+
+        registry.addResourceHandler("/profiles/**")
+                .addResourceLocations("file:///" + uploadImgLocation);
     }
 
     @Override

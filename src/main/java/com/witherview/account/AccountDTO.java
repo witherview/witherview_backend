@@ -84,4 +84,18 @@ public class AccountDTO {
         private String mainJob;
         private String subJob;
     }
+
+    @Getter @Setter
+    public static class UpdateMyInfoDTO {
+        private String name;
+        private String mainIndustry;
+        private String subIndustry;
+        private String mainJob;
+        private String subJob;
+    }
+
+    @Getter @Setter
+    public static class UploadProfileDTO {
+        private String profileImg;
+    }
 }

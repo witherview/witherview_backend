@@ -11,10 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
@@ -57,11 +55,36 @@ public class AccountController {
         return new ResponseEntity<>(modelMapper.map(user, AccountDTO.ResponseLogin.class), HttpStatus.OK);
     }
 
-    @ApiOperation(value="내 정보")
+    @ApiOperation(value="내 정보 조회")
     @GetMapping(path = "/api/myinfo")
     public ResponseEntity<?> myInfo(@ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
         AccountDTO.ResponseMyInfo info = accountService.myInfo(accountSession.getId());
         return new ResponseEntity<>(modelMapper.map(info, AccountDTO.ResponseMyInfo.class), HttpStatus.OK);
+    }
+
+    @ApiOperation(value="내 정보 수정")
+    @PutMapping(path = "/api/myinfo")
+    public ResponseEntity<?> updateMyInfo(@RequestBody @Valid AccountDTO.UpdateMyInfoDTO updateMyInfoDTO,
+                                          BindingResult result, @ApiIgnore HttpSession session) {
+        if (result.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        Long userId = accountSession.getId();
+
+        accountService.updateMyInfo(userId, updateMyInfoDTO);
+        User user = accountService.findUser(userId);
+        return new ResponseEntity<>(modelMapper.map(user, AccountDTO.UpdateMyInfoDTO.class), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "프로필 이미지 업로드")
+    @PostMapping(path="/api/myinfo/profile")
+    public ResponseEntity<?> uploadProfile(@RequestParam("profileImg") MultipartFile profileImg,
+                                           @ApiIgnore HttpSession session) {
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+        User user = accountService.uploadProfile(accountSession.getId(), profileImg);
+        return new ResponseEntity<>(modelMapper.map(user, AccountDTO.UploadProfileDTO.class), HttpStatus.CREATED);
     }
 }
