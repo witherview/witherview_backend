@@ -34,6 +34,10 @@ dependencies {
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	// amqp, reactor netty
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
+
 	// mongoDB
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
