@@ -1,7 +1,5 @@
 package com.witherview.account;
 
-import com.witherview.database.entity.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,16 +18,10 @@ public class LoginControllerTest extends AccountSupporter {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @BeforeEach
-    public void 미리_회원가입() {
-        userRepository.save(new User(email, passwordEncoder.encode(password), name,
-                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
-    }
-
     @Test
     public void 로그인_성공_케이스() throws Exception {
         AccountDTO.LoginDTO dto = new AccountDTO.LoginDTO();
-        dto.setEmail(email);
+        dto.setEmail(email1);
         dto.setPassword(password);
 
         ResultActions resultActions = mockMvc.perform(post("/login")
@@ -39,7 +31,7 @@ public class LoginControllerTest extends AccountSupporter {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        resultActions.andExpect(jsonPath("$.email").value(email));
+        resultActions.andExpect(jsonPath("$.email").value(email1));
         resultActions.andExpect(jsonPath("$.name").value(name));
     }
 

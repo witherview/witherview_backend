@@ -38,6 +38,8 @@ public class User {
 
     private String subJob;
 
+    private String profileImg;
+
     @ColumnDefault("0")
     private Long selfPracticeCnt = 0L;
 
@@ -104,5 +106,18 @@ public class User {
     public void addSelfHistory(SelfHistory selfHistory) {
         selfHistory.updateUser(this);
         this.selfHistories.add(selfHistory);
+    }
+
+    public void update(String name, String mainIndustry, String subIndustry,
+                       String mainJob, String subJob) {
+        this.name = name;
+        this.mainIndustry = mainIndustry;
+        this.subIndustry = subIndustry;
+        this.mainJob = mainJob;
+        this.subJob = subJob;
+    }
+
+    public void uploadImg(String profileImg) {
+        this.profileImg = profileImg;
     }
 }
