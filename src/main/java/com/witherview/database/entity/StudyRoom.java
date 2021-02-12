@@ -61,9 +61,6 @@ public class StudyRoom {
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoomParticipant> studyRoomParticipants = new ArrayList<>();
 
-    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Chat> chats = new ArrayList<>();
-
     @Builder
     public StudyRoom(String title, String description,
                      String category, String industry, String job,
@@ -81,11 +78,6 @@ public class StudyRoom {
 
     protected void updateHost(User host) {
         this.host = host;
-    }
-
-    public void addChat(Chat chat) {
-        this.chats.add(chat);
-        chat.updateStudyRoom(this);
     }
 
     public void addParticipants(StudyRoomParticipant studyRoomParticipant) {
