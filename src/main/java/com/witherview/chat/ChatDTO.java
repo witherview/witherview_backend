@@ -19,9 +19,11 @@ public class ChatDTO {
         private String type; // 메세지 타입
         private String sender; // 메세지 보낸사람
         private String contents; // 메세지
+        private LocalTime createdAt; // 영상 어느 시점에 생성된 메시지인지?
+        private LocalDateTime timestamp;
     }
 
-    @Getter @Setter @AllArgsConstructor
+    @Getter @Setter @Builder
     public static class FeedBackDTO {
         private String id;
 
@@ -55,6 +57,7 @@ public class ChatDTO {
         private Long writtenUserId; // 피드백 보낸사람
         private Long targetUserId; // 피드백 받는사람
         private String message; // 피드백
-        private LocalDateTime createdAt;
+        private LocalTime createdAt;
+        private LocalDateTime timestammp;
     }
 }
