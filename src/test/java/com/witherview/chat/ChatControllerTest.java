@@ -1,14 +1,22 @@
 package com.witherview.chat;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.witherview.database.entity.StudyHistory;
 import com.witherview.database.entity.StudyRoom;
 import com.witherview.groupPractice.GroupStudy.GroupStudyService;
+import com.witherview.groupPractice.history.StudyHistoryService;
+import com.witherview.utils.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -20,6 +28,7 @@ import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -35,10 +44,19 @@ import static org.mockito.BDDMockito.given;
 class ChatControllerTest {
     @MockBean
     private GroupStudyService groupStudyService;
+    @MockBean
+    private StudyHistoryService studyHistoryService;
     @LocalServerPort
     private Integer port;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     private WebSocketStompClient webSocketStompClient;
-    private BlockingQueue<ChatDTO.MessageDTO> blockingQueue;
+    private BlockingQueue<Object> blockingQueue;
+
+
 
     @BeforeEach
     public void setup() {
@@ -66,21 +84,24 @@ class ChatControllerTest {
         // 세션 생성, timeout 시간 설정
         StompSession session = webSocketStompClient.connect(getWsPath(), new CustomStompFrameHandler() {
         })
-                .get(10, SECONDS);
+                .get(5, SECONDS);
 
         // 채팅메시지 생성
         ChatDTO.MessageDTO msg = new ChatDTO.MessageDTO();
         msg.setRoomId(1l); msg.setSender("test");
         msg.setType("1"); msg.setContents("testMessage");
-
+        msg.setCreatedAt(StringUtils.getTimeStamp(LocalDateTime.now()));
         // 해당 방 구독
         session.subscribe("/topic/room." + msg.getRoomId(), new CustomStompFrameHandler());
         // 메시지 전송
-        session.send("/pub/chat", msg);
-        assertEquals(msg.getContents(), blockingQueue.poll(10, SECONDS).getContents());
+        session.send("/pub/chat.room", msg);
+        var result = (ChatDTO.MessageDTO) blockingQueue.poll(10, SECONDS);
+        System.out.println(result);
+        assertEquals(msg.getContents(), result.getContents());
     }
 
     @Test
+    @Disabled
     void messageWithInvalidUrl() throws InterruptedException, ExecutionException, TimeoutException {
         //// Given
 
@@ -97,15 +118,44 @@ class ChatControllerTest {
         ChatDTO.MessageDTO msg = new ChatDTO.MessageDTO();
         msg.setRoomId(1l); msg.setSender("test");
         msg.setType("1"); msg.setContents("testMessage");
+//        msg.setCreatedAt(LocalTime.now());
 
         // When
         // 해당 방 구독 -> 방이 문자열인 경우
         session.subscribe("/topic/room." + msg.getSender(), new CustomStompFrameHandler());
         // 메시지 전송
-        session.send("/pub/chat", msg);
+        session.send("/pub/chat.room", msg);
 
         // Then
-        assertEquals(msg.getContents(), blockingQueue.poll(10, SECONDS).getContents());
+        var result = (ChatDTO.MessageDTO) blockingQueue.poll(10, SECONDS);
+        assertEquals(msg.getContents(), result.getContents());
+    }
+
+    @Test
+    public void feedback() throws InterruptedException, ExecutionException, TimeoutException, JsonProcessingException {
+
+        // Given
+        given(studyHistoryService.findStudyHistory(any())).willReturn(StudyHistory.builder().build());
+        Long studyHistoryId = 1l;
+
+        webSocketStompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        StompSession session = webSocketStompClient.connect(getWsPath(), new CustomStompFrameHandler() {
+        })
+                .get(5, SECONDS);
+
+        // When
+        var feedback = new ChatDTO.FeedBackDTO();
+        feedback.setMessage("test"); feedback.setStudyHistoryId(studyHistoryId);
+        feedback.setWrittenUserId(2l); feedback.setTargetUserId(1l);
+        feedback.setCreatedAt(StringUtils.getTimeStamp(LocalDateTime.now()));
+
+        session.subscribe("/topic/feedback." + feedback.getStudyHistoryId(), new CustomStompFrameHandler());
+        session.send("/pub/chat.feedback", feedback);
+
+        // Then
+        var resultJson = (String) redisTemplate.opsForList().leftPop(studyHistoryId.toString(), 10, SECONDS);
+        var result = objectMapper.readValue(resultJson, ChatDTO.FeedBackDTO.class);
+        assertEquals(studyHistoryId, result.getStudyHistoryId());
     }
     class CustomStompFrameHandler extends StompSessionHandlerAdapter implements StompFrameHandler {
 
@@ -124,9 +174,12 @@ class ChatControllerTest {
         @Override
         public void handleFrame(StompHeaders headers, Object payload) {
             System.out.println(payload.getClass());
-            System.out.println("Receive Message : " + payload.toString());
+            System.out.println("Received Message : " + payload.toString());
             // 메시지 저장
-            blockingQueue.add((ChatDTO.MessageDTO) payload);
+            if (payload instanceof ChatDTO.MessageDTO)
+                blockingQueue.add((ChatDTO.MessageDTO) payload);
+            else if (payload instanceof ChatDTO.FeedBackDTO)
+                blockingQueue.add((ChatDTO.FeedBackDTO) payload);
         }
     }
 }
