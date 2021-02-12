@@ -1,5 +1,6 @@
 package com.witherview.chat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.witherview.chat.exception.NotSavedFeedBackChat;
@@ -15,6 +16,7 @@ import com.witherview.groupPractice.exception.NotFoundStudyHistory;
 import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.groupPractice.exception.NotOwnedStudyHistory;
 import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.utils.StreamExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -51,12 +54,16 @@ public class ChatService {
 
         Iterable<FeedBackChat> lists =  redisTemplate.opsForList().range(historyId, 0, -1)
                 .stream()
-                .map(message -> (FeedBackChat) message )
+                .map(streamMapper(
+                        message -> objectMapper.readValue(
+                                (String) message, FeedBackChat.class)
+                        )
+                )
                 .collect(Collectors.toList());
-        // todo: 이동건.작동여부 불확실
+        // 한번에 저장
         feedBackChatRepository.insert(lists);
         redisTemplate.delete(historyId);
-        return (List) lists.iterator();
+        return (List) lists;
     }
 
     public List<FeedBackChat> getFeedbackMessage(Long historyId, Long userId, Integer idx) {
@@ -78,5 +85,16 @@ public class ChatService {
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+    
+    private <T,R> Function<T,R> streamMapper(StreamExceptionHandler<T, R> f) {
+        return (T r) -> {
+            try {
+                return f.apply(r);
+            } catch (Exception e) {
+                // todo: 원래 발생하는 Exception은 JsonProcessingException
+                throw new RuntimeException();
+            }
+        };
     }
 }
