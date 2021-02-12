@@ -1,9 +1,9 @@
 package com.witherview.chat;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.witherview.utils.StringUtils;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,18 +12,18 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 public class ChatDTO {
-    @Getter @Setter
+    @Getter @Setter @ToString
     public static class MessageDTO {
         private String id; // message id - mongoDB에 저장할 경우 따로 uuid 필요 없음
         private Long roomId; // 방 번호
         private String type; // 메세지 타입
         private String sender; // 메세지 보낸사람
         private String contents; // 메세지
-        private LocalTime createdAt; // 영상 어느 시점에 생성된 메시지인지?
-        private LocalDateTime timestamp;
+        private String createdAt; // 영상 어느 시점에 생성된 메시지인지? : HH:mm:ss 형태로 리턴받아야 함
+        private String timestamp = StringUtils.getCurrentDateTimeStamp();
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter @ToString
     public static class FeedBackDTO {
         private String id;
 
@@ -39,9 +39,9 @@ public class ChatDTO {
         @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
         private String message; // 피드백
 
-        private LocalTime createdAt;
+        private String createdAt;
         // todo: 이동건. createdAt 쓰임새가 명확해지면 제거해야 할 수도 있는 값.
-        private LocalDateTime timestamp;
+        private String timestamp = StringUtils.getCurrentDateTimeStamp();
     }
 
     @Getter @Setter

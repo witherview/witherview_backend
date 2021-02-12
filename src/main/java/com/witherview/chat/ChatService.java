@@ -41,10 +41,7 @@ public class ChatService {
     private final StudyHistoryRepository studyHistoryRepository;
 
     // 캐싱 용도로 피드백메세지 레디스에 임시 저장
-    @Transactional
     public ChatDTO.FeedBackDTO saveRedis(Long studyHistoryId, ChatDTO.FeedBackDTO message) {
-        message.setCreatedAt(LocalTime.now());
-        message.setTimestamp(LocalDateTime.now()); // 프런트 레벨에서 timestamp 찍기 vs 서버에서 찍기.
         redisTemplate.opsForList().rightPush(studyHistoryId.toString(), gson.toJson(message));
         return message;
     }
