@@ -32,7 +32,7 @@ public class FeedBackChat {
     @NotBlank
     private String message;
 
-    private LocalTime createdAt; // 영상 시작하고 몇 분에 달린 comment인지?
-    private LocalDateTime timestamp;
+    private String createdAt; // 영상 시작하고 몇 분에 달린 comment인지?
+    private String timestamp;
 
 }
