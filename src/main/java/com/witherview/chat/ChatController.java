@@ -13,10 +13,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
@@ -40,16 +37,15 @@ public class ChatController {
     private final SimpMessageSendingOperations messagingTemplate;
     private final ModelMapper modelMapper;
 
-    @MessageMapping("/chat")
-    public ChatDTO.MessageDTO message(@Payload ChatDTO.MessageDTO message) {
+    @MessageMapping("/chat.room")
+    public void message(@Payload ChatDTO.MessageDTO message) {
         messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), message);
-        return message;
     }
 
-    @MessageMapping("/feedback")
-    public void feedback(@Valid ChatDTO.FeedBackDTO feedback) {
+    @MessageMapping("/chat.feedback")
+    public void feedback(@Payload ChatDTO.FeedBackDTO feedback) {
         redisTemplate.convertAndSend(channelTopic.getTopic(),
-                gson.toJson(chatService.saveRedis(feedback.getStudyHistoryId(), feedback)));
+                chatService.saveRedis(feedback.getStudyHistoryId(), feedback));
     }
 
     @MessageExceptionHandler

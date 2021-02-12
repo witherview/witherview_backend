@@ -16,7 +16,7 @@ public class RedisSubscriber {
     public void sendMessage(String message) {
         try {
             ChatDTO.FeedBackDTO feedBackDTO = objectMapper.readValue(message, ChatDTO.FeedBackDTO.class);
-            messagingTemplate.convertAndSend("/sub/feedback/" + feedBackDTO.getStudyHistoryId(), message);
+            messagingTemplate.convertAndSend("/topic/feedback." + feedBackDTO.getStudyHistoryId(), message);
         } catch (Exception e) {
             log.error("Exception {}", e);
         }
