@@ -1,39 +1,30 @@
 package com.witherview.database.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
-@Entity @Getter
-@NoArgsConstructor
-@Table(name = "tbl_chat")
-public class Chat extends CreatedBaseEntity {
+@Getter @Setter @Builder
+@NoArgsConstructor @AllArgsConstructor
+@Document
+// 방 id순 오름차순 정렬 해당 방에서는 시간순서로 정리.
+@CompoundIndex(def = "{'studyRoomId' : 1, 'timestamp' : 1}")
+public class Chat {
 
-    @Id @GeneratedValue
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_room_id", nullable = false)
-    private StudyRoom studyRoom;
-
-    @NotBlank
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Id
+    private String id;
+    @NotNull
+    private Long userId;
+    @NotNull
+    private Long studyRoomId;
+    @NotNull(message = "메시지는 반드시 입력해야 합니다.")
     private String message;
+    private LocalDateTime timestamp;
 
-    @Builder
-    public Chat(User user, String message) {
-        this.user = user;
-        this.message = message;
-    }
-
-    protected void updateStudyRoom(StudyRoom studyRoom) {
-        this.studyRoom = studyRoom;
-    }
 }
