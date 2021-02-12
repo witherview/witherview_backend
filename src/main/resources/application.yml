@@ -81,6 +81,10 @@ spring:
       database: witherview_test
       auto-index-creation: true
 
+  redis:
+    host: localhost
+    port: 6379
+
   devtools:
     livereload:
       enabled: true
