@@ -55,8 +55,12 @@ public class ChatService {
         Iterable<FeedBackChat> lists =  redisTemplate.opsForList().range(historyId, 0, -1)
                 .stream()
                 .map(streamMapper(
-                        message -> objectMapper.readValue(
-                                (String) message, FeedBackChat.class)
+                        message -> {
+                            System.out.println(message);
+                            return objectMapper.readValue(
+                                    (String) message, FeedBackChat.class);
+
+                        }
                         )
                 )
                 .collect(Collectors.toList());

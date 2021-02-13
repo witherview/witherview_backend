@@ -28,6 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,7 +74,7 @@ class ChatServiceTest {
             ChatDTO.FeedBackDTO feedback = new ChatDTO.FeedBackDTO();
             feedback.setMessage("test " + i); feedback.setStudyHistoryId(studyHistoryId);
             feedback.setWrittenUserId(2l); feedback.setTargetUserId(1l);
-            feedback.setCreatedAt(StringUtils.getTimeStamp(LocalDateTime.of(2020,i % 12 + 1, i,i,i,0)));
+            feedback.setCreatedAt(LocalDateTime.of(2020,i % 12 + 1, i,i,i,0).atZone(ZoneId.of("Asia/Seoul")).toInstant());
             feedbacks.add(feedback);
             redisTemplate.opsForList().rightPush(studyHistoryId.toString(), gson.toJson(feedback));
         }

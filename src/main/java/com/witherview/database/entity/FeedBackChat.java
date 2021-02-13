@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -32,7 +34,7 @@ public class FeedBackChat {
     @NotBlank
     private String message;
 
-    private String createdAt; // 영상 시작하고 몇 분에 달린 comment인지?
-    private String timestamp;
+    private Instant createdAt; // 영상 시작하고 몇 분에 달린 comment인지?
+    private Instant timestamp;
 
 }
