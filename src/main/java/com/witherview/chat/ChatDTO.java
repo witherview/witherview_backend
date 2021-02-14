@@ -20,7 +20,6 @@ public class ChatDTO {
         private String type; // 메세지 타입
         private String sender; // 메세지 보낸사람
         private String contents; // 메세지
-        private String createdAt; // 영상 어느 시점에 생성된 메시지인지? : HH:mm:ss 형태로 리턴받아야 함
         private String timestamp = StringUtils.getCurrentDateTimeStamp();
     }
 
