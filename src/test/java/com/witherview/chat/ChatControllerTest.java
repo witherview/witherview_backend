@@ -97,8 +97,7 @@ class ChatControllerTest {
         session.subscribe("/topic/room." + msg.getRoomId(), new CustomStompFrameHandler());
         // 메시지 전송
         session.send("/pub/chat.room", msg);
-        var result = (ChatDTO.MessageDTO) blockingQueue.poll(10, SECONDS);
-        System.out.println(result);
+        ChatDTO.MessageDTO result = (ChatDTO.MessageDTO) blockingQueue.poll(10, SECONDS);
         assertEquals(msg.getContents(), result.getContents());
     }
 
@@ -148,7 +147,7 @@ class ChatControllerTest {
         // When
         var feedback = new ChatDTO.FeedBackDTO();
         feedback.setMessage("test"); feedback.setStudyHistoryId(studyHistoryId);
-        feedback.setWrittenUserId(2l); feedback.setTargetUserId(1l);
+        feedback.setReceivedUserId(2l); feedback.setSendUserId(1l);
         feedback.setCreatedAt(StringUtils.getTimeStamp(LocalDateTime.now()));
 
         session.subscribe("/topic/feedback." + feedback.getStudyHistoryId(), new CustomStompFrameHandler());
@@ -157,7 +156,7 @@ class ChatControllerTest {
         // Then
         var resultJson = (String) redisTemplate.opsForList().leftPop(studyHistoryId.toString(), 10, SECONDS);
         var result = objectMapper.readValue(resultJson, ChatDTO.FeedBackDTO.class);
-        assertEquals(studyHistoryId, result.getStudyHistoryId());
+        assertEquals(2, result.getReceivedUserId());
     }
     class CustomStompFrameHandler extends StompSessionHandlerAdapter implements StompFrameHandler {
 
