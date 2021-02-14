@@ -16,15 +16,16 @@ import java.time.LocalTime;
 
 @Getter @NoArgsConstructor @Builder @AllArgsConstructor
 @Document
-@CompoundIndex(def = "{'writtenUserId': 1 , 'studyHistoryId': -1, 'targetUserId': 1}")
+@CompoundIndex(def = "{'receivedUserId': 1 , 'studyHistoryId': -1 }")
+@CompoundIndex(def = "{'receivedUserId': 1 , 'studyHistoryId': -1, 'sendUserId': 1, 'timestamp' : 1}")
 public class FeedBackChat {
     @Id
     private String id;
     // compoundKey
     @NotNull(message = "피드백 보낸사람 아이디는 반드시 입력해야 합니다.")
-    private Long targetUserId;
+    private Long sendUserId;
     @NotNull(message = "피드백 받는사람 아이디는 반드시 입력해야 합니다.")
-    private Long writtenUserId;
+    private Long receivedUserId;
     @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
     private Long studyHistoryId;
     

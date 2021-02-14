@@ -11,14 +11,14 @@ import java.util.List;
 @Repository
 public interface FeedBackChatRepository extends MongoRepository<FeedBackChat, String> {
     // 조회자 본인 + 해당 면접에서의 모든 피드백 조회하기
-    Page<FeedBackChat> findAllByWrittenUserIdAndStudyHistoryId(
-            Long writtenUserId,
+    Page<FeedBackChat> findAllByReceivedUserIdAndStudyHistoryId(
+            Long receivedUserId,
             Long studyHistoryId, Pageable pagable);
     // 조회자 본인 + 해당 면접의 특정 사람 피드백 조회하기
-    Page<FeedBackChat> findAllByWrittenUserIdAndStudyHistoryIdAndTargetUserId(
-            Long writtenUserId,
+    Page<FeedBackChat> findAllByReceivedUserIdAndStudyHistoryIdAndSendUserId(
+            Long receivedUserId,
             Long studyHistoryId,
-            Long targetUserId, Pageable pagable);
+            Long sendUserId, Pageable pagable);
 
     // TODO: 이동건. 메소드 대체 필요.
     List<FeedBackChat> findAllByStudyHistoryId(Pageable pageable, Long historyId);
