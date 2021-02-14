@@ -16,8 +16,10 @@ import com.witherview.groupPractice.exception.NotFoundStudyHistory;
 import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.groupPractice.exception.NotOwnedStudyHistory;
 import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.utils.FeedBackMapper;
 import com.witherview.utils.StreamExceptionHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -38,9 +41,9 @@ import java.util.stream.Collectors;
 public class ChatService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final FeedBackMapper feedBackMapper;
     private final Gson gson;
     private final FeedBackChatRepository feedBackChatRepository;
-    private final UserRepository userRepository;
     private final StudyHistoryRepository studyHistoryRepository;
 
     // 캐싱 용도로 피드백메세지 레디스에 임시 저장
@@ -49,42 +52,56 @@ public class ChatService {
         return message;
     }
     
-    public List<FeedBackChat> saveFeedbackMessage(ChatDTO.SaveDTO requestDto) {
+    public List<ChatDTO.FeedBackDTO> saveFeedbackMessage(ChatDTO.SaveDTO requestDto) {
+        List<ChatDTO.FeedBackDTO> resultList = new ArrayList<>();
         String historyId = requestDto.getStudyHistoryId().toString();
 
         Iterable<FeedBackChat> lists =  redisTemplate.opsForList().range(historyId, 0, -1)
                 .stream()
                 .map(streamMapper(
-                        message -> objectMapper.readValue(
-                                (String) message, FeedBackChat.class)
-                        )
+                        message -> {
+                          resultList.add( (ChatDTO.FeedBackDTO) message);
+                          return objectMapper.readValue(
+                                  (String) message, FeedBackChat.class);
+                        })
                 )
                 .collect(Collectors.toList());
         // 한번에 저장
         feedBackChatRepository.insert(lists);
         redisTemplate.delete(historyId);
-        return (List) lists;
+        return resultList;
     }
 
-    public List<FeedBackChat> getFeedbackMessage(Long historyId, Long userId, Integer idx) {
+    public List<ChatDTO.FeedBackDTO> getFeedbackMessageByReceivedUserId(Long userId, Long historyId, Integer idx) {
         StudyHistory studyHistory = findStudyHistory(historyId);
         if(studyHistory.getUser().getId() != userId) throw new NotOwnedStudyHistory();
 
         int page = idx == null ? 0 : idx;
-        Pageable pageRequest = PageRequest.of(page, 10, Sort.by("createdAt").ascending());
-        return feedBackChatRepository.findAllByStudyHistoryId(pageRequest, historyId);
+        Pageable pageRequest = PageRequest.of(page, 10,
+                Sort.by("studyHistoryId").ascending()
+        );
+        var result = feedBackChatRepository.findAllByReceivedUserIdAndStudyHistoryId(userId, historyId, pageRequest);
+        var content = result.getContent();
+        return content.stream().map(chatEntity -> feedBackMapper.toDto(chatEntity)).collect(Collectors.toList());
     }
+
+    public List<ChatDTO.FeedBackDTO> getFeedbackMessageByWrittenUserIdAndTargetUser(Long userId, Long historyId, Integer idx) {
+        StudyHistory studyHistory = findStudyHistory(historyId);
+        if(studyHistory.getUser().getId() != userId) throw new NotOwnedStudyHistory();
+
+        int page = idx == null ? 0 : idx;
+        Pageable pageRequest = PageRequest.of(page, 10,
+                Sort.by("studyHistoryId").ascending()
+        );
+        var result = feedBackChatRepository.findAllByReceivedUserIdAndStudyHistoryId(userId, historyId, pageRequest);
+        var content = result.getContent();
+        return content.stream().map(chatEntity -> feedBackMapper.toDto(chatEntity)).collect(Collectors.toList());
+    }
+
+
 
     public StudyHistory findStudyHistory(Long id) {
         return studyHistoryRepository.findById(id).orElseThrow(NotFoundStudyHistory::new);
-    }
-
-    public User findUser(Long id) {
-        return userRepository.findById(id).orElseThrow(NotFoundUser::new);
-    }
-
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
     }
     
     private <T,R> Function<T,R> streamMapper(StreamExceptionHandler<T, R> f) {
