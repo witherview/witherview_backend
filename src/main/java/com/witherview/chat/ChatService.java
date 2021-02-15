@@ -110,7 +110,7 @@ public class ChatService {
                 return f.apply(r);
             } catch (Exception e) {
                 // todo: 원래 발생하는 Exception은 JsonProcessingException
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         };
     }
