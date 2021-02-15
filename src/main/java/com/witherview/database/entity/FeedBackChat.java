@@ -1,48 +1,39 @@
 package com.witherview.database.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
-@Entity
-@Getter
-@NoArgsConstructor
-@Table(name = "tbl_feedback_chat")
+
+@Getter @NoArgsConstructor @Builder @AllArgsConstructor
+@Document
+@CompoundIndex(def = "{'receivedUserId': 1 , 'studyHistoryId': -1 }")
+@CompoundIndex(def = "{'receivedUserId': 1 , 'studyHistoryId': -1, 'sendUserId': 1, 'timestamp' : 1}")
 public class FeedBackChat {
     @Id
-    @GeneratedValue
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_user_id", nullable = false)
-    private User targetUser;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "written_user_id", nullable = false)
-    private User writtenUser;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_history_id", nullable = false)
-    private StudyHistory studyHistory;
-
+    private String id;
+    // compoundKey
+    @NotNull(message = "피드백 보낸사람 아이디는 반드시 입력해야 합니다.")
+    private Long sendUserId;
+    @NotNull(message = "피드백 받는사람 아이디는 반드시 입력해야 합니다.")
+    private Long receivedUserId;
+    @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
+    private Long studyHistoryId;
+    
+//    private String writtenUserName;
     @NotBlank
-    @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
 
-    @NotNull @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private String createdAt; // 영상 시작하고 몇 분에 달린 comment인지?
+    private String timestamp;
 
-    @Builder
-    public FeedBackChat(StudyHistory studyHistory, User writtenUser, User targetUser, String message, LocalDateTime createdAt) {
-        this.studyHistory = studyHistory;
-        this.writtenUser = writtenUser;
-        this.targetUser = targetUser;
-        this.message = message;
-        this.createdAt = createdAt;
-    }
 }

@@ -10,7 +10,8 @@ services: # 이 항목 밑에 실행하려는 컨테이너 들을 정의
     ports:
       - "3306:3306" # 접근 포트 설정 (컨테이너 외부:컨테이너 내부)
     environment: # -e 옵션
-      MYSQL_ROOT_PASSWORD: "1234"  # MYSQL 패스워드 설정 옵션
+      - TZ=Asia/Seoul
+      - MYSQL_ROOT_PASSWORD=1234  # MYSQL 패스워드 설정 옵션
     command: # 명령어 실행
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
@@ -31,6 +32,7 @@ services: # 이 항목 밑에 실행하려는 컨테이너 들을 정의
     restart: always
     ports:
       - 27017:27017
-    # environment:
+    environment:
+      - TZ=Asia/Seoul
     #   MONGO_INITDB_ROOT_USERNAME: root
     #   MONGO_INITDB_ROOT_PASSWORD: 1234
