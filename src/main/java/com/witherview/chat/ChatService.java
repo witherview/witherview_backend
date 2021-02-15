@@ -60,7 +60,7 @@ public class ChatService {
                 .stream()
                 .map(streamMapper(
                         message -> {
-                          resultList.add( (ChatDTO.FeedBackDTO) message);
+                          resultList.add(objectMapper.readValue((String) message, ChatDTO.FeedBackDTO.class));
                           return objectMapper.readValue(
                                   (String) message, FeedBackChat.class);
                         })
