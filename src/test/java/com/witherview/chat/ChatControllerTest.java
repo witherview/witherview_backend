@@ -92,7 +92,7 @@ class ChatControllerTest {
         ChatDTO.MessageDTO msg = new ChatDTO.MessageDTO();
         msg.setRoomId(1l); msg.setSender("test");
         msg.setType("1"); msg.setContents("testMessage");
-        msg.setCreatedAt(StringUtils.getTimeStamp(LocalDateTime.now()));
+        msg.setTimestamp(StringUtils.getTimeStamp(LocalDateTime.now()));
         // 해당 방 구독
         session.subscribe("/topic/room." + msg.getRoomId(), new CustomStompFrameHandler());
         // 메시지 전송
@@ -119,7 +119,7 @@ class ChatControllerTest {
         ChatDTO.MessageDTO msg = new ChatDTO.MessageDTO();
         msg.setRoomId(1l); msg.setSender("test");
         msg.setType("1"); msg.setContents("testMessage");
-        msg.setCreatedAt(StringUtils.getTimeStamp(LocalDateTime.now()));
+        msg.setTimestamp(StringUtils.getTimeStamp(LocalDateTime.now()));
 
         // When
         // 해당 방 구독 -> 방이 문자열인 경우
