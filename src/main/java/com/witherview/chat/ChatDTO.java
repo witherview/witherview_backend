@@ -1,16 +1,13 @@
 package com.witherview.chat;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.witherview.utils.StringUtils;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.UUID;
 
 public class ChatDTO {
     @Getter @Setter @ToString
