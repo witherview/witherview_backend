@@ -37,10 +37,16 @@ services: # 이 항목 밑에 실행하려는 컨테이너 들을 정의
     #   MONGO_INITDB_ROOT_USERNAME: root
     #   MONGO_INITDB_ROOT_PASSWORD: 1234
   rabbitmq:
-    image: rabbitmq:3.6.9
+    image: rabbitmq
     container_name: rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
-    command: sh -c "rabbitmq-plugins enable rabbitmq_stomp; rabbitmq-server"
+      - 61613:61613
+    volumes:
+      - ./initCmd/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    command: bash -c "
+      rabbitmq-plugins --offline enable rabbitmq_stomp;
+      rabbitmq-server
+      "
     
