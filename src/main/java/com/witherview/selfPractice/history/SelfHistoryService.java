@@ -2,7 +2,6 @@ package com.witherview.selfPractice.history;
 
 import com.witherview.account.AccountSession;
 import com.witherview.database.entity.QuestionList;
-import com.witherview.database.entity.SelfCheck;
 import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.QuestionListRepository;
@@ -12,7 +11,7 @@ import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotDeletedFile;
 import com.witherview.selfPractice.exception.NotFoundHistory;
 import com.witherview.selfPractice.exception.NotFoundQuestionList;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.video.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +38,7 @@ public class SelfHistoryService {
 
     @Transactional
     public SelfHistory save(Long questionListId, AccountSession accountSession) {
-        User user = userRepository.findById(accountSession.getId()).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(accountSession.getId()).orElseThrow(UserNotFoundException::new);
         QuestionList questionList = questionListRepository.findById(questionListId)
                 .orElseThrow(NotFoundQuestionList::new);
         if (!user.getId().equals(questionList.getOwner().getId())) {
@@ -55,7 +54,7 @@ public class SelfHistoryService {
 
     @Transactional
     public SelfHistory uploadVideo(MultipartFile videoFile, Long historyId, AccountSession accountSession) {
-        User user = userRepository.findById(accountSession.getId()).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(accountSession.getId()).orElseThrow(UserNotFoundException::new);
         SelfHistory selfHistory = selfHistoryRepository.findById(historyId).orElseThrow(NotFoundHistory::new);
         authenticateOwner(user, selfHistory);
         String savedLocation = videoService.upload(videoFile,
@@ -66,7 +65,7 @@ public class SelfHistoryService {
 
     @Transactional
     public SelfHistory deleteHistory(Long userId, Long historyId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         SelfHistory selfHistory = selfHistoryRepository.findById(historyId).orElseThrow(NotFoundHistory::new);
         authenticateOwner(user, selfHistory);
 
@@ -95,7 +94,7 @@ public class SelfHistoryService {
     }
 
     public List<SelfHistory> findAll(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return selfHistoryRepository.findAllByUserId(user.getId());
     }
 

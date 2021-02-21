@@ -3,7 +3,7 @@ package com.witherview.groupPractice.GroupStudy;
 import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
 import com.witherview.groupPractice.exception.*;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +30,7 @@ public class GroupStudyService {
     @Transactional
     public StudyRoom saveRoom(Long userId, GroupStudyDTO.StudyCreateDTO requestDto) {
         StudyRoom studyRoom = requestDto.toEntity();
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         user.addHostedRoom(studyRoom);
         return studyRoomRepository.save(studyRoom);
@@ -67,7 +67,7 @@ public class GroupStudyService {
         }
 
         StudyRoom studyRoom = findRoom(id);
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         StudyRoomParticipant studyRoomParticipant = StudyRoomParticipant.builder()
                                                                         .studyRoom(studyRoom)
                                                                         .user(user)
@@ -97,8 +97,8 @@ public class GroupStudyService {
         StudyHistory studyHistory = studyHistoryRepository.findById(requestDto.getHistoryId())
                 .orElseThrow(NotFoundStudyHistory::new);;
 
-        User writtenUser = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
-        User targetUser = userRepository.findById(requestDto.getTargetUser()).orElseThrow(NotFoundUser::new);
+        User writtenUser = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User targetUser = userRepository.findById(requestDto.getTargetUser()).orElseThrow(UserNotFoundException::new);
 
         if(findParticipant(requestDto.getStudyRoomId(), writtenUser.getId()) == null) {
             throw new NotJoinedStudyRoom();
@@ -148,7 +148,7 @@ public class GroupStudyService {
     }
 
     public List<StudyRoom> findParticipatedRooms(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return user.getParticipatedStudyRooms()
                     .stream()
                     .map(r -> r.getStudyRoom())

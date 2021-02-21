@@ -6,7 +6,7 @@ import com.witherview.database.entity.StudyRoomParticipant;
 import com.witherview.database.entity.User;
 import com.witherview.groupPractice.GroupStudy.GroupStudyDTO;
 import com.witherview.groupPractice.exception.NotFoundStudyRoom;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -78,7 +78,7 @@ public class GroupStudyApiTest extends GroupStudySupporter {
     @Test
     public void 스터디_피드백_등록_성공() throws Exception {
         StudyRoom studyRoom = studyRoomRepository.findById(roomId).orElseThrow(NotFoundStudyRoom::new);
-        User user = userRepository.findById(userId2).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId2).orElseThrow(UserNotFoundException::new);
         StudyRoomParticipant studyRoomParticipant = StudyRoomParticipant.builder()
                 .studyRoom(studyRoom)
                 .user(user)

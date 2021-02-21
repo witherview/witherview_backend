@@ -1,7 +1,7 @@
 package com.witherview.account;
 
 import com.witherview.database.entity.User;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +27,7 @@ public class RegisterServiceTest extends AccountSupporter {
         dto.setSubJob("부 관심직무");
 
         Long registerdUserId = accountService.register(dto).getId();
-        User user = userRepository.findById(registerdUserId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(registerdUserId).orElseThrow(UserNotFoundException::new);
 
         assertEquals(1, user.getQuestionLists().size());
         assertEquals(14, user.getQuestionLists().get(0).getQuestions().size());

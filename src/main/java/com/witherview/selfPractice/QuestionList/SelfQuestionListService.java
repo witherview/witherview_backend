@@ -5,7 +5,7 @@ import com.witherview.database.entity.User;
 import com.witherview.database.repository.QuestionListRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundQuestionList;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class SelfQuestionListService {
     public QuestionList saveList(Long userId, SelfQuestionListDTO.QuestionListSaveDTO requestDto) {
         QuestionList questionList = requestDto.toEntity();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundUser());
+                .orElseThrow(() -> new UserNotFoundException());
         user.addQuestionList(questionList);
 
         return questionListRepository.save(questionList);

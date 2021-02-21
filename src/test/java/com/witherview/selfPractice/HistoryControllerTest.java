@@ -5,7 +5,7 @@ import com.witherview.database.entity.QuestionList;
 import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.UserRepository;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.selfPractice.history.SelfHistoryDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,7 +145,7 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
 
     @Test
     public void 히스토리_요청() throws Exception {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         QuestionList questionList1 = new QuestionList("title1", "ent1", "job1");
         QuestionList questionList2 = new QuestionList("title2", "ent2", "job2");

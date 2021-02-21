@@ -9,7 +9,6 @@ import com.witherview.database.repository.QuestionListRepository;
 import com.witherview.database.repository.SelfCheckRepository;
 import com.witherview.database.repository.SelfHistoryRepository;
 import com.witherview.database.repository.UserRepository;
-import com.witherview.selfPractice.exception.NotFoundUser;
 import com.witherview.support.MockMvcSupporter;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,6 @@
 package com.witherview.groupPractice.history;
 
 import com.witherview.database.entity.StudyHistory;
-import com.witherview.database.entity.StudyRoom;
 import com.witherview.database.entity.StudyRoomParticipant;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.*;
@@ -9,7 +8,7 @@ import com.witherview.groupPractice.exception.NotFoundStudyHistory;
 import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.groupPractice.exception.NotJoinedStudyRoom;
 import com.witherview.groupPractice.exception.NotOwnedStudyHistory;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.video.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class StudyHistoryService {
 
     @Transactional
     public StudyHistory uploadVideo(MultipartFile videoFile, Long historyId, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         StudyHistory studyHistory = findStudyHistory(historyId);
 
         if (!user.getId().equals(studyHistory.getUser().getId())) {
@@ -43,7 +42,7 @@ public class StudyHistoryService {
 
     @Transactional
     public StudyHistory saveStudyHistory(Long studyRoomId, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         studyRoomRepository.findById(studyRoomId).orElseThrow(NotFoundStudyRoom::new);
         StudyRoomParticipant studyRoomParticipant = studyRoomParticipantRepository
                 .findByStudyRoomIdAndUserId(studyRoomId, userId);
