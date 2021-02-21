@@ -1,5 +1,6 @@
 package com.witherview.chat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.witherview.account.AccountSession;
 import com.witherview.exception.ErrorResponse;
 import io.swagger.annotations.*;
@@ -35,16 +36,19 @@ public class ChatController {
     private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
     private final SimpMessageSendingOperations messagingTemplate;
+    private final ChatProducer chatProducer;
 
     @MessageMapping("/chat.room")
-    public void message(@Payload ChatDTO.MessageDTO message) {
-        messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), message);
+    public void message(@Payload ChatDTO.MessageDTO message) throws JsonProcessingException {
+        //messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), message);
+        chatProducer.sendChat(message);
     }
 
     @MessageMapping("/chat.feedback")
-    public void feedback(@Payload ChatDTO.FeedBackDTO feedback) {
-        redisTemplate.convertAndSend(channelTopic.getTopic(),
-                chatService.saveRedis(feedback.getStudyHistoryId(), feedback));
+    public void feedback(@Payload ChatDTO.FeedBackDTO feedback) throws JsonProcessingException {
+//        redisTemplate.convertAndSend(channelTopic.getTopic(),
+//                chatService.saveRedis(feedback.getStudyHistoryId(), feedback));
+        chatProducer.sendFeedback(feedback);
     }
 
     @MessageExceptionHandler
