@@ -69,10 +69,16 @@ public class AccountDTO {
     public static class ResponseLogin {
         private String email;
         private String name;
+        private String profileImg;
+        private String mainIndustry;
+        private String subIndustry;
+        private String mainJob;
+        private String subJob;
     }
 
     @Getter @Setter
     public static class ResponseMyInfo {
+        private String profileImg;
         private Long groupStudyCnt;
         private Long selfPracticeCnt;
         private Long questionListCnt;
