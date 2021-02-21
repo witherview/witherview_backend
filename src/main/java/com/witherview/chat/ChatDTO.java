@@ -13,10 +13,9 @@ public class ChatDTO {
     @Getter @Setter @ToString
     public static class MessageDTO {
         private String id; // message id - mongoDB에 저장할 경우 따로 uuid 필요 없음
-        private Long roomId; // 방 번호
-        private String type; // 메세지 타입
-        private String sender; // 메세지 보낸사람
-        private String contents; // 메세지
+        private Long studyRoomId; // 방 번호
+        private Long userId; // 메세지 보낸사람
+        private String message; // 메세지
         private String timestamp = StringUtils.getCurrentDateTimeStamp();
     }
 
