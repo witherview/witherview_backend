@@ -8,6 +8,7 @@ import com.witherview.database.entity.*;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,11 +24,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class AccountServiceImpl implements UserDetailsService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+//@Transactional(readOnly = true)
+public class AccountService implements UserDetailsService {
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Value("${upload.img-location}")
     private String uploadLocation;
@@ -37,7 +39,7 @@ public class AccountServiceImpl implements UserDetailsService {
 
 
 
-    @Transactional
+//    @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
         if (!dto.getPassword().equals(dto.getPasswordConfirm())) {
             throw new NotEqualPasswordException();
@@ -78,14 +80,14 @@ public class AccountServiceImpl implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    @Transactional
+//    @Transactional
     public void updateMyInfo(Long userId, AccountDTO.UpdateMyInfoDTO dto) {
         User user = findUser(userId);
         user.update(dto.getName(), dto.getMainIndustry(), dto.getSubIndustry(),
                 dto.getMainJob(), dto.getSubJob());
     }
 
-    @Transactional
+//    @Transactional
     public User uploadProfile(Long userId, MultipartFile profileImg) {
         User user = findUser(userId);
         String fileOriName = profileImg.getOriginalFilename();
