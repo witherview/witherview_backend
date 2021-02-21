@@ -1,9 +1,9 @@
 package com.witherview.account;
 
-import com.witherview.account.exception.DuplicateEmail;
-import com.witherview.account.exception.InvalidLogin;
-import com.witherview.account.exception.NotEqualPassword;
-import com.witherview.account.exception.NotSavedProfileImg;
+import com.witherview.account.exception.DuplicateEmailException;
+import com.witherview.account.exception.InvalidLoginException;
+import com.witherview.account.exception.NotEqualPasswordException;
+import com.witherview.account.exception.NotSavedProfileImgException;
 import com.witherview.database.entity.*;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundUser;
@@ -35,11 +35,11 @@ public class AccountService {
     @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
         if (!dto.getPassword().equals(dto.getPasswordConfirm())) {
-            throw new NotEqualPassword();
+            throw new NotEqualPasswordException();
         }
         User findUser = userRepository.findByEmail(dto.getEmail());
         if (findUser != null) {
-            throw new DuplicateEmail();
+            throw new DuplicateEmailException();
         }
         User user = new User(dto.getEmail(), passwordEncoder.encode(dto.getPassword()), dto.getName(),
                              dto.getMainIndustry(), dto.getSubIndustry(), dto.getMainJob(), dto.getSubJob());
@@ -83,7 +83,7 @@ public class AccountService {
             profileImg.transferTo(newImg);
             user.uploadImg(serverUrl + "profiles/" + profileName);
         } catch(Exception e) {
-            throw new NotSavedProfileImg();
+            throw new NotSavedProfileImgException();
         }
         return user;
     }
@@ -91,7 +91,7 @@ public class AccountService {
     public User login(AccountDTO.LoginDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail());
         if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new InvalidLogin();
+            throw new InvalidLoginException();
         }
         return user;
     }
@@ -133,4 +133,5 @@ public class AccountService {
     public User findUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(NotFoundUser::new);
     }
+    
 }
