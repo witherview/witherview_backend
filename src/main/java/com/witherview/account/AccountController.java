@@ -36,6 +36,7 @@ public class AccountController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
         User user = accountService.register(registerDTO);
+        // todo: 생성된 데이터에 접근할 수 있는 uri를 반환해야 함.
         return new ResponseEntity<>(modelMapper.map(user, AccountDTO.ResponseRegister.class), HttpStatus.CREATED);
     }
 
@@ -49,9 +50,12 @@ public class AccountController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
         User user = accountService.login(loginDTO);
+
+
         AccountSession accountSession = new AccountSession(user.getId(), user.getEmail(), user.getName());
         session.setAttribute("user", accountSession);
         session.setMaxInactiveInterval(SESSION_TIMEOUT);
+
         return new ResponseEntity<>(modelMapper.map(user, AccountDTO.ResponseLogin.class), HttpStatus.OK);
     }
 
