@@ -26,23 +26,25 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins("*");
     }
 
+//    @Override
+//    public void configureMessageBroker(MessageBrokerRegistry registry) {
+//        registry.setApplicationDestinationPrefixes("/pub");
+//        registry.enableStompBrokerRelay("/topic")
+//                .setRelayHost("localhost")
+//                .setRelayPort(61613)
+//                .setClientLogin(rabbitmqUser)
+//                .setClientPasscode(rabbitmqPassword)
+//                .setSystemLogin(rabbitmqUser)
+//                .setSystemPasscode(rabbitmqPassword);
+//    }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/pub");
-        registry.enableStompBrokerRelay("/topic")
-                .setRelayHost("localhost")
-                .setRelayPort(61613)
-                .setClientLogin(rabbitmqUser)
-                .setClientPasscode(rabbitmqPassword)
-                .setSystemLogin(rabbitmqUser)
-                .setSystemPasscode(rabbitmqPassword);
-        ;
-
+        registry.enableSimpleBroker("/sub");
     }
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompHandler);
-    }
-
+//    @Override
+//    public void configureClientInboundChannel(ChannelRegistration registration) {
+//        registration.interceptors(stompHandler);
+//    }
 }
