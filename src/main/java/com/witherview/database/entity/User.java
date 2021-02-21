@@ -12,7 +12,8 @@ import java.util.List;
 
 @Entity @Getter
 @NoArgsConstructor
-@Table(name = "tbl_user")
+@Table(name = "tbl_user",
+        indexes = @Index(name = "email", columnList = "email"))
 public class User {
 
     @Id @GeneratedValue
@@ -24,7 +25,7 @@ public class User {
 
     @NotBlank
     @Column(nullable = false)
-    private String password;
+    private String encryptedPassword;
 
     @NotBlank
     @Column(nullable = false)
@@ -65,10 +66,10 @@ public class User {
     private List<SelfHistory> selfHistories = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, String name,
+    public User(String email, String encryptedPassword, String name,
                 String mainIndustry, String subIndustry, String mainJob, String subJob) {
         this.email = email;
-        this.password = password;
+        this.encryptedPassword = encryptedPassword;
         this.name = name;
         this.mainIndustry = mainIndustry;
         this.subIndustry = subIndustry;
