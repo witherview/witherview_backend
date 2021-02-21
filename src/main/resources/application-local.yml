@@ -1,0 +1,124 @@
+server:
+  port: 8080
+  host: localhost
+  url: http://localhost:8080/
+
+upload:
+  location: /root/videos/
+  img-location: /Users/yeemoon/Web_2_Backend/img
+
+ffmpeg:
+  path: /root/ffmpeg_sources/ffmpeg/
+
+task:
+  queue:
+    maximum-attempt-count: 5
+    cpu:
+      limit-percentage: 40
+    thread:
+      wait-milliseconds: 3000
+
+spring:
+  datasource:
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+
+  redis:
+    host: localhost
+    port: 6379
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: witherview
+      auto-index-creation: true
+
+  rabbitmq:
+    host: localhost
+    username: witherview
+    password: witherview
+    port: 5672
+    topics:
+      chat: chat-message
+      feedback: feedback-message
+
+  devtools:
+    livereload:
+      enabled: true
+
+  freemarker:
+    cache: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: true
+
+logging:
+  level:
+    org.hibernate: error
+
+---
+
+spring:
+  profiles: test
+  datasource:
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/witherview_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: witherview_test
+      auto-index-creation: true
+
+  redis:
+    host: localhost
+    port: 6379
+
+  devtools:
+    livereload:
+      enabled: true
+
+  freemarker:
+    cache: false
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
