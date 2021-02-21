@@ -1,37 +1,23 @@
 package com.witherview.chat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.witherview.chat.exception.NotSavedFeedBackChat;
 import com.witherview.database.entity.FeedBackChat;
 import com.witherview.database.entity.StudyHistory;
-import com.witherview.database.entity.StudyRoom;
-import com.witherview.database.entity.User;
 import com.witherview.database.repository.FeedBackChatRepository;
 import com.witherview.database.repository.StudyHistoryRepository;
-import com.witherview.database.repository.StudyRoomRepository;
-import com.witherview.database.repository.UserRepository;
 import com.witherview.groupPractice.exception.NotFoundStudyHistory;
-import com.witherview.groupPractice.exception.NotFoundStudyRoom;
 import com.witherview.groupPractice.exception.NotOwnedStudyHistory;
-import com.witherview.selfPractice.exception.NotFoundUser;
 import com.witherview.utils.FeedBackMapper;
 import com.witherview.utils.StreamExceptionHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -60,7 +46,7 @@ public class ChatService {
                 .stream()
                 .map(streamMapper(
                         message -> {
-                          resultList.add( (ChatDTO.FeedBackDTO) message);
+                          resultList.add(objectMapper.readValue((String) message, ChatDTO.FeedBackDTO.class));
                           return objectMapper.readValue(
                                   (String) message, FeedBackChat.class);
                         })
@@ -97,9 +83,7 @@ public class ChatService {
         var content = result.getContent();
         return content.stream().map(chatEntity -> feedBackMapper.toDto(chatEntity)).collect(Collectors.toList());
     }
-
-
-
+    
     public StudyHistory findStudyHistory(Long id) {
         return studyHistoryRepository.findById(id).orElseThrow(NotFoundStudyHistory::new);
     }
@@ -110,7 +94,7 @@ public class ChatService {
                 return f.apply(r);
             } catch (Exception e) {
                 // todo: 원래 발생하는 Exception은 JsonProcessingException
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         };
     }

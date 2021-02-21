@@ -12,6 +12,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    private final String rabbitmqUser = "witherview";
+    private final String rabbitmqPassword = "witherview";
+
     private final StompHandler stompHandler;
 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -29,8 +32,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableStompBrokerRelay("/topic")
                 .setRelayHost("localhost")
                 .setRelayPort(61613)
-                .setClientLogin("guest")
-                .setClientPasscode("guest")
+                .setClientLogin(rabbitmqUser)
+                .setClientPasscode(rabbitmqPassword)
+                .setSystemLogin(rabbitmqUser)
+                .setSystemPasscode(rabbitmqPassword);
         ;
 
     }
