@@ -16,6 +16,7 @@ public class MyInfoControllerTest extends AccountSupporter {
                 .session(mockHttpSession))
                 .andExpect(status().isOk());
 
+        resultActions.andExpect(jsonPath("$.profileImg").value(profileImg));
         resultActions.andExpect(jsonPath("$.groupStudyCnt").value(groupStudyCnt));
         resultActions.andExpect(jsonPath("$.selfPracticeCnt").value(selfPracticeCnt));
         resultActions.andExpect(jsonPath("$.questionListCnt").value(questionListCnt));
