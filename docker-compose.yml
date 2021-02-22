@@ -37,7 +37,7 @@ services: # 이 항목 밑에 실행하려는 컨테이너 들을 정의
     #   MONGO_INITDB_ROOT_USERNAME: root
     #   MONGO_INITDB_ROOT_PASSWORD: 1234
   rabbitmq:
-    image: rabbitmq
+    image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
       - 5672:5672
