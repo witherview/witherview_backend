@@ -25,6 +25,7 @@ public abstract class AccountSupporter extends MockMvcSupporter {
     final String mainJob2 = "기획자";
     final String subJob1 = "기획자";
     final String subJob2 = "SW개발";
+    final String profileImg = "http://localhost:8080/profiles/1_c27990ec-c038-4ec6-9ad2-9c279cde3a3b.png";
     final Long groupStudyCnt = 0L;
     final Long selfPracticeCnt = 0L;
     final Long questionListCnt = 0L;
@@ -43,8 +44,11 @@ public abstract class AccountSupporter extends MockMvcSupporter {
     @BeforeEach
     public void 회원가입_세션생성_스터디룸생성() {
         // 회원가입
-        userId = userRepository.save(new User(email1, passwordEncoder.encode(password), name,
-                mainIndustry1, subIndustry1, mainJob1, subJob1)).getId();
+        User user = userRepository.save(new User(email1, passwordEncoder.encode(password), name,
+                mainIndustry1, subIndustry1, mainJob1, subJob1));
+
+        userId = user.getId();
+        user.uploadImg(profileImg);
 
         // 세션생성
         AccountSession accountSession = new AccountSession(userId, email1, name);

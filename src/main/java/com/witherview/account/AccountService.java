@@ -116,6 +116,7 @@ public class AccountService {
         Long failCnt = feedbackList.size() - passCnt;
         Long questionListCnt = (long) user.getQuestionLists().size();
 
+        responseMyInfo.setProfileImg(user.getProfileImg());
         responseMyInfo.setSelfPracticeCnt(user.getSelfPracticeCnt());
         responseMyInfo.setGroupStudyCnt(user.getGroupPracticeCnt());
         responseMyInfo.setPassCnt(passCnt);

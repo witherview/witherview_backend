@@ -33,6 +33,11 @@ public class LoginControllerTest extends AccountSupporter {
 
         resultActions.andExpect(jsonPath("$.email").value(email1));
         resultActions.andExpect(jsonPath("$.name").value(name));
+        resultActions.andExpect(jsonPath("$.profileImg").value(profileImg));
+        resultActions.andExpect(jsonPath("$.mainIndustry").value(mainIndustry1));
+        resultActions.andExpect(jsonPath("$.subIndustry").value(subIndustry1));
+        resultActions.andExpect(jsonPath("$.mainJob").value(mainJob1));
+        resultActions.andExpect(jsonPath("$.subJob").value(subJob1));
     }
 
     @Test
