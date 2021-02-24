@@ -84,7 +84,7 @@ public class ChatController {
 
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
 
-        var lists = chatService.getFeedbackMessageByReceivedUserId(accountSession.getId(), historyId, idx);
+        var lists = chatService.getFeedbackMessageByReceivedUserId(accountSession.getId().toString(), historyId, idx);
         return new ResponseEntity<>(lists, HttpStatus.OK);
     }
 }

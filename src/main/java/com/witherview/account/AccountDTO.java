@@ -56,7 +56,7 @@ public class AccountDTO {
 
     @Getter @Setter
     public static class ResponseRegister {
-        private Long id;
+        private String id;
         private String email;
         private String name;
         private String mainIndustry;

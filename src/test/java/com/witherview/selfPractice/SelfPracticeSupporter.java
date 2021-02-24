@@ -19,7 +19,7 @@ import javax.transaction.Transactional;
 
 @Transactional
 public class SelfPracticeSupporter extends MockMvcSupporter {
-    Long userId = (long)1;
+    String userId = "1";
     final String email = "hohoho@witherview.com";
     final String password = "123456";
     final String name = "witherview";
@@ -69,7 +69,7 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
         userId = user.getId();
 
         // 세션생성
-        AccountSession accountSession = new AccountSession(userId, email, name);
+        AccountSession accountSession = new AccountSession(Long.parseLong(userId), email, name);
         mockHttpSession.setAttribute("user", accountSession);
 
         // 리스트생성

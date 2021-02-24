@@ -7,6 +7,7 @@ import com.witherview.account.exception.NotSavedProfileImgException;
 import com.witherview.database.entity.*;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.UserNotFoundException;
+import com.witherview.utils.GenerateRandomId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +25,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-//@Transactional(readOnly = true)
 public class AccountService implements UserDetailsService {
+    @Autowired
+    private GenerateRandomId generateRandomId;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -37,17 +39,12 @@ public class AccountService implements UserDetailsService {
     @Value("${server.url}")
     private String serverUrl;
 
-
-
-//    @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
-        if (!dto.getPassword().equals(dto.getPasswordConfirm())) {
-            throw new NotEqualPasswordException();
-        }
-
+        if (!dto.getPassword().equals(dto.getPasswordConfirm())) throw new NotEqualPasswordException();
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) throw new DuplicateEmailException();
 
         User user = User.builder()
+//                .id(generateRandomId.generateId())
                 .email(dto.getEmail())
                 .encryptedPassword(passwordEncoder.encode(dto.getPassword()))
                 .name(dto.getName())
@@ -80,19 +77,18 @@ public class AccountService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-//    @Transactional
-    public void updateMyInfo(Long userId, AccountDTO.UpdateMyInfoDTO dto) {
-        User user = findUser(userId);
+    public User updateMyInfo(String email, AccountDTO.UpdateMyInfoDTO dto) {
+        User user = findUser(email);
         user.update(dto.getName(), dto.getMainIndustry(), dto.getSubIndustry(),
                 dto.getMainJob(), dto.getSubJob());
+        return userRepository.save(user);
     }
 
-//    @Transactional
-    public User uploadProfile(Long userId, MultipartFile profileImg) {
-        User user = findUser(userId);
+    public User uploadProfile(String email, MultipartFile profileImg) {
+        User user = findUser(email);
         String fileOriName = profileImg.getOriginalFilename();
         String orgFileExtension = fileOriName.substring(fileOriName.lastIndexOf("."));
-        String profileName = userId + "_" + UUID.randomUUID() + orgFileExtension;
+        String profileName = user.getId() + "_" + UUID.randomUUID() + orgFileExtension;
 
         File newImg = new File(uploadLocation, profileName);
         try {
@@ -104,16 +100,11 @@ public class AccountService implements UserDetailsService {
         return user;
     }
 
-    public User login(AccountDTO.LoginDTO dto) {
-        var user = userRepository.findByEmail(dto.getEmail());
-        if (!user.isPresent() || !passwordEncoder.matches(dto.getPassword(), user.get().getEncryptedPassword())) {
-            throw new InvalidLoginException();
-        }
-        return user.get();
-    }
-
-    public AccountDTO.ResponseMyInfo myInfo(Long userId) {
-        User user = findUser(userId);
+    // todo: DB에서 sum / groupby count를 쓰는 게 더 나을 것 같다
+    //      분류는 user이지만, 실제로 쓰게 될 데이터는 studyHistory, selfHistory값.
+    public AccountDTO.ResponseMyInfo myInfo(String email) {
+        // 매번 꺼내서 연산하는 대신, studyHistory에 저장해도 되지 않을까?
+        User user = findUser(email);
         AccountDTO.ResponseMyInfo responseMyInfo = new AccountDTO.ResponseMyInfo();
         List<StudyFeedback> feedbackList = new ArrayList<>();
 
@@ -147,8 +138,8 @@ public class AccountService implements UserDetailsService {
         return responseMyInfo;
     }
 
-    public User findUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public User findUser(String email) {
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
     @Override

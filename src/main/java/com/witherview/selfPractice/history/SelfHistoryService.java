@@ -38,7 +38,7 @@ public class SelfHistoryService {
 
     @Transactional
     public SelfHistory save(Long questionListId, AccountSession accountSession) {
-        User user = userRepository.findById(accountSession.getId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(accountSession.getId().toString()).orElseThrow(UserNotFoundException::new);
         QuestionList questionList = questionListRepository.findById(questionListId)
                 .orElseThrow(NotFoundQuestionList::new);
         if (!user.getId().equals(questionList.getOwner().getId())) {
@@ -54,7 +54,7 @@ public class SelfHistoryService {
 
     @Transactional
     public SelfHistory uploadVideo(MultipartFile videoFile, Long historyId, AccountSession accountSession) {
-        User user = userRepository.findById(accountSession.getId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(accountSession.getId().toString()).orElseThrow(UserNotFoundException::new);
         SelfHistory selfHistory = selfHistoryRepository.findById(historyId).orElseThrow(NotFoundHistory::new);
         authenticateOwner(user, selfHistory);
         String savedLocation = videoService.upload(videoFile,
@@ -64,7 +64,7 @@ public class SelfHistoryService {
     }
 
     @Transactional
-    public SelfHistory deleteHistory(Long userId, Long historyId) {
+    public SelfHistory deleteHistory(String userId, Long historyId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         SelfHistory selfHistory = selfHistoryRepository.findById(historyId).orElseThrow(NotFoundHistory::new);
         authenticateOwner(user, selfHistory);
@@ -93,7 +93,7 @@ public class SelfHistoryService {
         return selfHistory;
     }
 
-    public List<SelfHistory> findAll(Long userId) {
+    public List<SelfHistory> findAll(String userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return selfHistoryRepository.findAllByUserId(user.getId());
     }

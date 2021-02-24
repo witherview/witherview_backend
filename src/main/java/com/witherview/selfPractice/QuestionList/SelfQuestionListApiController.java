@@ -43,7 +43,7 @@ public class SelfQuestionListApiController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        QuestionList questionList = selfQuestionListService.saveList(accountSession.getId(), requestDto);
+        QuestionList questionList = selfQuestionListService.saveList(accountSession.getId().toString(), requestDto);
         return new ResponseEntity<>(modelMapper.map(questionList, SelfQuestionListDTO.ResponseDTO.class), HttpStatus.CREATED);
     }
 

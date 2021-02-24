@@ -28,7 +28,7 @@ public class GroupStudyService {
     private final int pageSize = 6;
 
     @Transactional
-    public StudyRoom saveRoom(Long userId, GroupStudyDTO.StudyCreateDTO requestDto) {
+    public StudyRoom saveRoom(String userId, GroupStudyDTO.StudyCreateDTO requestDto) {
         StudyRoom studyRoom = requestDto.toEntity();
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
@@ -37,7 +37,7 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public void updateRoom(Long userId, GroupStudyDTO.StudyUpdateDTO requestDto) {
+    public void updateRoom(String userId, GroupStudyDTO.StudyUpdateDTO requestDto) {
         StudyRoom studyRoom = findRoom(requestDto.getId());
 
         if(studyRoom.getHost().getId() != userId) {
@@ -49,7 +49,7 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public StudyRoom deleteRoom(Long id, Long userId) {
+    public StudyRoom deleteRoom(Long id, String userId) {
         StudyRoom studyRoom = findRoom(id);
 
         if(studyRoom.getHost().getId() != userId) {
@@ -60,7 +60,7 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public StudyRoom joinRoom(Long id, Long userId) {
+    public StudyRoom joinRoom(Long id, String userId) {
         // 이미 참여하고 있는 방인 경우
         if(findParticipant(id, userId) != null) {
             throw new AlreadyJoinedStudyRoom();
@@ -80,7 +80,7 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public StudyRoom leaveRoom(Long id, Long userId) {
+    public StudyRoom leaveRoom(Long id, String userId) {
         // 참여하지 않은 방인 경우
         if(findParticipant(id, userId) == null) {
             throw new NotJoinedStudyRoom();
@@ -92,7 +92,7 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public StudyFeedback createFeedBack(Long userId, GroupStudyDTO.StudyFeedBackDTO requestDto) {
+    public StudyFeedback createFeedBack(String userId, GroupStudyDTO.StudyFeedBackDTO requestDto) {
         findRoom(requestDto.getStudyRoomId());
         StudyHistory studyHistory = studyHistoryRepository.findById(requestDto.getHistoryId())
                 .orElseThrow(NotFoundStudyHistory::new);;
@@ -125,7 +125,7 @@ public class GroupStudyService {
                 .orElseThrow(NotFoundStudyRoom::new);
     }
 
-    public StudyRoomParticipant findParticipant(Long id, Long userId) {
+    public StudyRoomParticipant findParticipant(Long id, String userId) {
         return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId);
     }
 
@@ -147,7 +147,7 @@ public class GroupStudyService {
                 .collect(Collectors.toList());
     }
 
-    public List<StudyRoom> findParticipatedRooms(Long userId) {
+    public List<StudyRoom> findParticipatedRooms(String userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return user.getParticipatedStudyRooms()
                     .stream()

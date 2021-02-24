@@ -26,7 +26,7 @@ public class RegisterServiceTest extends AccountSupporter {
         dto.setMainJob("주 관심직무");
         dto.setSubJob("부 관심직무");
 
-        Long registerdUserId = accountService.register(dto).getId();
+        var registerdUserId = accountService.register(dto).getId();
         User user = userRepository.findById(registerdUserId).orElseThrow(UserNotFoundException::new);
 
         assertEquals(1, user.getQuestionLists().size());

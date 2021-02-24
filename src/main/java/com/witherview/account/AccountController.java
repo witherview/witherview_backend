@@ -3,92 +3,112 @@ package com.witherview.account;
 import com.witherview.database.entity.User;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import com.witherview.utils.AccountMapper;
+import io.jsonwebtoken.Claims;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Api(tags = "Account API")
 @RestController
 @RequiredArgsConstructor
 public class AccountController {
-    private final ModelMapper modelMapper;
+    private final AccountMapper accountMapper;
     private final AccountService accountService;
-    private final int SESSION_TIMEOUT = 1 * 60 * 60;
+
 
     @ApiOperation(value="회원가입")
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,
                                      produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(@RequestBody @Valid AccountDTO.RegisterDTO registerDTO,
-                                      BindingResult result) {
-        if (result.hasErrors()) {
-            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+                                      BindingResult error) throws URISyntaxException {
+        if (error.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
+            return ResponseEntity.badRequest().body(errorResponse);
         }
         User user = accountService.register(registerDTO);
         // todo: 생성된 데이터에 접근할 수 있는 uri를 반환해야 함.
-        return new ResponseEntity<>(modelMapper.map(user, AccountDTO.ResponseRegister.class), HttpStatus.CREATED);
+        var uri = new URI("/api/myInfo");
+        return ResponseEntity.created(uri).body(accountMapper.toRegister(user));
     }
 
     @ApiOperation(value="로그인")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, responseHeaders = {
+                    @ResponseHeader(name = "Authorization", description = "Bearer <JWT Token here>", response = String.class)
+            }, message = "Response Header"),
+            @ApiResponse(code = 401, message = "UnAuthorized")
+        }
+    )
     @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE,
                                   produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody @Valid AccountDTO.LoginDTO loginDTO,
-                                   BindingResult result, @ApiIgnore HttpSession session) {
-        if (result.hasErrors()) {
-            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+                                   BindingResult error) {
+        // 이곳의 로직은 작동하지 않습니다. Swagger를 위해 등록해놓은 인터페이스입니다.
+        // CustomAuthentication Filter를 참고하세요.
+        if (error.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        User user = accountService.login(loginDTO);
-
-
-        AccountSession accountSession = new AccountSession(user.getId(), user.getEmail(), user.getName());
-        session.setAttribute("user", accountSession);
-        session.setMaxInactiveInterval(SESSION_TIMEOUT);
-
-        return new ResponseEntity<>(modelMapper.map(user, AccountDTO.ResponseLogin.class), HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer + JWT Token Value");
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
     @ApiOperation(value="내 정보 조회")
     @GetMapping(path = "/api/myinfo")
-    public ResponseEntity<?> myInfo(@ApiIgnore HttpSession session) {
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        AccountDTO.ResponseMyInfo info = accountService.myInfo(accountSession.getId());
-        return new ResponseEntity<>(modelMapper.map(info, AccountDTO.ResponseMyInfo.class), HttpStatus.OK);
+    // todo: 어디서 쓰고 있는지?
+    public ResponseEntity<AccountDTO.ResponseMyInfo> myInfo(
+            Authentication authentication) {
+        String email = getAuthenticationValue(authentication);
+        System.out.println("controller : " + email);
+        var result = accountService.myInfo(email);
+        return ResponseEntity.ok(result);
     }
 
     @ApiOperation(value="내 정보 수정")
     @PutMapping(path = "/api/myinfo")
-    public ResponseEntity<?> updateMyInfo(@RequestBody @Valid AccountDTO.UpdateMyInfoDTO updateMyInfoDTO,
-                                          BindingResult result, @ApiIgnore HttpSession session) {
-        if (result.hasErrors()) {
-            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+    public ResponseEntity<?> updateMyInfo(
+            Authentication authentication,
+            @RequestBody @Valid AccountDTO.UpdateMyInfoDTO updateMyInfoDTO,
+            BindingResult error) {
+        if (error.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        Long userId = accountSession.getId();
 
-        accountService.updateMyInfo(userId, updateMyInfoDTO);
-        User user = accountService.findUser(userId);
-        return new ResponseEntity<>(modelMapper.map(user, AccountDTO.UpdateMyInfoDTO.class), HttpStatus.OK);
+        String email = getAuthenticationValue(authentication);
+        User user = accountService.updateMyInfo(email, updateMyInfoDTO);
+        var result = accountMapper.toUpdateMyInfo(user);
+        return ResponseEntity.ok(result);
     }
 
     @ApiOperation(value = "프로필 이미지 업로드")
     @PostMapping(path="/api/myinfo/profile")
-    public ResponseEntity<?> uploadProfile(@RequestParam("profileImg") MultipartFile profileImg,
-                                           @ApiIgnore HttpSession session) {
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        User user = accountService.uploadProfile(accountSession.getId(), profileImg);
-        return new ResponseEntity<>(modelMapper.map(user, AccountDTO.UploadProfileDTO.class), HttpStatus.CREATED);
+    public ResponseEntity<?> uploadProfile(
+            Authentication authentication,
+            @RequestParam("profileImg") MultipartFile profileImg) throws URISyntaxException {
+
+        String email = getAuthenticationValue(authentication);
+        User user = accountService.uploadProfile(email, profileImg);
+        var result = accountMapper.toUploadProfile(user);
+        URI uri = new URI(result.getProfileImg());
+        return ResponseEntity.created(uri).body("");
+    }
+
+    private String getAuthenticationValue(Authentication auth) {
+        Claims claims = (Claims) auth.getPrincipal();
+        String email = claims.get("email", String.class);
+        return email;
     }
 }

@@ -33,7 +33,7 @@ public abstract class AccountSupporter extends MockMvcSupporter {
     final Long passCnt = 0L;
     final Long failCnt = 0L;
     final MockHttpSession mockHttpSession = new MockHttpSession();
-    Long userId = 0L;
+    String userId = "0";
 
     @Autowired
     UserRepository userRepository;
@@ -51,7 +51,7 @@ public abstract class AccountSupporter extends MockMvcSupporter {
         user.uploadImg(profileImg);
 
         // 세션생성
-        AccountSession accountSession = new AccountSession(userId, email1, name);
-        mockHttpSession.setAttribute("user", accountSession);
+//        AccountSession accountSession = new AccountSession(userId., email1, name);
+//        mockHttpSession.setAttribute("user", accountSession);
     }
 }

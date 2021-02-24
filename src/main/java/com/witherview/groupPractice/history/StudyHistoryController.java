@@ -38,7 +38,7 @@ public class StudyHistoryController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyHistory studyHistory = studyHistoryService.saveStudyHistory(requestDto.getId(), accountSession.getId());
+        StudyHistory studyHistory = studyHistoryService.saveStudyHistory(requestDto.getId(), accountSession.getId().toString());
         return new ResponseEntity<>(modelMapper.map(studyHistory,
                 StudyHistoryDTO.HistoryCreatedResponseDTO.class), HttpStatus.CREATED);
     }
@@ -50,7 +50,7 @@ public class StudyHistoryController {
                                          @RequestParam("studyHistoryId") Long studyHistoryId,
                                          @ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyHistory studyHistory = studyHistoryService.uploadVideo(videoFile, studyHistoryId, accountSession.getId());
+        StudyHistory studyHistory = studyHistoryService.uploadVideo(videoFile, studyHistoryId, accountSession.getId().toString());
         return new ResponseEntity<>(modelMapper.map(studyHistory, StudyHistoryDTO.HistoryResponseDTO.class), HttpStatus.OK);
     }
 }

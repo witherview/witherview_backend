@@ -58,7 +58,7 @@ public class ChatService {
         return resultList;
     }
 
-    public List<ChatDTO.FeedBackDTO> getFeedbackMessageByReceivedUserId(Long userId, Long historyId, Integer idx) {
+    public List<ChatDTO.FeedBackDTO> getFeedbackMessageByReceivedUserId(String userId, Long historyId, Integer idx) {
         StudyHistory studyHistory = findStudyHistory(historyId);
         if(studyHistory.getUser().getId() != userId) throw new NotOwnedStudyHistory();
 
@@ -71,7 +71,7 @@ public class ChatService {
         return content.stream().map(chatEntity -> feedBackMapper.toDto(chatEntity)).collect(Collectors.toList());
     }
 
-    public List<ChatDTO.FeedBackDTO> getFeedbackMessageByWrittenUserIdAndTargetUser(Long userId, Long historyId, Integer idx) {
+    public List<ChatDTO.FeedBackDTO> getFeedbackMessageByWrittenUserIdAndTargetUser(String userId, Long historyId, Integer idx) {
         StudyHistory studyHistory = findStudyHistory(historyId);
         if(studyHistory.getUser().getId() != userId) throw new NotOwnedStudyHistory();
 

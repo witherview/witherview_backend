@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import com.witherview.utils.GenerateRandomId;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +17,8 @@ import java.util.List;
         indexes = @Index(name = "email", columnList = "email"))
 public class User {
 
-    @Id @GeneratedValue
-    private Long id;
+    @Id
+    private String id = new GenerateRandomId().generateId();
 
     @NotBlank
     @Column(nullable = false, unique = true)

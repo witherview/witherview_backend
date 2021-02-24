@@ -43,9 +43,9 @@ public class GroupStudySupporter extends MockMvcSupporter {
     final Byte score = 80;
     final Boolean passOrFail = true;
     final MockHttpSession mockHttpSession = new MockHttpSession();
-    Long userId1 = (long)1;
-    Long userId2 = (long)2;
-    Long userId3 = (long)3;
+    String userId1 = "1";
+    String userId2 = "2";
+    String userId3 = "3";
     Long roomId = (long) 4;
     Long studyHistoryId1 = (long) 1;
     Long studyHistoryId2 = (long) 2;
@@ -80,7 +80,7 @@ public class GroupStudySupporter extends MockMvcSupporter {
         userId3 = user3.getId();
 
         // 세션생성
-        AccountSession accountSession = new AccountSession(userId1, email1, name1);
+        AccountSession accountSession = new AccountSession(Long.parseLong(userId1), email1, name1);
         mockHttpSession.setAttribute("user", accountSession);
 
         // 스터디룸생성

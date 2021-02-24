@@ -60,7 +60,7 @@ public class SelfHistoryController {
     @GetMapping(path = "/api/self/history")
     public ResponseEntity<?> getList(@ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        List<SelfHistory> selfHistories = selfHistoryService.findAll(accountSession.getId());
+        List<SelfHistory> selfHistories = selfHistoryService.findAll(accountSession.getId().toString());
         return new ResponseEntity<>(modelMapper.map(selfHistories,
                 SelfHistoryDTO.SelfHistoryResponseDTO[].class), HttpStatus.OK);
     }
@@ -70,7 +70,7 @@ public class SelfHistoryController {
     public ResponseEntity<?> deleteHistory(@ApiParam(value = "삭제할 내역 id", required = true) @PathVariable Long id,
                                            @ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        SelfHistory selfHistory = selfHistoryService.deleteHistory(accountSession.getId(), id);
+        SelfHistory selfHistory = selfHistoryService.deleteHistory(accountSession.getId().toString(), id);
         return new ResponseEntity<>(modelMapper.map(selfHistory,
                 SelfHistoryDTO.SelfHistoryDefaultResponseDTO.class), HttpStatus.OK);
     }

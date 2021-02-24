@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.LongSummaryStatistics;
 
 public interface StudyRoomParticipantRepository extends JpaRepository<StudyRoomParticipant, Long> {
-    StudyRoomParticipant findByStudyRoomIdAndUserId(Long studyRoomId, Long userId);
+    StudyRoomParticipant findByStudyRoomIdAndUserId(Long studyRoomId, String userId);
 
-    void deleteByStudyRoomIdAndUserId(Long studyRoomId, Long userId);
+    void deleteByStudyRoomIdAndUserId(Long studyRoomId, String userId);
 }

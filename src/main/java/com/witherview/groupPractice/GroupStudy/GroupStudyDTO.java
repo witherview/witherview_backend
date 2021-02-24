@@ -72,7 +72,7 @@ public class GroupStudyDTO {
         private Long historyId;
 
         @NotNull(message = "타겟 유저아이디는 반드시 입력해야 합니다.")
-        private Long targetUser;
+        private String targetUser; // 이메일 값 파싱 필요
 
         @NotNull(message = "점수는 반드시 입력해야 합니다.")
         private Byte score;

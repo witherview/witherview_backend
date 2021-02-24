@@ -38,25 +38,25 @@ public class GroupStudyController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyRoom studyRoom = groupStudyService.saveRoom(accountSession.getId(), requestDto);
+        StudyRoom studyRoom = groupStudyService.saveRoom(accountSession.getId().toString(), requestDto);
 
         // 스터디방 생성자도 방 참여자로 등록
-        groupStudyService.joinRoom(studyRoom.getId(), accountSession.getId());
+        groupStudyService.joinRoom(studyRoom.getId(), accountSession.getId().toString());
         return new ResponseEntity<>(modelMapper.map(studyRoom, GroupStudyDTO.ResponseDTO.class), HttpStatus.CREATED);
     }
 
     @ApiOperation(value="스터디방 수정")
     @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateQuestion(@RequestBody @Valid GroupStudyDTO.StudyUpdateDTO requestDto,
-                                            BindingResult result,
+                                            BindingResult error,
                                             @ApiIgnore HttpSession session) {
 
-        if(result.hasErrors()) {
-            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+        if(error.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        groupStudyService.updateRoom(accountSession.getId(), requestDto);
+        groupStudyService.updateRoom(accountSession.getId().toString(), requestDto);
 
         StudyRoom studyRoom = groupStudyService.findRoom(requestDto.getId());
         return new ResponseEntity<>(modelMapper.map(studyRoom, GroupStudyDTO.ResponseDTO.class), HttpStatus.OK);
@@ -81,7 +81,7 @@ public class GroupStudyController {
     @GetMapping(path = "/participation")
     public ResponseEntity<?> findParticipatedRooms(@ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        List<StudyRoom> lists = groupStudyService.findParticipatedRooms(accountSession.getId());
+        List<StudyRoom> lists = groupStudyService.findParticipatedRooms(accountSession.getId().toString());
         return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ResponseDTO[].class), HttpStatus.OK);
     }
 
@@ -90,7 +90,7 @@ public class GroupStudyController {
     public ResponseEntity<?> deleteRoom(@ApiParam(value = "삭제할 방 id", required = true) @PathVariable Long id,
                                         @ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyRoom deletedRoom = groupStudyService.deleteRoom(id, accountSession.getId());
+        StudyRoom deletedRoom = groupStudyService.deleteRoom(id, accountSession.getId().toString());
         return new ResponseEntity<>(modelMapper.map(deletedRoom, GroupStudyDTO.DeleteResponseDTO.class), HttpStatus.OK);
     }
 
@@ -105,7 +105,7 @@ public class GroupStudyController {
         }
 
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyRoom studyRoom = groupStudyService.joinRoom(requestDto.getId(), accountSession.getId());
+        StudyRoom studyRoom = groupStudyService.joinRoom(requestDto.getId(), accountSession.getId().toString());
         return new ResponseEntity<>(modelMapper.map(studyRoom, GroupStudyDTO.ResponseDTO.class), HttpStatus.OK);
     }
 
@@ -130,7 +130,7 @@ public class GroupStudyController {
     public ResponseEntity<?> leaveRoom(@ApiParam(value = "나갈 방 id", required = true) @PathVariable Long id,
                                        @ApiIgnore HttpSession session) {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyRoom leftRoom = groupStudyService.leaveRoom(id, accountSession.getId());
+        StudyRoom leftRoom = groupStudyService.leaveRoom(id, accountSession.getId().toString());
         return new ResponseEntity<>(modelMapper.map(leftRoom, GroupStudyDTO.DeleteResponseDTO.class), HttpStatus.OK);
     }
 
@@ -145,7 +145,7 @@ public class GroupStudyController {
         }
 
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        StudyFeedback studyFeedback = groupStudyService.createFeedBack(accountSession.getId(), requestDto);
+        StudyFeedback studyFeedback = groupStudyService.createFeedBack(accountSession.getId().toString(), requestDto);
         return new ResponseEntity<>(modelMapper.map(studyFeedback, GroupStudyDTO.FeedBackResponseDTO.class), HttpStatus.CREATED);
     }
 }

@@ -21,7 +21,7 @@ public class SelfQuestionListService {
     private final UserRepository userRepository;
 
     @Transactional
-    public QuestionList saveList(Long userId, SelfQuestionListDTO.QuestionListSaveDTO requestDto) {
+    public QuestionList saveList(String userId, SelfQuestionListDTO.QuestionListSaveDTO requestDto) {
         QuestionList questionList = requestDto.toEntity();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());

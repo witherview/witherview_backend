@@ -27,7 +27,7 @@ public class StudyHistoryService {
     private final VideoService videoService;
 
     @Transactional
-    public StudyHistory uploadVideo(MultipartFile videoFile, Long historyId, Long userId) {
+    public StudyHistory uploadVideo(MultipartFile videoFile, Long historyId, String userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         StudyHistory studyHistory = findStudyHistory(historyId);
 
@@ -41,7 +41,7 @@ public class StudyHistoryService {
     }
 
     @Transactional
-    public StudyHistory saveStudyHistory(Long studyRoomId, Long userId) {
+    public StudyHistory saveStudyHistory(Long studyRoomId, String userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         studyRoomRepository.findById(studyRoomId).orElseThrow(NotFoundStudyRoom::new);
         StudyRoomParticipant studyRoomParticipant = studyRoomParticipantRepository
