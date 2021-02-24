@@ -1,6 +1,5 @@
 package com.witherview.chat;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.witherview.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +12,14 @@ public class ChatDTO {
     @Getter @Setter @ToString
     public static class MessageDTO {
         private String id; // message id - mongoDB에 저장할 경우 따로 uuid 필요 없음
-        private Long studyRoomId; // 방 번호
-        private Long userId; // 메세지 보낸사람
+
+        @NotNull(message = "방 번는 반드시 입력해야 합니다.")
+        private Long studyRoomId; // 방 번호호
+
+        @NotNull(message = "채팅 보낸사람 아이디는 반드시 입력해야 합니다.")
+        private Long userId; // 메세지 보낸사람팅
+
+        @NotBlank(message = "채팅 메세지는 반드시 입력해야 합니다.")
         private String message; // 메세지
         private String timestamp = StringUtils.getCurrentDateTimeStamp();
     }
@@ -27,7 +32,6 @@ public class ChatDTO {
         private Long studyHistoryId; // 방 번호
 
         @NotNull(message = "피드백 보낸사람 아이디는 반드시 입력해야 합니다.")
-        @JsonIgnore
         private Long sendUserId; // 피드백 보낸사람
 
         @NotNull(message = "피드백 받는사람 아이디는 반드시 입력해야 합니다.")
