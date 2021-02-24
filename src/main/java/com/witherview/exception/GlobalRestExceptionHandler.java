@@ -1,5 +1,6 @@
 package com.witherview.exception;
 
+import com.witherview.account.exception.CustomJwtRuntimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -35,5 +36,10 @@ public class GlobalRestExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handle(HttpMessageNotReadableException e) {
         return new ResponseEntity<>(ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomJwtRuntimeException.class)
+    public ResponseEntity<?> handle(CustomJwtRuntimeException e) {
+        return new ResponseEntity<>(ErrorResponse.of(ErrorCode.FORBIDDEN), HttpStatus.FORBIDDEN);
     }
 }
