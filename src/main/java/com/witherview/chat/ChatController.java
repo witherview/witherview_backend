@@ -2,31 +2,24 @@ package com.witherview.chat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.witherview.account.AccountSession;
-import com.witherview.exception.ErrorResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
-
-import static com.witherview.exception.ErrorCode.INVALID_INPUT_VALUE;
 
 @RequiredArgsConstructor
 @Controller
@@ -39,40 +32,18 @@ public class ChatController {
     private final ChatProducer chatProducer;
 
     @MessageMapping("/chat.room")
-    public void message(@Payload ChatDTO.MessageDTO message) throws JsonProcessingException {
-        //messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), message);
+    public void message(@Payload @Valid ChatDTO.MessageDTO message) throws JsonProcessingException, MethodArgumentNotValidException {
         chatProducer.sendChat(message);
     }
 
     @MessageMapping("/chat.feedback")
-    public void feedback(@Payload ChatDTO.FeedBackDTO feedback) throws JsonProcessingException {
-//        redisTemplate.convertAndSend(channelTopic.getTopic(),
-//                chatService.saveRedis(feedback.getStudyHistoryId(), feedback));
+    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback) throws JsonProcessingException {
         chatProducer.sendFeedback(feedback);
     }
 
     @MessageExceptionHandler
     public String handleException(Throwable exception) {
         return exception.getMessage();
-    }
-
-    @ApiOperation(value="그룹스터디 피드백 내용 등록")
-    @ApiResponses({
-            @ApiResponse(
-                    code = 201,
-                    message = "Created"
-//                    response = ChatDTO.FeedBackDTO.class,
-//                    responseContainer = "List"
-            )
-    })
-    @PostMapping(path = "/api/messages/feedbacks", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveFeedBackMessage(@RequestBody @Valid ChatDTO.SaveDTO requestDto,
-                                  BindingResult result) {
-        if(result.hasErrors())
-            return new ResponseEntity<>(ErrorResponse.of(INVALID_INPUT_VALUE, result), HttpStatus.BAD_REQUEST);
-        chatService.saveFeedbackMessage(requestDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ApiOperation(value="그룹스터디 피드백 내용 조회. 현재 버전은 세션에서 userId값을 가져와 사용한다.")
