@@ -3,7 +3,7 @@ package com.witherview.configuration;
 
 import com.witherview.account.AccountService;
 import com.witherview.account.filter.CustomAuthenticationFilter;
-import com.witherview.account.filter.CustomAuthorizationFilter;
+import com.witherview.account.filter.JwtAuthenticationFilter;
 import com.witherview.constant.SecurityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -63,10 +63,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
              .authorizeRequests()
              .antMatchers(HttpMethod.POST, SecurityConstant.SIGN_UP_URL).permitAll()
+//             .anyRequest().
              .anyRequest().permitAll() // todo: 일단 모든 요청을 통과하도록 설정. 삭제 필요
         .and()
-            .addFilter(new CustomAuthenticationFilter(authenticationManager()))
-            .addFilter(new CustomAuthorizationFilter(authenticationManager()))
+            .addFilter(new CustomAuthenticationFilter(authenticationManager())) // 로그인 url에만 적용되는 필터 (확인필요)
+            .addFilter(new JwtAuthenticationFilter(authenticationManager()))
        ;
     }
 

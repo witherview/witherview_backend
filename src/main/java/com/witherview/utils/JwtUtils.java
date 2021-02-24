@@ -19,8 +19,8 @@ public class JwtUtils {
     }
     // input 값으로 jwt 토큰 생성하기.
     public String createToken(String email) {
-
         var token = Jwts.builder()
+//                .setSubject("user", email)
                 .claim("email", email)
                 .setExpiration(new Date(System.currentTimeMillis()+ SecurityConstant.EXPIRATION_TIME)) // 1시간)
                 .signWith(this.key, SignatureAlgorithm.HS256)
@@ -31,10 +31,11 @@ public class JwtUtils {
     }
 
     public Claims getClaims(String token) {
-//        Key key = Keys.hmacShaKeyFor(SecurityConstant.SECRET.getBytes());
         var claims = Jwts.parserBuilder()
                 .setSigningKey(key).build()
-                .parseClaimsJwt(token).getBody();
+                .parseClaimsJws(token)
+                .getBody()
+                ;
         return claims;
     }
 
