@@ -8,7 +8,6 @@ import com.witherview.database.entity.*;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.utils.GenerateRandomId;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -26,8 +24,6 @@ import java.util.UUID;
 
 @Service
 public class AccountService implements UserDetailsService {
-    @Autowired
-    private GenerateRandomId generateRandomId;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -78,14 +74,14 @@ public class AccountService implements UserDetailsService {
     }
 
     public User updateMyInfo(String email, AccountDTO.UpdateMyInfoDTO dto) {
-        User user = findUser(email);
+        User user = findUserByEmail(email);
         user.update(dto.getName(), dto.getMainIndustry(), dto.getSubIndustry(),
                 dto.getMainJob(), dto.getSubJob());
         return userRepository.save(user);
     }
 
     public User uploadProfile(String email, MultipartFile profileImg) {
-        User user = findUser(email);
+        User user = findUserByEmail(email);
         String fileOriName = profileImg.getOriginalFilename();
         String orgFileExtension = fileOriName.substring(fileOriName.lastIndexOf("."));
         String profileName = user.getId() + "_" + UUID.randomUUID() + orgFileExtension;
@@ -104,7 +100,7 @@ public class AccountService implements UserDetailsService {
     //      분류는 user이지만, 실제로 쓰게 될 데이터는 studyHistory, selfHistory값.
     public AccountDTO.ResponseMyInfo myInfo(String email) {
         // 매번 꺼내서 연산하는 대신, studyHistory에 저장해도 되지 않을까?
-        User user = findUser(email);
+        User user = findUserByEmail(email);
         AccountDTO.ResponseMyInfo responseMyInfo = new AccountDTO.ResponseMyInfo();
         List<StudyFeedback> feedbackList = new ArrayList<>();
 
@@ -138,7 +134,7 @@ public class AccountService implements UserDetailsService {
         return responseMyInfo;
     }
 
-    public User findUser(String email) {
+    public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
