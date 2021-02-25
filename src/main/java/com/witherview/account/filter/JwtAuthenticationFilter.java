@@ -50,14 +50,13 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
                 //  이중암호를 걸었다면, 해제로직도 여기서 있어야 한다.
                 //  매번 데이터베이스를 조회하는 것보다 빠를 만한 방식을 생각해보자.
                 String email = claims.get("email", String.class);
-                System.out.println(email);
-                // 검증 완료 후
+                String userId = claims.get("userId", String.class);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(claims, null, new ArrayList<>());
                 return authentication;
             }
         } catch (Exception e) {
-            log.error("JwtToken Error in Authentication Filter." + e.getMessage());
+            log.error("JwtToken Error in Authentication Filter. " + e.getMessage());
         }
         return null;
     }
