@@ -4,7 +4,6 @@ import com.witherview.account.exception.InvalidJwtTokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,6 +40,6 @@ public class GlobalRestExceptionHandler {
 
     @ExceptionHandler(InvalidJwtTokenException.class)
     public ResponseEntity<?> handle(InvalidJwtTokenException e) {
-        return new ResponseEntity<>(ErrorResponse.of(ErrorCode.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ErrorResponse.of(ErrorCode.INVALID_JWT_TOKEN), HttpStatus.UNAUTHORIZED);
     }
 }

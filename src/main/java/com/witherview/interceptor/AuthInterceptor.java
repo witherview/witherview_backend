@@ -17,11 +17,12 @@ public class AuthInterceptor implements HandlerInterceptor {
         String header = request.getHeader(SecurityConstant.AUTHORIZATION_HEADER);
         System.out.println("interceptor : " + header);
         if (header == null || !header.startsWith(SecurityConstant.TOKEN_PREFIX))
-            throw new InvalidJwtTokenException(ErrorCode.UNAUTHORIZED);
+            throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
         var token = header.substring(SecurityConstant.TOKEN_PREFIX.length());
         Claims claims = new JwtUtils().getClaims(token);
         if (claims != null)
             return true;
+
         return false;
     }
 }
