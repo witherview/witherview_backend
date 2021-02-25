@@ -5,6 +5,7 @@ import com.witherview.account.AccountService;
 import com.witherview.account.filter.CustomAuthenticationFilter;
 import com.witherview.account.filter.JwtAuthenticationFilter;
 import com.witherview.constant.SecurityConstant;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -23,13 +24,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AccountService accountService;
 
-
-// authentication 방법. Bcrypt 사용.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(accountService).passwordEncoder(new BCryptPasswordEncoder());
@@ -52,18 +52,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .httpBasic().disable() // rest api 이므로 기본설정은 전부 disable;
             .cors()
-                .and()
+        .and()
             .csrf().disable()
             .formLogin().disable()
             .headers().frameOptions().disable()
-                .and()
+        .and()
             // 세션이 자동으로 유지되면, 헤더 값이 자동으로 지정된다. http 세션을 생성하지 않도록 설정 변경.
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
              .authorizeRequests()
              .antMatchers(HttpMethod.POST, SecurityConstant.SIGN_UP_URL).permitAll()
-//             .anyRequest().
              .anyRequest().permitAll() // todo: 일단 모든 요청을 통과하도록 설정. 삭제 필요
         .and()
             .addFilter(new CustomAuthenticationFilter(authenticationManager())) // 로그인 url에만 적용되는 필터 (확인필요)

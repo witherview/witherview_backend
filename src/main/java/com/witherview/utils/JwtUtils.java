@@ -1,14 +1,11 @@
 package com.witherview.utils;
 
-import com.witherview.account.exception.CustomJwtRuntimeException;
+import com.witherview.account.exception.InvalidJwtTokenException;
 import com.witherview.constant.SecurityConstant;
 import com.witherview.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
@@ -41,24 +38,23 @@ public class JwtUtils {
             return claims;
         } catch (io.jsonwebtoken.security.SignatureException e ){
             log.error("Token :" + token +" - Invalid Jwt Signiture.");
-            throw new CustomJwtRuntimeException(ErrorCode.FORBIDDEN);
+            throw new InvalidJwtTokenException(ErrorCode.UNAUTHORIZED);
         } catch (SecurityException e) {
             log.error("Token :" + token +" - Invalid Jwt Signiture.");
-            throw new CustomJwtRuntimeException(ErrorCode.FORBIDDEN);
+            throw new InvalidJwtTokenException(ErrorCode.UNAUTHORIZED);
         } catch (MalformedJwtException e) {
             log.error("Token :" + token + " - Invalid Jwt token value.");
-            throw new CustomJwtRuntimeException(ErrorCode.FORBIDDEN);
+            throw new InvalidJwtTokenException(ErrorCode.UNAUTHORIZED);
         } catch (ExpiredJwtException e) {
             log.error("Token :" + token + " - Expired Jwt Token.");
-            throw new CustomJwtRuntimeException(ErrorCode.FORBIDDEN);
+            throw new InvalidJwtTokenException(ErrorCode.UNAUTHORIZED);
         } catch (UnsupportedJwtException e) {
             log.error("Token :" + token +" - Unsupported Jwt Token.");
-            throw new CustomJwtRuntimeException(ErrorCode.FORBIDDEN);
+            throw new InvalidJwtTokenException(ErrorCode.UNAUTHORIZED);
         } catch (IllegalArgumentException e) {
-            log.error("Token :" + token +" - Jwt token compact of handler are invalid.");
-            throw new CustomJwtRuntimeException(ErrorCode.FORBIDDEN);
+            log.error("Token :" + token + " - Jwt token compact of handler are invalid.");
+            throw new InvalidJwtTokenException(ErrorCode.UNAUTHORIZED);
         }
-
     }
 
 }
