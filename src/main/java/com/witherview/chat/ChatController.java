@@ -4,14 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.witherview.account.AccountSession;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +23,6 @@ import java.util.List;
 @Api(value = "채팅 API", description = "서버에 있는 채팅기록 DB로 저장 및 조회", tags = "채팅 API")
 public class ChatController {
     private final ChatService chatService;
-    private final RedisTemplate redisTemplate;
-    private final ChannelTopic channelTopic;
-    private final SimpMessageSendingOperations messagingTemplate;
     private final ChatProducer chatProducer;
 
     @MessageMapping("/chat.room")
@@ -60,6 +54,23 @@ public class ChatController {
         AccountSession accountSession = (AccountSession) session.getAttribute("user");
 
         var lists = chatService.getFeedbackMessageByReceivedUserId(accountSession.getId(), historyId, idx);
+        return new ResponseEntity<>(lists, HttpStatus.OK);
+    }
+
+    @ApiOperation(value="그룹스터디 채팅 내용 조회. 현재 버전은 세션에서 userId값을 가져와 사용한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "studyRoomId", value = "조회할 스터디방 Id"),
+            @ApiImplicitParam(name = "idx", value = "조회할 채팅 메세지 pagination idx (디폴트 값 = 0), 현재 20개 단위")
+    })
+    @GetMapping(path = "/api/messages/chats")
+    public ResponseEntity<List<ChatDTO.MessageDTO>> getChatMessage(
+            @RequestParam(value = "studyRoomId") Long studyRoomId,
+            @RequestParam(value = "idx", required = false) Integer idx,
+            @ApiIgnore HttpSession session) {
+
+        AccountSession accountSession = (AccountSession) session.getAttribute("user");
+
+        var lists = chatService.getChatMessageByStudyRoomId(accountSession.getId(), studyRoomId, idx);
         return new ResponseEntity<>(lists, HttpStatus.OK);
     }
 }

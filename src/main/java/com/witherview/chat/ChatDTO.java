@@ -10,6 +10,13 @@ import javax.validation.constraints.NotNull;
 
 public class ChatDTO {
     @Getter @Setter @ToString
+    /*
+    {
+        "studyRoomId" : 17,
+        "userId" : 1,
+        "message" : "hihihh"
+    }
+    * */
     public static class MessageDTO {
         private String id; // message id - mongoDB에 저장할 경우 따로 uuid 필요 없음
 
@@ -25,6 +32,14 @@ public class ChatDTO {
     }
 
     @Getter @Setter @ToString
+    /*
+    {
+        "studyHistoryId" : 19,
+        "sendUserId" : 1,
+        "receivedUserId" : 1,
+        "message" : "feedback"
+    }
+    * */
     public static class FeedBackDTO {
         private String id;
 
