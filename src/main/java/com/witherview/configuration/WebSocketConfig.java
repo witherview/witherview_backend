@@ -12,9 +12,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    private final String rabbitmqUser = "witherview";
-    private final String rabbitmqPassword = "witherview";
-
     private final StompHandler stompHandler;
 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -26,25 +23,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins("*");
     }
 
-//    @Override
-//    public void configureMessageBroker(MessageBrokerRegistry registry) {
-//        registry.setApplicationDestinationPrefixes("/pub");
-//        registry.enableStompBrokerRelay("/topic")
-//                .setRelayHost("localhost")
-//                .setRelayPort(61613)
-//                .setClientLogin(rabbitmqUser)
-//                .setClientPasscode(rabbitmqPassword)
-//                .setSystemLogin(rabbitmqUser)
-//                .setSystemPasscode(rabbitmqPassword);
-//    }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/pub");
         registry.enableSimpleBroker("/sub");
     }
 
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        registration.interceptors(stompHandler);
-//    }
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(stompHandler);
+    }
 }

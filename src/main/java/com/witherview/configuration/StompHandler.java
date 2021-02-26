@@ -1,7 +1,5 @@
 package com.witherview.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.witherview.chat.ChatDTO;
 import com.witherview.groupPractice.GroupStudy.GroupStudyService;
 import com.witherview.groupPractice.history.StudyHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -9,16 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessagingException;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.converter.MessageConverter;
-import org.springframework.messaging.converter.StringMessageConverter;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
