@@ -2,17 +2,16 @@ package com.witherview.chat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.witherview.database.entity.Chat;
-import com.witherview.database.entity.FeedBackChat;
-import com.witherview.database.entity.StudyHistory;
-import com.witherview.database.entity.StudyRoom;
+import com.witherview.database.entity.*;
 import com.witherview.database.repository.ChatRepository;
 import com.witherview.database.repository.FeedBackChatRepository;
 import com.witherview.database.repository.StudyHistoryRepository;
 import com.witherview.database.repository.StudyRoomRepository;
+import com.witherview.database.repository.StudyRoomParticipantRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,26 +19,36 @@ import java.util.Optional;
 
 @Component
 public class ChatConsumer {
-    private final SimpMessageSendingOperations messagingTemplate;
     private final FeedBackChatRepository feedBackChatRepository;
     private final ChatRepository chatRepository;
     private final StudyRoomRepository studyRoomRepository;
     private final StudyHistoryRepository studyHistoryRepository;
+    private final StudyRoomParticipantRepository studyRoomParticipantRepository;
     private final ObjectMapper objectMapper;
+    // redis pub/sub
+    private final RedisTemplate redisTemplate;
+    private final ChannelTopic studyRoomChannelTopic;
+    private final ChannelTopic feedBackChannelTopic;
 
     @Autowired
-    public ChatConsumer(SimpMessageSendingOperations messagingTemplate,
-                        FeedBackChatRepository feedBackChatRepository,
+    public ChatConsumer(FeedBackChatRepository feedBackChatRepository,
                         ChatRepository chatRepository,
                         StudyRoomRepository studyRoomRepository,
                         StudyHistoryRepository studyHistoryRepository,
-                        ObjectMapper objectMapper) {
-        this.messagingTemplate = messagingTemplate;
+                        StudyRoomParticipantRepository studyRoomParticipantRepository,
+                        ObjectMapper objectMapper,
+                        RedisTemplate redisTemplate,
+                        ChannelTopic studyRoomChannelTopic,
+                        ChannelTopic feedBackChannelTopic) {
         this.feedBackChatRepository = feedBackChatRepository;
         this.chatRepository = chatRepository;
         this.studyRoomRepository = studyRoomRepository;
         this.studyHistoryRepository = studyHistoryRepository;
+        this.studyRoomParticipantRepository = studyRoomParticipantRepository;
         this.objectMapper = objectMapper;
+        this.redisTemplate = redisTemplate;
+        this.studyRoomChannelTopic = studyRoomChannelTopic;
+        this.feedBackChannelTopic = feedBackChannelTopic;
     }
 
     @Transactional
@@ -48,10 +57,12 @@ public class ChatConsumer {
         ChatDTO.MessageDTO messageDTO = objectMapper.readValue(message, ChatDTO.MessageDTO.class);
         Chat chat = objectMapper.readValue(message, Chat.class);
         Optional<StudyRoom> studyRoom = studyRoomRepository.findById(messageDTO.getStudyRoomId());
+        StudyRoomParticipant studyRoomParticipant = studyRoomParticipantRepository
+                .findByStudyRoomIdAndUserId(messageDTO.getStudyRoomId(), messageDTO.getUserId());
 
-        if(studyRoom.isEmpty()) return;
+        if(studyRoom.isEmpty() || studyRoomParticipant == null) return;
         chatRepository.insert(chat);
-        sendChat(message, messageDTO.getStudyRoomId());
+        sendChat(message);
     }
 
     @Transactional
@@ -64,14 +75,14 @@ public class ChatConsumer {
         if(studyHistory.isEmpty() || studyHistory.get().getUser().getId() != feedBackDTO.getReceivedUserId()) return;
 
         feedBackChatRepository.insert(feedBackChat);
-        sendFeedBack(message, feedBackDTO.getStudyHistoryId());
+        sendFeedBack(message);
     }
 
-    private void sendChat(String message, Long roomId) {
-        messagingTemplate.convertAndSend("/sub/room." + roomId, message);
+    private void sendChat(String message) {
+        redisTemplate.convertAndSend(studyRoomChannelTopic.getTopic(), message);
     }
 
-    private void sendFeedBack(String message, Long historyId) {
-        messagingTemplate.convertAndSend("/sub/feedback." + historyId, message);
+    private void sendFeedBack(String message) {
+        redisTemplate.convertAndSend(feedBackChannelTopic.getTopic(), message);
     }
 }
