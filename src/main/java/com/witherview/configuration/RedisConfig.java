@@ -28,25 +28,38 @@ public class RedisConfig {
     }
 
     @Bean
-    public ChannelTopic channelTopic() {
+    public ChannelTopic studyRoomChannelTopic() {
         return new ChannelTopic("studyRoomChat");
+    }
+
+    @Bean
+    public ChannelTopic feedBackChannelTopic() {
+        return new ChannelTopic("feedBackChat");
     }
 
     // redis에 발행된 메시지 처리를 위한 리스너 설정
     @Bean
     public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory,
-                                                              MessageListenerAdapter listenerAdapter,
-                                                              ChannelTopic channelTopic) {
+                                                              MessageListenerAdapter chatListenerAdapter,
+                                                              MessageListenerAdapter feedBackListenerAdapter,
+                                                              ChannelTopic studyRoomChannelTopic,
+                                                              ChannelTopic feedBackChannelTopic) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, channelTopic);
+        container.addMessageListener(chatListenerAdapter, studyRoomChannelTopic);
+        container.addMessageListener(feedBackListenerAdapter, feedBackChannelTopic);
         return container;
     }
 
     // 실제 메시지를 처리하는 subscriber 설정 추가
     @Bean
-    public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
-        return new MessageListenerAdapter(subscriber, "sendMessage");
+    public MessageListenerAdapter chatListenerAdapter(RedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "sendChat");
+    }
+
+    @Bean
+    public MessageListenerAdapter feedBackListenerAdapter(RedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "sendFeedback");
     }
 
     @Bean
