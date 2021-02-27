@@ -17,11 +17,11 @@ public class StudyFeedback extends CreatedBaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_user_id", nullable = false)
-    private User targetUser;
+    private User receivedUser; // 받은 사람람 (조회할 때 사용할 필드)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "written_user_id", nullable = false)
-    private User writtenUser;
+    private User sendUser; // 보낸 사
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_history_id", nullable = false)
@@ -34,10 +34,10 @@ public class StudyFeedback extends CreatedBaseEntity {
     private Boolean passOrFail;
 
     @Builder
-    public StudyFeedback(User targetUser, User writtenUser,
+    public StudyFeedback(User receivedUser, User sendUser,
                          Byte score, Boolean passOrFail) {
-        this.targetUser = targetUser;
-        this.writtenUser = writtenUser;
+        this.receivedUser = receivedUser;
+        this.sendUser = sendUser;
         this.score = score;
         this.passOrFail = passOrFail;
     }

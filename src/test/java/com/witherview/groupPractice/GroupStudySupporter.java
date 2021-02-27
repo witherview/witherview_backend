@@ -116,8 +116,8 @@ public class GroupStudySupporter extends MockMvcSupporter {
 
         // 피드백 등록
         StudyFeedback studyFeedback1 = StudyFeedback.builder()
-                .targetUser(user1)
-                .writtenUser(user3)
+                .receivedUser(user1)
+                .sendUser(user3)
                 .score(score)
                 .passOrFail(passOrFail)
                 .build();
