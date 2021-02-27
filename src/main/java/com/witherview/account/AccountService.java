@@ -11,7 +11,6 @@ import com.witherview.database.repository.StudyFeedbackRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.utils.AccountMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -111,16 +110,14 @@ public class AccountService implements UserDetailsService {
         return user;
     }
 
-    // todo: DB에서 sum / groupby count를 쓰는 게 더 나을 것 같다
-    //      분류는 user이지만, 실제로 쓰게 될 데이터는 studyHistory, selfHistory값.
     public AccountDTO.ResponseMyInfo myInfo(String userId) {
         // 매번 꺼내서 연산하는 대신, studyHistory에 저장해도 되지 않을까?
-        User user = findUserById(userId);
-        
+        User user = findUserByEmail(userId);
+
         var interviewScore =
-                studyFeedbackRepository.getAvgInterviewScoreByUserId(userId).orElse(0d);
+                studyFeedbackRepository.getAvgInterviewScoreByEmail(userId).orElse(0d);
         System.out.println(interviewScore);
-        var passFailData = studyFeedbackRepository.getPassOrFailCountByUserId(userId);
+        var passFailData = studyFeedbackRepository.getPassOrFailCountByEmail(userId);
         System.out.println(passFailData.toString());
         System.out.println(passFailData.get(0)[0]);
         System.out.println(passFailData.get(0)[1]);
@@ -144,9 +141,6 @@ public class AccountService implements UserDetailsService {
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-    }
-    public User findUserById(String id) {
-        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
