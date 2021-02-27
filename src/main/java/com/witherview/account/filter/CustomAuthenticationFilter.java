@@ -1,12 +1,13 @@
 package com.witherview.account.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.witherview.WitherviewApplicationContext;
 import com.witherview.account.AccountDTO;
 import com.witherview.account.AccountService;
 import com.witherview.account.exception.InvalidLoginException;
 import com.witherview.constant.SecurityConstant;
 import com.witherview.utils.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,10 +23,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
+@Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    @Autowired
-    private AccountService accountService;
     private AuthenticationManager authenticationManager;
 
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
@@ -55,12 +55,16 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(
             HttpServletRequest request, HttpServletResponse response,
             FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        // 인증 통과한 사용자의 email + 고유Id를 jwt 토큰에 넣어 반환한다.
+        // accountService를 호출한다.
+        AccountService accountService = (AccountService) WitherviewApplicationContext.getBean("accountService");
+
+        // email / userId값을 토큰에 넣어 사용한다.
         String email = ((User) authResult.getPrincipal()).getUsername();
         var userId = accountService.findUserByEmail(email).getId();
-
         String token = new JwtUtils().createToken(email, userId);
 
         response.addHeader(SecurityConstant.AUTHORIZATION_HEADER, SecurityConstant.TOKEN_PREFIX + token);
+
+        log.info("User: " + email + " login Accepted. Token : " + token + " created.");
     }
 }
