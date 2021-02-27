@@ -4,7 +4,7 @@ import com.witherview.database.entity.User;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
 import com.witherview.utils.AccountMapper;
-import io.jsonwebtoken.Claims;
+import com.witherview.utils.AuthTokenParsing;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -66,20 +67,28 @@ public class AccountController {
     }
 
     @ApiOperation(value="내 정보 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @GetMapping(path = "/api/myinfo")
     // todo: 어디서 쓰고 있는지?
     public ResponseEntity<AccountDTO.ResponseMyInfo> myInfo(
-            Authentication authentication) {
-        String email = getAuthenticationValue(authentication);
+            @ApiIgnore Authentication authentication) {
+        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+
         System.out.println("controller : " + email);
-        var result = accountService.myInfo(email);
+        var result = accountService.myInfo(userId);
         return ResponseEntity.ok(result);
     }
 
     @ApiOperation(value="내 정보 수정")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @PutMapping(path = "/api/myinfo")
     public ResponseEntity<?> updateMyInfo(
-            Authentication authentication,
+            @ApiIgnore Authentication authentication,
             @RequestBody @Valid AccountDTO.UpdateMyInfoDTO updateMyInfoDTO,
             BindingResult error) {
         if (error.hasErrors()) {
@@ -87,28 +96,28 @@ public class AccountController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
-        String email = getAuthenticationValue(authentication);
-        User user = accountService.updateMyInfo(email, updateMyInfoDTO);
+        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        User user = accountService.updateMyInfo(userId, updateMyInfoDTO);
         var result = accountMapper.toUpdateMyInfo(user);
         return ResponseEntity.ok(result);
     }
 
     @ApiOperation(value = "프로필 이미지 업로드")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @PostMapping(path="/api/myinfo/profile")
     public ResponseEntity<?> uploadProfile(
-            Authentication authentication,
+            @ApiIgnore Authentication authentication,
             @RequestParam("profileImg") MultipartFile profileImg) throws URISyntaxException {
 
-        String email = getAuthenticationValue(authentication);
+        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         User user = accountService.uploadProfile(email, profileImg);
         var result = accountMapper.toUploadProfile(user);
         URI uri = new URI(result.getProfileImg());
         return ResponseEntity.created(uri).body("");
     }
 
-    private String getAuthenticationValue(Authentication auth) {
-        Claims claims = (Claims) auth.getPrincipal();
-        String email = claims.get("email", String.class);
-        return email;
-    }
 }
