@@ -5,7 +5,7 @@ server:
 
 upload:
   location: /root/videos/
-  img-location: /root/profiles/
+  img-location: /Users/yeemoon/Web_2_Backend/img
 
 ffmpeg:
   path: /root/ffmpeg_sources/ffmpeg/
@@ -54,7 +54,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
