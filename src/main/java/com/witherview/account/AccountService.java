@@ -5,9 +5,13 @@ import com.witherview.account.exception.InvalidLoginException;
 import com.witherview.account.exception.NotEqualPasswordException;
 import com.witherview.account.exception.NotSavedProfileImgException;
 import com.witherview.database.entity.*;
+import com.witherview.database.repository.QuestionListRepository;
+import com.witherview.database.repository.QuestionRepository;
+import com.witherview.database.repository.StudyFeedbackRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.UserNotFoundException;
-import com.witherview.utils.GenerateRandomId;
+import com.witherview.utils.AccountMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +31,15 @@ public class AccountService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private StudyFeedbackRepository studyFeedbackRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
+    @Autowired
+    private QuestionListRepository questionListRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AccountMapper accountMapper;
 
     @Value("${upload.img-location}")
     private String uploadLocation;
@@ -36,11 +48,12 @@ public class AccountService implements UserDetailsService {
     private String serverUrl;
 
     public User register(AccountDTO.RegisterDTO dto) {
-        if (!dto.getPassword().equals(dto.getPasswordConfirm())) throw new NotEqualPasswordException();
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) throw new DuplicateEmailException();
+        if (!dto.getPassword().equals(dto.getPasswordConfirm()))
+            throw new NotEqualPasswordException();
+        if (userRepository.findByEmail(dto.getEmail()).isPresent())
+            throw new DuplicateEmailException();
 
         User user = User.builder()
-//                .id(generateRandomId.generateId())
                 .email(dto.getEmail())
                 .encryptedPassword(passwordEncoder.encode(dto.getPassword()))
                 .name(dto.getName())
@@ -55,7 +68,7 @@ public class AccountService implements UserDetailsService {
         String job = "공통";
 
         // todo: 질문 리스트를 쉽게 수정하거나 변경할 수 있는 로직이 있다면 좋을 것 같다.
-        QuestionList questionList = new QuestionList(title, enterprise, job);
+        QuestionList questionList = new QuestionList(user, title, enterprise, job);
         List<String> list = new ArrayList<>();
         list.add("간단한 자기소개 해주세요."); list.add("이 직무를 선택하게 된 이유가 무엇인가요?");
         list.add("지원 직무의 핵심 역량은 무엇이라고 생각하나요?");  list.add("그 역량을 갖추기 위해 어떤 노력을 했는지 구체적으로 말씀해 주시겠어요?");
@@ -69,15 +82,17 @@ public class AccountService implements UserDetailsService {
         for (int i = 0; i < list.size(); i++) {
             questionList.addQuestion(new Question(list.get(i), "", i + 1));
         }
-        user.addQuestionList(questionList);
-        return userRepository.save(user);
+        var savedUser = userRepository.save(user);
+        questionListRepository.save(questionList);
+//        user.addQuestionList(questionList);
+        return savedUser;
     }
 
     public User updateMyInfo(String email, AccountDTO.UpdateMyInfoDTO dto) {
         User user = findUserByEmail(email);
         user.update(dto.getName(), dto.getMainIndustry(), dto.getSubIndustry(),
                 dto.getMainJob(), dto.getSubJob());
-        return userRepository.save(user);
+        return user;
     }
 
     public User uploadProfile(String email, MultipartFile profileImg) {
@@ -98,44 +113,40 @@ public class AccountService implements UserDetailsService {
 
     // todo: DB에서 sum / groupby count를 쓰는 게 더 나을 것 같다
     //      분류는 user이지만, 실제로 쓰게 될 데이터는 studyHistory, selfHistory값.
-    public AccountDTO.ResponseMyInfo myInfo(String email) {
+    public AccountDTO.ResponseMyInfo myInfo(String userId) {
         // 매번 꺼내서 연산하는 대신, studyHistory에 저장해도 되지 않을까?
-        User user = findUserByEmail(email);
-        AccountDTO.ResponseMyInfo responseMyInfo = new AccountDTO.ResponseMyInfo();
-        List<StudyFeedback> feedbackList = new ArrayList<>();
-
-        for (StudyHistory v : user.getStudyHistories()) {
-            feedbackList.addAll(v.getStudyFeedbacks());
+        User user = findUserById(userId);
+        
+        var interviewScore =
+                studyFeedbackRepository.getAvgInterviewScoreByUserId(userId).orElse(0d);
+        System.out.println(interviewScore);
+        var passFailData = studyFeedbackRepository.getPassOrFailCountByUserId(userId);
+        System.out.println(passFailData.toString());
+        System.out.println(passFailData.get(0)[0]);
+        System.out.println(passFailData.get(0)[1]);
+        Long passCnt = 0l;;
+        if (passFailData.get(0)[1] != null) {
+            passCnt = (Long) passFailData.get(0)[1];
         }
+        Long failCnt = (Long) passFailData.get(0)[0] - passCnt;
+        Long questionListCnt = questionRepository.CountByOwnerId(userId);
 
-        Double interviewScore = feedbackList
-                .stream()
-                .mapToDouble(StudyFeedback::getScore)
-                .average()
-                .orElse(0);
-        Long passCnt = feedbackList
-                .stream()
-                .filter(StudyFeedback::getPassOrFail)
-                .count();
-        Long failCnt = feedbackList.size() - passCnt;
-        Long questionListCnt = (long) user.getQuestionLists().size();
-
+        var responseMyInfo = accountMapper.toResponseMyInfo(user);
+        responseMyInfo.setInterviewScore(String.format("%.2f", interviewScore));
+        responseMyInfo.setPassCnt(passCnt);
+        responseMyInfo.setFailCnt(failCnt);
+        responseMyInfo.setQuestionListCnt(questionListCnt);
         responseMyInfo.setProfileImg(user.getProfileImg());
         responseMyInfo.setSelfPracticeCnt(user.getSelfPracticeCnt());
         responseMyInfo.setGroupStudyCnt(user.getGroupPracticeCnt());
-        responseMyInfo.setPassCnt(passCnt);
-        responseMyInfo.setFailCnt(failCnt);
-        responseMyInfo.setInterviewScore(String.format("%.1f", interviewScore));
-        responseMyInfo.setQuestionListCnt(questionListCnt);
-        responseMyInfo.setMainIndustry(user.getMainIndustry());
-        responseMyInfo.setSubIndustry(user.getSubIndustry());
-        responseMyInfo.setMainJob(user.getMainJob());
-        responseMyInfo.setSubJob(user.getSubJob());
         return responseMyInfo;
     }
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    }
+    public User findUserById(String id) {
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
