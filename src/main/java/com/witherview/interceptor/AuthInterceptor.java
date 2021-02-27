@@ -20,6 +20,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
         var token = header.substring(SecurityConstant.TOKEN_PREFIX.length());
         Claims claims = new JwtUtils().getClaims(token);
+        // todo: 토큰 검증 로직 필요.
         if (claims != null)
             return true;
 
