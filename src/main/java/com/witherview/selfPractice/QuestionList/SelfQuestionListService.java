@@ -25,8 +25,6 @@ public class SelfQuestionListService {
         QuestionList questionList = requestDto.toEntity();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());
-        user.addQuestionList(questionList);
-
         return questionListRepository.save(questionList);
     }
 
@@ -51,7 +49,7 @@ public class SelfQuestionListService {
     }
 
     public List<QuestionList> findAllLists() {
-        return questionListRepository.findAll();
+        return (List) questionListRepository.findAll();
     }
 
     public List<QuestionList> findAllLists(Long userId) {

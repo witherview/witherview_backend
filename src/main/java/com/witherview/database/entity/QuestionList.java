@@ -41,10 +41,11 @@ public class QuestionList {
     private List<SelfHistory> selfHistories = new ArrayList<>();
 
     @Builder
-    public QuestionList(String title, String enterprise, String job) {
+    public QuestionList(User owner, String title, String enterprise, String job) {
         this.title = title;
         this.enterprise = enterprise;
         this.job = job;
+        this.owner = owner;
     }
 
     public void addQuestion(Question question) {

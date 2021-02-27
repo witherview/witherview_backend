@@ -4,6 +4,7 @@ import com.witherview.account.AccountSession;
 import com.witherview.database.entity.QuestionList;
 import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
+import com.witherview.database.repository.QuestionListRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.selfPractice.history.SelfHistoryDTO;
@@ -25,6 +26,8 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private QuestionListRepository questionListRepository;
 
     @Test
     public void 히스토리_등록_성공() throws Exception {
@@ -81,10 +84,11 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
 
     @Test
     public void 히스토리_등록_실패_해당_리스트는_요청한_유저의_리스트가_아님() throws Exception {
-        QuestionList questionList = new QuestionList("제목2", "기업명2", "직무명2");
+
         User user = new User("hohoho2@witherview.com", "pass2", "name2",
                 "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무");
-        user.addQuestionList(questionList);
+        QuestionList questionList = new QuestionList(user, "제목2", "기업명2", "직무명2");
+        questionListRepository.save(questionList);
         userRepository.save(user);
 
         SelfHistoryDTO.SelfHistoryRequestDTO dto = new SelfHistoryDTO.SelfHistoryRequestDTO();
@@ -149,13 +153,14 @@ public class HistoryControllerTest extends SelfPracticeSupporter {
     public void 히스토리_요청() throws Exception {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        QuestionList questionList1 = new QuestionList("title1", "ent1", "job1");
-        QuestionList questionList2 = new QuestionList("title2", "ent2", "job2");
-        QuestionList questionList3 = new QuestionList("title3", "ent3", "job3");
+        QuestionList questionList1 = new QuestionList(user, "title1", "ent1", "job1");
+        QuestionList questionList2 = new QuestionList(user, "title2", "ent2", "job2");
+        QuestionList questionList3 = new QuestionList(user, "title3", "ent3", "job3");
 
-        user.addQuestionList(questionList1);
-        user.addQuestionList(questionList2);
-        user.addQuestionList(questionList3);
+        questionListRepository.save(questionList1);
+        questionListRepository.save(questionList2);
+        questionListRepository.save(questionList3);
+
 
         SelfHistory selfHistory1 = new SelfHistory(questionList1);
         SelfHistory selfHistory2 = new SelfHistory(questionList2);

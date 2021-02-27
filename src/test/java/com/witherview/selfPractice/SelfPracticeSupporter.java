@@ -73,8 +73,7 @@ public class SelfPracticeSupporter extends MockMvcSupporter {
         mockHttpSession.setAttribute("user", accountSession);
 
         // 리스트생성
-        QuestionList questionList = new QuestionList("title", "enterprise", "job");
-        user.addQuestionList(questionList);
+        QuestionList questionList = new QuestionList(user, "title", "enterprise", "job");
         listId = questionListRepository.save(questionList).getId();
 
         SelfHistory selfHistory = new SelfHistory(questionList);
