@@ -14,17 +14,21 @@ public class ChatDTO {
     {
         "studyRoomId" : 17,
         "userId" : 1,
+        "userName" : "yeeun",
         "message" : "hihihh"
     }
     * */
     public static class MessageDTO {
         private String id; // message id - mongoDB에 저장할 경우 따로 uuid 필요 없음
 
-        @NotNull(message = "방 번는 반드시 입력해야 합니다.")
-        private Long studyRoomId; // 방 번호호
+        @NotNull(message = "방 id는 반드시 입력해야 합니다.")
+        private Long studyRoomId; // 방 id
 
         @NotNull(message = "채팅 보낸사람 아이디는 반드시 입력해야 합니다.")
-        private Long userId; // 메세지 보낸사람팅
+        private Long userId; // 메세지 보낸사람 아이디
+
+        @NotNull(message = "채팅 보낸사람 이름은 반드시 입력해야 합니다.")
+        private String userName; // 메세지 보낸사람 이름
 
         @NotBlank(message = "채팅 메세지는 반드시 입력해야 합니다.")
         private String message; // 메세지
