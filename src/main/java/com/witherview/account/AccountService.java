@@ -83,19 +83,18 @@ public class AccountService implements UserDetailsService {
         }
         var savedUser = userRepository.save(user);
         questionListRepository.save(questionList);
-//        user.addQuestionList(questionList);
         return savedUser;
     }
 
-    public User updateMyInfo(String email, AccountDTO.UpdateMyInfoDTO dto) {
-        User user = findUserByEmail(email);
+    public User updateMyInfo(String userId, AccountDTO.UpdateMyInfoDTO dto) {
+        User user = findUserById(userId);
         user.update(dto.getName(), dto.getMainIndustry(), dto.getSubIndustry(),
                 dto.getMainJob(), dto.getSubJob());
         return user;
     }
 
-    public User uploadProfile(String email, MultipartFile profileImg) {
-        User user = findUserByEmail(email);
+    public User uploadProfile(String userId, MultipartFile profileImg) {
+        User user = findUserById(userId);
         String fileOriName = profileImg.getOriginalFilename();
         String orgFileExtension = fileOriName.substring(fileOriName.lastIndexOf("."));
         String profileName = user.getId() + "_" + UUID.randomUUID() + orgFileExtension;
@@ -111,16 +110,12 @@ public class AccountService implements UserDetailsService {
     }
 
     public AccountDTO.ResponseMyInfo myInfo(String userId) {
-        // 매번 꺼내서 연산하는 대신, studyHistory에 저장해도 되지 않을까?
-        User user = findUserByEmail(userId);
+        User user = findUserById(userId);
 
         var interviewScore =
                 studyFeedbackRepository.getAvgInterviewScoreByEmail(userId).orElse(0d);
         System.out.println(interviewScore);
         var passFailData = studyFeedbackRepository.getPassOrFailCountByEmail(userId);
-        System.out.println(passFailData.toString());
-        System.out.println(passFailData.get(0)[0]);
-        System.out.println(passFailData.get(0)[1]);
         Long passCnt = 0l;;
         if (passFailData.get(0)[1] != null) {
             passCnt = (Long) passFailData.get(0)[1];
@@ -141,6 +136,9 @@ public class AccountService implements UserDetailsService {
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    }
+    public User findUserById(String userId) {
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
