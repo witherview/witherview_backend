@@ -32,8 +32,9 @@ public class AccountController {
     @ApiOperation(value="회원가입")
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,
                                      produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> register(@RequestBody @Valid AccountDTO.RegisterDTO registerDTO,
-                                      BindingResult error) throws URISyntaxException {
+    public ResponseEntity<?> register(
+            @RequestBody @Valid AccountDTO.RegisterDTO registerDTO,
+            BindingResult error) throws URISyntaxException {
         if (error.hasErrors()) {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
             return ResponseEntity.badRequest().body(errorResponse);

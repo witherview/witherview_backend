@@ -3,7 +3,6 @@ package com.witherview.utils;
 import com.witherview.account.AccountDTO;
 import com.witherview.database.entity.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)

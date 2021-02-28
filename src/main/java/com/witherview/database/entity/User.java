@@ -84,11 +84,6 @@ public class User {
         this.groupPracticeCnt += 1;
     }
 
-//    public void addQuestionList(QuestionList questionList) {
-//        questionList.updateOwner(this);
-//        this.questionLists.add(questionList);
-//    }
-
     public void addHostedRoom(StudyRoom studyRoom) {
         studyRoom.updateHost(this);
         this.hostedStudyRooms.add(studyRoom);
