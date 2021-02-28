@@ -13,7 +13,7 @@ public class ChatDTO {
     /*
     {
         "studyRoomId" : 17,
-        "userId" : 1,
+        "userId" : "gfhgchgfdhgdhgc",
         "userName" : "yeeun",
         "message" : "hihihh"
     }
@@ -21,11 +21,11 @@ public class ChatDTO {
     public static class MessageDTO {
         private String id; // message id - mongoDB에 저장할 경우 따로 uuid 필요 없음
 
-        @NotNull(message = "방 id는 반드시 입력해야 합니다.")
+        @NotNull(message = "방id는 반드시 입력해야 합니다.")
         private Long studyRoomId; // 방 id
 
         @NotNull(message = "채팅 보낸사람 아이디는 반드시 입력해야 합니다.")
-        private Long userId; // 메세지 보낸사람 아이디
+        private String userId; // 메세지 보낸사람 아이디
 
         @NotNull(message = "채팅 보낸사람 이름은 반드시 입력해야 합니다.")
         private String userName; // 메세지 보낸사람 이름
@@ -39,8 +39,8 @@ public class ChatDTO {
     /*
     {
         "studyHistoryId" : 19,
-        "sendUserId" : 1,
-        "receivedUserId" : 1,
+        "sendUserId" : "qwerasdfadfqew",
+        "receivedUserId" : "adfqewrasdfadf",
         "message" : "feedback"
     }
     * */
@@ -51,10 +51,10 @@ public class ChatDTO {
         private Long studyHistoryId; // 방 번호
 
         @NotNull(message = "피드백 보낸사람 아이디는 반드시 입력해야 합니다.")
-        private Long sendUserId; // 피드백 보낸사람
+        private String sendUserId; // 피드백 보낸사람
 
         @NotNull(message = "피드백 받는사람 아이디는 반드시 입력해야 합니다.")
-        private Long receivedUserId; // 피드백 받는사람
+        private String receivedUserId; // 피드백 받는사람
 
         @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
         private String message; // 피드백
