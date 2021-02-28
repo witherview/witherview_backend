@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class ChatService {
+
     private final FeedBackMapper feedBackMapper;
     private final ChatMessageMapper chatMessageMapper;
     private final FeedBackChatRepository feedBackChatRepository;
@@ -31,7 +32,7 @@ public class ChatService {
 
     public List<ChatDTO.FeedBackDTO> getFeedbackMessageByReceivedUserId(String userId, Long historyId, Integer idx) {
         StudyHistory studyHistory = findStudyHistory(historyId);
-        if(studyHistory.getUser().getId() != userId) throw new NotOwnedStudyHistory();
+        if(!studyHistory.getUser().getId().equals(userId)) throw new NotOwnedStudyHistory();
 
         int page = idx == null ? 0 : idx;
         Pageable pageRequest = PageRequest.of(page, 10,
@@ -39,23 +40,23 @@ public class ChatService {
         );
         var result = feedBackChatRepository.findAllByReceivedUserIdAndStudyHistoryId(userId, historyId, pageRequest);
         var content = result.getContent();
-        return content.stream().map(chatEntity -> feedBackMapper.toDto(chatEntity)).collect(Collectors.toList());
+        return content.stream().map(feedBackMapper::toDto).collect(Collectors.toList());
     }
 
-    public List<ChatDTO.FeedBackDTO> getFeedbackMessageByWrittenUserIdAndTargetUser(String userId, Long historyId, Integer idx) {
+    public List<ChatDTO.FeedBackDTO> getFeedbackMessageByReceivedUserIdAndSendUserId(String receivedUserId, Long historyId, String sendUserId, Integer idx) {
         StudyHistory studyHistory = findStudyHistory(historyId);
-        if(studyHistory.getUser().getId() != userId) throw new NotOwnedStudyHistory();
+        if(!studyHistory.getUser().getId().equals(receivedUserId)) throw new NotOwnedStudyHistory();
 
         int page = idx == null ? 0 : idx;
         Pageable pageRequest = PageRequest.of(page, 10,
                 Sort.by("studyHistoryId").ascending()
         );
-        var result = feedBackChatRepository.findAllByReceivedUserIdAndStudyHistoryId(userId, historyId, pageRequest);
+        var result = feedBackChatRepository.findAllByReceivedUserIdAndStudyHistoryIdAndSendUserId(receivedUserId, historyId, sendUserId, pageRequest);
         var content = result.getContent();
-        return content.stream().map(feedbackEntity -> feedBackMapper.toDto(feedbackEntity)).collect(Collectors.toList());
+        return content.stream().map(feedBackMapper::toDto).collect(Collectors.toList());
     }
 
-    public List<ChatDTO.MessageDTO> getChatMessageByStudyRoomId(Long userId, Long studyRoomId, Integer idx) {
+    public List<ChatDTO.MessageDTO> getChatMessageByStudyRoomId(String userId, Long studyRoomId, Integer idx) {
         studyRoomRepository.findById(studyRoomId).orElseThrow(NotFoundStudyRoom::new);
         StudyRoomParticipant studyRoomParticipant = studyRoomParticipantRepository.findByStudyRoomIdAndUserId(studyRoomId, userId);
 
@@ -67,7 +68,7 @@ public class ChatService {
         );
         var result = chatRepository.findAllByStudyRoomId(studyRoomId, pageRequest);
         var content = result.getContent();
-        return content.stream().map(chatEntity -> chatMessageMapper.toDto(chatEntity)).collect(Collectors.toList());
+        return content.stream().map(chatMessageMapper::toDto).collect(Collectors.toList());
     }
 
     public StudyHistory findStudyHistory(Long id) {
