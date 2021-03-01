@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class GroupStudyDTO {
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class StudyCreateDTO {
         @NotBlank(message = "방 제목은 반드시 입력해야 합니다.")
         @Length(min = 1, message = "방 제목은 1자 이상이어야 합니다.")
@@ -28,23 +28,12 @@ public class GroupStudyDTO {
         private String industry;
         private String job;
 
-        private LocalDate date;
-        private LocalTime time;
+        private String date;
+        private String time;
 
-        public StudyRoom toEntity() {
-            return StudyRoom.builder()
-                    .title(title)
-                    .description(description)
-                    .category(category)
-                    .industry(industry)
-                    .job(job)
-                    .date(date)
-                    .time(time)
-                    .build();
-        }
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class StudyUpdateDTO {
         @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
         private Long id;
@@ -59,11 +48,11 @@ public class GroupStudyDTO {
         private String industry;
         private String job;
 
-        private LocalDate date;
-        private LocalTime time;
+        private String date;
+        private String time;
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class StudyFeedBackDTO {
         @NotNull(message = " 아이디는 반드시 입력해야 합니다.")
         private Long studyRoomId;
@@ -72,7 +61,7 @@ public class GroupStudyDTO {
         private Long historyId;
 
         @NotNull(message = "타겟 유저아이디는 반드시 입력해야 합니다.")
-        private String targetUser; // 이메일 값 파싱 필요
+        private String receivedUser; // 이메일?
 
         @NotNull(message = "점수는 반드시 입력해야 합니다.")
         private Byte score;
