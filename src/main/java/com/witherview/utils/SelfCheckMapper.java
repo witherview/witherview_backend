@@ -14,7 +14,7 @@ public interface SelfCheckMapper {
     SelfCheckDTO.CheckListResponseDTO toResponseDto(CheckListType checkListType);
     List<SelfCheckDTO.CheckListResponseDTO> toResponseDtoList(List<CheckListType> checkListType);
     List<SelfCheck> toSelfCheckEntityList(List<SelfCheckDTO.CheckListDTO> checkListDTOs);
-
+    SelfCheck toSelfCheckEntity(SelfCheckDTO.CheckListDTO checkListDTO);
     // controller
     SelfCheckDTO.CheckListResultDTO[] toResultArray(List<SelfCheck> selfChecksList);
     SelfCheckDTO.CheckListResponseDTO[] toResponseArray(List<SelfCheckDTO.CheckListResponseDTO> checkListResponseDTOList);

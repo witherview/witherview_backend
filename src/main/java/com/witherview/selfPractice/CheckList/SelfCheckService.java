@@ -4,6 +4,7 @@ import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
 import com.witherview.selfPractice.exception.NotFoundCheckList;
 import com.witherview.selfPractice.exception.NotFoundHistory;
+import com.witherview.utils.SelfCheckMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,15 +13,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class SelfCheckService {
     private final SelfHistoryRepository selfHistoryRepository;
     private final SelfCheckRepository selfCheckRepository;
     private final CheckListTypeRepository checkListTypeRepository;
     private final CheckListRepository checkListRepository;
+    private final SelfCheckMapper selfCheckMapper;
 
-    @Transactional
+
     public List<SelfCheck> save(SelfCheckDTO.SelfCheckRequestDTO requestDto) {
         SelfHistory selfHistory = selfHistoryRepository.findById(requestDto.getSelfHistoryId())
                 .orElseThrow(NotFoundHistory::new);
@@ -28,7 +29,7 @@ public class SelfCheckService {
         return requestDto.getCheckLists().stream()
                 .map(dto -> {
                     findCheckList(dto.getCheckListId());
-                    SelfCheck selfCheck = dto.toEntity();
+                    SelfCheck selfCheck = selfCheckMapper.toSelfCheckEntity(dto);
                     selfHistory.addSelfCheck(selfCheck);
                     return selfCheckRepository.save(selfCheck);
                 })
