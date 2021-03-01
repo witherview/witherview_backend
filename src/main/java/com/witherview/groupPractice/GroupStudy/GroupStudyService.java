@@ -37,10 +37,10 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public void updateRoom(String userId, GroupStudyDTO.StudyUpdateDTO requestDto) {
-        StudyRoom studyRoom = findRoom(requestDto.getId());
+    public void updateRoom(String userId, Long roomId, GroupStudyDTO.StudyUpdateDTO requestDto) {
+        StudyRoom studyRoom = findRoom(roomId);
 
-        if(studyRoom.getHost().getId() != userId) {
+        if(!studyRoom.getHost().getId().equals(userId)) {
             throw new NotStudyRoomHost();
         }
         studyRoom.update(requestDto.getTitle(), requestDto.getDescription(),
@@ -147,13 +147,6 @@ public class GroupStudyService {
                 .collect(Collectors.toList());
     }
 
-    public List<StudyRoom> findParticipatedRooms(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return user.getParticipatedStudyRooms()
-                    .stream()
-                    .map(r -> r.getStudyRoom())
-                    .collect(Collectors.toList());
-    }
 
     public List<StudyRoom> findRooms(Integer current) {
         int page = current == null ? 0 : current;
