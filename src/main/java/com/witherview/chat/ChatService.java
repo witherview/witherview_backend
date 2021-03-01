@@ -58,9 +58,8 @@ public class ChatService {
 
     public List<ChatDTO.MessageDTO> getChatMessageByStudyRoomId(String userId, Long studyRoomId, Integer idx) {
         studyRoomRepository.findById(studyRoomId).orElseThrow(NotFoundStudyRoom::new);
-        StudyRoomParticipant studyRoomParticipant = studyRoomParticipantRepository.findByStudyRoomIdAndUserId(studyRoomId, userId);
-
-        if(studyRoomParticipant == null) throw new NotJoinedStudyRoom();
+        var studyRoomParticipant = studyRoomParticipantRepository.findByStudyRoomIdAndUserId(studyRoomId, userId)
+                .orElseThrow(NotJoinedStudyRoom::new);
 
         int page = idx == null ? 0 : idx;
         Pageable pageRequest = PageRequest.of(page, 20,

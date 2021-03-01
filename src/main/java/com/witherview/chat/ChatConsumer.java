@@ -57,10 +57,11 @@ public class ChatConsumer {
         ChatDTO.MessageDTO messageDTO = objectMapper.readValue(message, ChatDTO.MessageDTO.class);
         Chat chat = objectMapper.readValue(message, Chat.class);
         Optional<StudyRoom> studyRoom = studyRoomRepository.findById(messageDTO.getStudyRoomId());
-        StudyRoomParticipant studyRoomParticipant = studyRoomParticipantRepository
+        var studyRoomParticipant = studyRoomParticipantRepository
                 .findByStudyRoomIdAndUserId(messageDTO.getStudyRoomId(), messageDTO.getUserId());
 
-        if(studyRoom.isEmpty() || studyRoomParticipant == null) return;
+        if(studyRoom.isEmpty() || studyRoomParticipant.isEmpty())
+            return;
         chatRepository.insert(chat);
         sendChat(message);
     }

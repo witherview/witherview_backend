@@ -1,13 +1,13 @@
 package com.witherview.database.repository;
 
 import com.witherview.database.entity.StudyRoomParticipant;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-import java.util.LongSummaryStatistics;
+import java.util.Optional;
 
-public interface StudyRoomParticipantRepository extends JpaRepository<StudyRoomParticipant, Long> {
-    StudyRoomParticipant findByStudyRoomIdAndUserId(Long studyRoomId, String userId);
+public interface StudyRoomParticipantRepository extends CrudRepository<StudyRoomParticipant, Long> {
+    Optional<StudyRoomParticipant> findByStudyRoomIdAndUserId(Long studyRoomId, String userId);
 
     void deleteByStudyRoomIdAndUserId(Long studyRoomId, String userId);
+
 }
