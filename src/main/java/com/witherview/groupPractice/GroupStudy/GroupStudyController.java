@@ -33,10 +33,10 @@ public class GroupStudyController {
     private final GroupStudyMapper groupStudyMapper;
     private final GroupStudyService groupStudyService;
 
-    // todo: 여기 어떻게 쓰이고 있는지. + 로그인 안해도 볼 수 있는 영역이어야 하는지?
     @ApiOperation(value="특정 스터디방 조회")
-    @GetMapping("/room/{id}") // 방 조회인데 room은 없고
-    public ResponseEntity<?> findSpecificRoom(@ApiParam(value = "조회할 방 id") @PathVariable("id") Long id) {
+    @GetMapping("/room/{id}")
+    public ResponseEntity<?> findSpecificRoom(
+            @ApiParam(value = "조회할 방 id") @PathVariable("id") Long id) {
         StudyRoom studyRoom = groupStudyService.findRoom(id);
         return ResponseEntity.ok(groupStudyMapper.toResponseDto(studyRoom));
     }
@@ -84,7 +84,7 @@ public class GroupStudyController {
         return ResponseEntity.ok(groupStudyMapper.toResponseDto(studyRoom));
     }
 
-    @ApiOperation(value="스터디방 삭제")
+    @ApiOperation(value="스터디방 삭제 - 방의 마지막 참여자가 나갈 때 호출")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")
     })
@@ -92,14 +92,11 @@ public class GroupStudyController {
     public ResponseEntity<?> deleteRoom(@ApiParam(value = "삭제할 방 id", required = true) @PathVariable("id") Long roomId,
                                         @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        StudyRoom deletedRoom = groupStudyService.deleteRoom(roomId, userId);
-        // todo: 삭제되었으므로 방 정보를 굳이 리턴할 필요 없음. -> 프런트랑 이야기해야 함.
+        groupStudyService.deleteRoom(roomId, userId);
         return ResponseEntity.ok("");
     }
 
-    // interceptor 예외이도록 처리
-    // todo: 여기에 카테고리 requestParam에 false두고 처리.
-    //  '전체'를 호출하는 카테고리는 현재 없는 것으로 보이는데, 처리를 어떻게 해야 하는지. -> 프론트랑 회의.
+
     @ApiOperation(value="전체 / 카테고리별 스터디룸 데이터 조회.")
     @GetMapping("/room")
     public ResponseEntity<?> findAllRooms(
@@ -118,9 +115,8 @@ public class GroupStudyController {
         return ResponseEntity.ok(groupStudyMapper.toResponseDtoArray(lists));
     }
 
-    // todo: 참여자 조회는 Authorization이 필요한가?
-    @ApiOperation(value="해당 스터디방 참여자 조회") // 방 상세페이지 -> 들어온 사용자 데이터.
-    @GetMapping(path = "/room/{id}/participants") // 이건 왜 참여자 조회? 방 조회 아닌가?
+    @ApiOperation(value="해당 스터디방 참여자 조회")
+    @GetMapping(path = "/room/{id}/participants")
     public ResponseEntity<?> findParticipants(
             @ApiParam(value = "참여 조회할 방 id") @PathVariable Long id
     ) {
@@ -152,11 +148,11 @@ public class GroupStudyController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")
     })
-    // todo: 삭제로직에서 리턴값 필요한지??
     @DeleteMapping(path = "/room/{id}/participants")
-    public ResponseEntity<?> leaveRoom(@ApiParam(value = "나갈 방 id", required = true) @PathVariable Long roomId,
+    public ResponseEntity<?> leaveRoom(@ApiParam(value = "나갈 방 id", required = true) @PathVariable("id") Long roomId,
                                        @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        // todo: 다른 사용자에게 host 넘기는 로직이 필요함.
         StudyRoom leftRoom = groupStudyService.leaveRoom(roomId, userId);
         return ResponseEntity.ok("");
     }
@@ -167,10 +163,10 @@ public class GroupStudyController {
     })
     @PostMapping(path = "/feedback", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> feedback(@RequestBody @Valid GroupStudyDTO.StudyFeedBackDTO requestDto,
-                                      BindingResult result,
+                                      BindingResult error,
                                       @ApiIgnore Authentication authentication) {
-        if(result.hasErrors()) {
-            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+        if(error.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
