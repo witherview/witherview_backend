@@ -6,6 +6,8 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class AccountDTO {
     @Getter @Setter
@@ -103,5 +105,19 @@ public class AccountDTO {
     @Getter @Setter
     public static class UploadProfileDTO {
         private String profileImg;
+    }
+
+    @Getter @Setter
+    public static class StudyRoomDTO {
+        private Long id;
+        private String title;
+        private String description;
+        private String category;
+        private String industry;
+        private String job;
+        private LocalDate date;
+        private LocalTime time;
+        private Integer nowUserCnt;
+        private Integer maxUserCnt;
     }
 }

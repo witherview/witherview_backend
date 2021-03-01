@@ -1,8 +1,10 @@
 package com.witherview.account;
 
+import com.witherview.database.entity.StudyRoom;
 import com.witherview.database.entity.User;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
+import com.witherview.groupPractice.GroupStudy.GroupStudyService;
 import com.witherview.utils.AccountMapper;
 import com.witherview.utils.AuthTokenParsing;
 import io.swagger.annotations.*;
@@ -20,6 +22,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @Api(tags = "Account API")
 @RestController
@@ -27,7 +30,7 @@ import java.net.URISyntaxException;
 public class AccountController {
     private final AccountMapper accountMapper;
     private final AccountService accountService;
-
+    private final GroupStudyService groupStudyService;
 
     @ApiOperation(value="회원가입")
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -72,7 +75,7 @@ public class AccountController {
             @ApiImplicitParam(name="authorization", paramType = "header")
     })
     @GetMapping(path = "/api/myinfo")
-    // todo: 어디서 쓰고 있는지?
+    // todo: 어디서 쓰고 있는지? - 프런트
     public ResponseEntity<AccountDTO.ResponseMyInfo> myInfo(
             @ApiIgnore Authentication authentication) {
         String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
@@ -81,6 +84,21 @@ public class AccountController {
         System.out.println("controller : " + email);
         var result = accountService.myInfo(userId);
         return ResponseEntity.ok(result);
+    }
+
+    @ApiOperation(value="내가 참여한 스터디방 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
+    @GetMapping(path = "/api/myinfo/rooms")
+    // todo: pagination으로 추후에 변경될 여지가 있는지? - 프론트엔드에게 질문.
+    public ResponseEntity<AccountDTO.StudyRoomDTO[]> myInfoRoom(
+            @ApiIgnore Authentication authentication) {
+        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+
+        List<StudyRoom> lists = accountService.findRooms(userId);
+        return ResponseEntity.ok(accountMapper.toResponseDtoArray(lists));
     }
 
     @ApiOperation(value="내 정보 수정")

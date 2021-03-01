@@ -5,10 +5,7 @@ import com.witherview.account.exception.InvalidLoginException;
 import com.witherview.account.exception.NotEqualPasswordException;
 import com.witherview.account.exception.NotSavedProfileImgException;
 import com.witherview.database.entity.*;
-import com.witherview.database.repository.QuestionListRepository;
-import com.witherview.database.repository.QuestionRepository;
-import com.witherview.database.repository.StudyFeedbackRepository;
-import com.witherview.database.repository.UserRepository;
+import com.witherview.database.repository.*;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.utils.AccountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService implements UserDetailsService {
@@ -35,6 +33,8 @@ public class AccountService implements UserDetailsService {
     private QuestionRepository questionRepository;
     @Autowired
     private QuestionListRepository questionListRepository;
+    @Autowired
+    private StudyRoomRepository studyRoomRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -139,6 +139,15 @@ public class AccountService implements UserDetailsService {
     }
     public User findUserById(String userId) {
         return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    public List<StudyRoom> findRooms(String userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return user.getParticipatedStudyRooms()
+                .stream()
+                .map(r -> r.getStudyRoom())
+                .collect(Collectors.toList());
     }
 
     @Override
