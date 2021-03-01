@@ -1,7 +1,6 @@
 package com.witherview.groupPractice.GroupStudy;
 
-import com.witherview.database.entity.StudyRoom;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -28,9 +27,10 @@ public class GroupStudyDTO {
         private String industry;
         private String job;
 
-        private String date;
-        private String time;
-
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+        private LocalDate date;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalTime time;
     }
 
     @Getter @Setter
@@ -48,8 +48,10 @@ public class GroupStudyDTO {
         private String industry;
         private String job;
 
-        private String date;
-        private String time;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+        private LocalDate date;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalTime time;
     }
 
     @Getter @Setter
@@ -61,7 +63,7 @@ public class GroupStudyDTO {
         private Long historyId;
 
         @NotNull(message = "타겟 유저아이디는 반드시 입력해야 합니다.")
-        private String receivedUser; // 이메일?
+        private String receivedUser;
 
         @NotNull(message = "점수는 반드시 입력해야 합니다.")
         private Byte score;
@@ -92,7 +94,7 @@ public class GroupStudyDTO {
 
     @Getter @Setter
     public static class ParticipantDTO {
-        private Long id;
+        private String id;
         private String email;
         private String name;
         private Long groupPracticeCnt;
@@ -103,7 +105,9 @@ public class GroupStudyDTO {
     @Getter @Setter
     public static class FeedBackResponseDTO {
         private Long id;
-        private Long targetUserId;
+        // TODO: receivedUserId 조회 안됨
+        //  modelMapper에서는 receivedUser 엔티티의 id 값으로 바로 매핑됐는데 mapStruct은 왜 안되는지 의문...
+//        private String receivedUserId;
         private Byte score;
         private Boolean passOrFail;
     }
