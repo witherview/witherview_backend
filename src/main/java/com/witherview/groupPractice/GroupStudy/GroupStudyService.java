@@ -96,7 +96,7 @@ public class GroupStudyService {
                 .orElseThrow(NotFoundStudyHistory::new);;
 
         User sendUser = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        User receivedUser = userRepository.findById(requestDto.getTargetUser()).orElseThrow(UserNotFoundException::new);
+        User receivedUser = userRepository.findById(requestDto.getReceivedUser()).orElseThrow(UserNotFoundException::new);
 
         if( findParticipant(requestDto.getStudyRoomId(), sendUser.getId()) == null) {
             throw new NotJoinedStudyRoom();
