@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class StudyHistoryService {
 
@@ -26,7 +25,7 @@ public class StudyHistoryService {
     private final StudyRoomParticipantRepository studyRoomParticipantRepository;
     private final VideoService videoService;
 
-    @Transactional
+
     public StudyHistory uploadVideo(MultipartFile videoFile, Long historyId, String userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         StudyHistory studyHistory = findStudyHistory(historyId);
@@ -40,16 +39,11 @@ public class StudyHistoryService {
         return studyHistory;
     }
 
-    @Transactional
     public StudyHistory saveStudyHistory(Long studyRoomId, String userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         studyRoomRepository.findById(studyRoomId).orElseThrow(NotFoundStudyRoom::new);
-        StudyRoomParticipant studyRoomParticipant = studyRoomParticipantRepository
-                .findByStudyRoomIdAndUserId(studyRoomId, userId);
-
-        if (studyRoomParticipant == null) {
-            throw new NotJoinedStudyRoom();
-        }
+        var studyRoomParticipant = studyRoomParticipantRepository
+                .findByStudyRoomIdAndUserId(studyRoomId, userId).orElseThrow(NotJoinedStudyRoom::new);
 
         StudyHistory studyHistory = StudyHistory.builder().studyRoom(studyRoomId).build();
         user.addStudyHistory(studyHistory);
