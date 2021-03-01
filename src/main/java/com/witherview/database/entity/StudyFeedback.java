@@ -16,12 +16,12 @@ public class StudyFeedback extends CreatedBaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_user_id", nullable = false)
-    private User receivedUser; // 받은 사람람 (조회할 때 사용할 필드)
+    @JoinColumn(name = "received_user_id", nullable = false)
+    private User receivedUser; // 받은 사람 (조회할 때 사용할 필드)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "written_user_id", nullable = false)
-    private User sendUser; // 보낸 사
+    @JoinColumn(name = "send_user_id", nullable = false)
+    private User sendUser; // 보낸 사람
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_history_id", nullable = false)
