@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -25,7 +26,7 @@ public class StudyRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User host;
+    private User host; // host와 participant로 구분되어야 할 이유는? User - studyRoom N:M 관계면 충분하지 않나?
 
     @NotBlank
     @Column(nullable = false)
@@ -53,9 +54,11 @@ public class StudyRoom {
     private String job;
 
     @Column(columnDefinition = "DATE")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     @Column(columnDefinition = "TIME")
+    @DateTimeFormat(pattern = "HH:mm:ss")
     private LocalTime time;
 
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
