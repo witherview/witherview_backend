@@ -43,9 +43,7 @@ public class AccountController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
         User user = accountService.register(registerDTO);
-        // todo: 생성된 데이터에 접근할 수 있는 uri를 반환해야 함.
-        var uri = new URI("/api/myInfo");
-        return ResponseEntity.created(uri).body(accountMapper.toRegister(user));
+        return new ResponseEntity<>(accountMapper.toRegister(user), HttpStatus.CREATED);
     }
 
     @ApiOperation(value="로그인")
@@ -75,7 +73,6 @@ public class AccountController {
             @ApiImplicitParam(name="authorization", paramType = "header")
     })
     @GetMapping(path = "/api/myinfo")
-    // todo: 어디서 쓰고 있는지? - 프런트
     public ResponseEntity<AccountDTO.ResponseMyInfo> myInfo(
             @ApiIgnore Authentication authentication) {
         String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
@@ -92,11 +89,14 @@ public class AccountController {
     })
     @GetMapping(path = "/api/myinfo/rooms")
     // todo: pagination으로 추후에 변경될 여지가 있는지? - 프론트엔드에게 질문.
+    //      -> 프론트에서는 무한스크롤 처리한다고 했고, 페이지네이션 방식 적용이 필요함.
+    //      페이지네이션 적용은 아직 되지 않았음.
     public ResponseEntity<AccountDTO.StudyRoomDTO[]> myInfoRoom(
+            @ApiParam(value = "조회할 page (디폴트 값 = 0)")
+            @RequestParam(value = "page", required = false) Integer current,
             @ApiIgnore Authentication authentication) {
         String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-
         List<StudyRoom> lists = accountService.findRooms(userId);
         return ResponseEntity.ok(accountMapper.toResponseDtoArray(lists));
     }
