@@ -1,5 +1,6 @@
 package com.witherview.chat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.witherview.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,8 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class ChatDTO {
     @Getter @Setter @ToString
@@ -32,7 +35,9 @@ public class ChatDTO {
 
         @NotBlank(message = "채팅 메세지는 반드시 입력해야 합니다.")
         private String message; // 메세지
-        private String timestamp = StringUtils.getCurrentDateTimeStamp();
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime timestamp = LocalDateTime.now();
     }
 
     @Getter @Setter @ToString
@@ -65,9 +70,11 @@ public class ChatDTO {
         @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
         private String message; // 피드백
 
-        private String createdAt;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalTime createdAt;
 
-        private String timestamp = StringUtils.getCurrentDateTimeStamp();
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime timestamp = LocalDateTime.now();
     }
 
     @Getter @Setter
