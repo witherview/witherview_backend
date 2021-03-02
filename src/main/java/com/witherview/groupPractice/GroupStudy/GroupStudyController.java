@@ -31,6 +31,9 @@ public class GroupStudyController {
     private final GroupStudyService groupStudyService;
 
     @ApiOperation(value="특정 스터디방 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @GetMapping("/room/{id}")
     public ResponseEntity<?> findSpecificRoom(
             @ApiParam(value = "조회할 방 id") @PathVariable("id") Long id) {
@@ -96,6 +99,9 @@ public class GroupStudyController {
 
 
     @ApiOperation(value="전체 / 카테고리별 스터디룸 데이터 조회.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @GetMapping("/room")
     public ResponseEntity<?> findAllRooms(
             @ApiParam(value = "조회할 방 카테고리")
@@ -115,6 +121,9 @@ public class GroupStudyController {
     }
 
     @ApiOperation(value="해당 스터디방 참여자 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @GetMapping(path = "/room/{id}/participants")
     public ResponseEntity<?> findParticipants(
             @ApiParam(value = "참여 조회할 방 id") @PathVariable Long id
