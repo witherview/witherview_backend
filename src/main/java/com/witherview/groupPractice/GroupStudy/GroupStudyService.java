@@ -5,9 +5,7 @@ import com.witherview.database.repository.*;
 import com.witherview.groupPractice.exception.*;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.utils.GroupStudyMapper;
-import com.witherview.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,6 +26,7 @@ public class GroupStudyService {
     private final StudyHistoryRepository studyHistoryRepository;
     private final int pageSize = 6;
 
+    @Transactional
     public StudyRoom saveRoom(String userId, GroupStudyDTO.StudyCreateDTO requestDto) {
         StudyRoom studyRoom = groupStudyMapper.toStudyRoomEntity(requestDto);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
@@ -35,19 +34,20 @@ public class GroupStudyService {
         return studyRoomRepository.save(studyRoom);
     }
 
+    @Transactional
     public void updateRoom(String userId, Long roomId, GroupStudyDTO.StudyUpdateDTO requestDto) {
         StudyRoom studyRoom = findRoom(roomId);
 
         if(!studyRoom.getHost().getId().equals(userId)) {
             throw new NotStudyRoomHost();
         }
-        var localDate = StringUtils.toLocalDate(requestDto.getDate());
-        var localTime = StringUtils.toLocalTime(requestDto.getTime());
+
         studyRoom.update(requestDto.getTitle(), requestDto.getDescription(),
-                        requestDto.getIndustry(), requestDto.getJob(),
-                        localDate, localTime);
+                requestDto.getIndustry(), requestDto.getJob(),
+                requestDto.getDate(), requestDto.getTime());
     }
 
+    @Transactional
     public StudyRoom deleteRoom(Long id, String userId) {
         StudyRoom studyRoom = findRoom(id);
 
@@ -58,6 +58,7 @@ public class GroupStudyService {
         return studyRoom;
     }
 
+    @Transactional
     public StudyRoom joinRoom(Long id, String userId) {
         // 이미 참여하고 있는 방인 경우
         if(findParticipant(id, userId) != null) {
@@ -77,6 +78,7 @@ public class GroupStudyService {
         return studyRoom;
     }
 
+    @Transactional
     public StudyRoom leaveRoom(Long id, String userId) {
         // 참여하지 않은 방인 경우
         if(findParticipant(id, userId) == null) {
@@ -88,6 +90,7 @@ public class GroupStudyService {
         return studyRoom;
     }
 
+    @Transactional
     public StudyFeedback createFeedBack(String userId, GroupStudyDTO.StudyFeedBackDTO requestDto) {
         // 해당 스터디룸이 존재하는지 확인
         findRoom(requestDto.getStudyRoomId());
@@ -98,13 +101,13 @@ public class GroupStudyService {
         User sendUser = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         User receivedUser = userRepository.findById(requestDto.getReceivedUser()).orElseThrow(UserNotFoundException::new);
 
-        if( findParticipant(requestDto.getStudyRoomId(), sendUser.getId()) == null) {
+        if(findParticipant(requestDto.getStudyRoomId(), sendUser.getId()) == null) {
             throw new NotJoinedStudyRoom();
         }
-        if( findParticipant(requestDto.getStudyRoomId(), receivedUser.getId()) == null) {
+        if(findParticipant(requestDto.getStudyRoomId(), receivedUser.getId()) == null) {
             throw new NotCreatedFeedback();
         }
-        if( !studyHistory.getUser().getId().equals(receivedUser.getId())) {
+        if(!studyHistory.getUser().getId().equals(receivedUser.getId())) {
             throw new NotOwnedStudyHistory();
         }
         StudyFeedback studyFeedback = StudyFeedback.builder()
@@ -124,8 +127,7 @@ public class GroupStudyService {
     }
 
     public StudyRoomParticipant findParticipant(Long id, String userId) {
-        return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId)
-                .orElseThrow(NotJoinedStudyRoom::new);
+        return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId).orElse(null);
     }
 
     public List<GroupStudyDTO.ParticipantDTO> findParticipatedUsers(Long id) {

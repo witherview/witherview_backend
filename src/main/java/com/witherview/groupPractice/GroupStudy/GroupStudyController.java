@@ -1,6 +1,5 @@
 package com.witherview.groupPractice.GroupStudy;
 
-import com.witherview.account.AccountSession;
 import com.witherview.database.entity.*;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
@@ -17,11 +16,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Api(tags = "GroupStudy API")
@@ -34,12 +31,16 @@ public class GroupStudyController {
     private final GroupStudyService groupStudyService;
 
     @ApiOperation(value="특정 스터디방 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @GetMapping("/room/{id}")
     public ResponseEntity<?> findSpecificRoom(
             @ApiParam(value = "조회할 방 id") @PathVariable("id") Long id) {
         StudyRoom studyRoom = groupStudyService.findRoom(id);
         return ResponseEntity.ok(groupStudyMapper.toResponseDto(studyRoom));
     }
+
     @ApiOperation(value="스터디방 생성")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")
@@ -49,6 +50,7 @@ public class GroupStudyController {
             @RequestBody @Valid GroupStudyDTO.StudyCreateDTO requestDto,
             BindingResult error,
             @ApiIgnore Authentication authentication) throws URISyntaxException {
+
         if(error.hasErrors()) {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
             return ResponseEntity.badRequest().body(errorResponse);
@@ -56,7 +58,6 @@ public class GroupStudyController {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         StudyRoom studyRoom = groupStudyService.saveRoom(userId, requestDto);
 
-        // 스터디방 생성자도 방 참여자로 등록
         groupStudyService.joinRoom(studyRoom.getId(), userId);
         var uri = new URI("/api/group/room/"+studyRoom.getId());
         return ResponseEntity.created(uri).body(groupStudyMapper.toResponseDto(studyRoom));
@@ -92,12 +93,15 @@ public class GroupStudyController {
     public ResponseEntity<?> deleteRoom(@ApiParam(value = "삭제할 방 id", required = true) @PathVariable("id") Long roomId,
                                         @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        groupStudyService.deleteRoom(roomId, userId);
-        return ResponseEntity.ok("");
+        StudyRoom studyRoom = groupStudyService.deleteRoom(roomId, userId);
+        return ResponseEntity.ok(groupStudyMapper.toDeleteResponseDto(studyRoom));
     }
 
 
     @ApiOperation(value="전체 / 카테고리별 스터디룸 데이터 조회.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @GetMapping("/room")
     public ResponseEntity<?> findAllRooms(
             @ApiParam(value = "조회할 방 카테고리")
@@ -105,9 +109,10 @@ public class GroupStudyController {
             @ApiParam(value = "조회할 page (디폴트 값 = 0)")
             @RequestParam(value = "page", required = false) Integer current
     ) {
+
         List<StudyRoom> lists;
 
-        if (category != null ) {
+        if (category != null) {
             lists = groupStudyService.findCategoryRooms(category, current);
         } else {
             lists = groupStudyService.findRooms(current);
@@ -116,6 +121,9 @@ public class GroupStudyController {
     }
 
     @ApiOperation(value="해당 스터디방 참여자 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
     @GetMapping(path = "/room/{id}/participants")
     public ResponseEntity<?> findParticipants(
             @ApiParam(value = "참여 조회할 방 id") @PathVariable Long id
@@ -128,17 +136,10 @@ public class GroupStudyController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")
     })
-    @PostMapping(path = "/room/{id}/participants", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/room/{id}/participants")
     public ResponseEntity<?> joinRoom(
-            @PathVariable("id") Long roomId,
-            BindingResult error,
+            @ApiParam(value = "참여할 방 id", required = true) @PathVariable("id") Long roomId,
             @ApiIgnore Authentication authentication) {
-
-        if(error.hasErrors()) {
-            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         StudyRoom studyRoom = groupStudyService.joinRoom(roomId, userId);
         return ResponseEntity.ok(groupStudyMapper.toResponseDto(studyRoom));
@@ -154,7 +155,7 @@ public class GroupStudyController {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         // todo: 다른 사용자에게 host 넘기는 로직이 필요함.
         StudyRoom leftRoom = groupStudyService.leaveRoom(roomId, userId);
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(groupStudyMapper.toDeleteResponseDto(leftRoom));
     }
 
     @ApiOperation(value="스터디 피드백")
