@@ -5,6 +5,7 @@ import com.witherview.database.entity.StudyRoom;
 import com.witherview.database.entity.User;
 import com.witherview.groupPractice.GroupStudy.GroupStudyDTO;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -18,7 +19,8 @@ public interface GroupStudyMapper {
     GroupStudyDTO.ResponseDTO toResponseDto(StudyRoom studyRoom);
     GroupStudyDTO.ResponseDTO[] toResponseDtoArray(List<StudyRoom> studyRoomList);
     GroupStudyDTO.DeleteResponseDTO toDeleteResponseDto(StudyRoom studyRoom);
-    GroupStudyDTO.ParticipantDTO toParticipantDto(StudyRoom studyRoom);
+//    GroupStudyDTO.ParticipantDTO toParticipantDto(StudyRoom studyRoom);
+    @Mapping(source = "receivedUser.id", target = "receivedUserId")
     GroupStudyDTO.FeedBackResponseDTO toFeedBackResponseDto(StudyFeedback studyFeedback);
 
 }

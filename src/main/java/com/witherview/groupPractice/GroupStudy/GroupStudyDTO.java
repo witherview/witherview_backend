@@ -105,9 +105,7 @@ public class GroupStudyDTO {
     @Getter @Setter
     public static class FeedBackResponseDTO {
         private Long id;
-        // TODO: receivedUserId 조회 안됨
-        //  modelMapper에서는 receivedUser 엔티티의 id 값으로 바로 매핑됐는데 mapStruct은 왜 안되는지 의문...
-//        private String receivedUserId;
+        private String receivedUserId;
         private Byte score;
         private Boolean passOrFail;
     }
