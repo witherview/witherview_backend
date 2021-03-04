@@ -37,8 +37,8 @@ public class SelfHistoryService {
     private String uploadLocation;
 
     @Transactional
-    public SelfHistory save(Long questionListId, AccountSession accountSession) {
-        User user = userRepository.findById(accountSession.getId().toString()).orElseThrow(UserNotFoundException::new);
+    public SelfHistory save(Long questionListId, String userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         QuestionList questionList = questionListRepository.findById(questionListId)
                 .orElseThrow(NotFoundQuestionList::new);
         if (!user.getId().equals(questionList.getOwner().getId())) {
@@ -53,12 +53,12 @@ public class SelfHistoryService {
     }
 
     @Transactional
-    public SelfHistory uploadVideo(MultipartFile videoFile, Long historyId, AccountSession accountSession) {
-        User user = userRepository.findById(accountSession.getId().toString()).orElseThrow(UserNotFoundException::new);
+    public SelfHistory uploadVideo(MultipartFile videoFile, Long historyId, String userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         SelfHistory selfHistory = selfHistoryRepository.findById(historyId).orElseThrow(NotFoundHistory::new);
         authenticateOwner(user, selfHistory);
         String savedLocation = videoService.upload(videoFile,
-                                           accountSession.getEmail() + "/self/" + selfHistory.getId());
+                                           userId + "/self/" + selfHistory.getId());
         selfHistory.updateSavedLocation(savedLocation);
         return selfHistory;
     }

@@ -4,14 +4,15 @@ import com.witherview.account.AccountSession;
 import com.witherview.database.entity.SelfHistory;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.witherview.utils.AuthTokenParsing;
+import com.witherview.utils.SelfHistoryMapper;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,52 +27,55 @@ import java.util.List;
 @RestController
 public class SelfHistoryController {
     private final ModelMapper modelMapper;
+    private final SelfHistoryMapper selfHistoryMapper;
     private final SelfHistoryService selfHistoryService;
 
     @ApiOperation(value="혼자 연습 기록 등록")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="Authorization", paramType = "header")
+    })
     @PostMapping(path = "/api/self/history", consumes = MediaType.APPLICATION_JSON_VALUE,
                                              produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> save(@RequestBody @Valid SelfHistoryDTO.SelfHistoryRequestDTO dto,
-                                  BindingResult result,
-                                  @ApiIgnore HttpSession session) {
-        if(result.hasErrors()) {
-            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, result);
+                                  BindingResult error,
+                                  @ApiIgnore Authentication authentication) {
+        if(error.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        SelfHistory selfHistory = selfHistoryService.save(dto.getQuestionListId(), accountSession);
-        return new ResponseEntity<>(modelMapper.map(selfHistory,
-                SelfHistoryDTO.SelfHistoryDefaultResponseDTO.class), HttpStatus.CREATED);
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        SelfHistory selfHistory = selfHistoryService.save(dto.getQuestionListId(), userId);
+        return new ResponseEntity<>(selfHistoryMapper.toResponseDto(selfHistory), HttpStatus.CREATED);
     }
 
     @ApiOperation(value="혼자 연습 영상 등록")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="Authorization", paramType = "header")
+    })
     @PostMapping(path = "/api/self/history/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
                                                    produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
                                          @RequestParam("historyId") Long historyId,
-                                         @ApiIgnore HttpSession session) {
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        SelfHistory selfHistory = selfHistoryService.uploadVideo(videoFile, historyId, accountSession);
-        return new ResponseEntity<>(modelMapper.map(selfHistory,
-                SelfHistoryDTO.SelfHistoryDefaultResponseDTO.class), HttpStatus.OK);
+                                         @ApiIgnore Authentication authentication) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        SelfHistory selfHistory = selfHistoryService.uploadVideo(videoFile, historyId, userId);
+        return new ResponseEntity<>(selfHistoryMapper.toResponseDto(selfHistory), HttpStatus.OK);
     }
 
     @ApiOperation(value="혼자 연습 기록 조회")
     @GetMapping(path = "/api/self/history")
-    public ResponseEntity<?> getList(@ApiIgnore HttpSession session) {
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        List<SelfHistory> selfHistories = selfHistoryService.findAll(accountSession.getId().toString());
-        return new ResponseEntity<>(modelMapper.map(selfHistories,
-                SelfHistoryDTO.SelfHistoryResponseDTO[].class), HttpStatus.OK);
+    public ResponseEntity<?> getList(@ApiIgnore Authentication authentication) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        List<SelfHistory> selfHistories = selfHistoryService.findAll(userId);
+        return new ResponseEntity<>(selfHistoryMapper.toResponseArray(selfHistories), HttpStatus.OK);
     }
 
     @ApiOperation(value="혼자 연습 기록 삭제")
     @DeleteMapping(path = "/api/self/history/{id}")
-    public ResponseEntity<?> deleteHistory(@ApiParam(value = "삭제할 내역 id", required = true) @PathVariable Long id,
-                                           @ApiIgnore HttpSession session) {
-        AccountSession accountSession = (AccountSession) session.getAttribute("user");
-        SelfHistory selfHistory = selfHistoryService.deleteHistory(accountSession.getId().toString(), id);
-        return new ResponseEntity<>(modelMapper.map(selfHistory,
-                SelfHistoryDTO.SelfHistoryDefaultResponseDTO.class), HttpStatus.OK);
+    public ResponseEntity<?> deleteHistory(@ApiParam(value = "삭제할 내역 id", required = true) @PathVariable("id") Long historyId,
+                                           @ApiIgnore Authentication authentication) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        SelfHistory selfHistory = selfHistoryService.deleteHistory(userId, historyId);
+        return new ResponseEntity<>(selfHistoryMapper.toResponseDto(selfHistory), HttpStatus.OK);
     }
 }
