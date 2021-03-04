@@ -63,6 +63,9 @@ public class SelfHistoryController {
     }
 
     @ApiOperation(value="혼자 연습 기록 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="Authorization", paramType = "header")
+    })
     @GetMapping(path = "/api/self/history")
     public ResponseEntity<?> getList(@ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
@@ -71,6 +74,9 @@ public class SelfHistoryController {
     }
 
     @ApiOperation(value="혼자 연습 기록 삭제")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="Authorization", paramType = "header")
+    })
     @DeleteMapping(path = "/api/self/history/{id}")
     public ResponseEntity<?> deleteHistory(@ApiParam(value = "삭제할 내역 id", required = true) @PathVariable("id") Long historyId,
                                            @ApiIgnore Authentication authentication) {
