@@ -16,6 +16,7 @@ public class JwtUtils {
     public JwtUtils() {
         this.key = Keys.hmacShaKeyFor(SecurityConstant.SECRET.getBytes());
     }
+
     // input 값으로 jwt 토큰 생성하기.
     public String createToken(String email, String userId) {
         var token = Jwts.builder()
@@ -58,4 +59,15 @@ public class JwtUtils {
         }
     }
 
+    public Boolean verifyToken(String header) {
+        System.out.println("들어온 header " + header);
+        if (header == null || !header.startsWith(SecurityConstant.TOKEN_PREFIX))
+            throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
+
+        var token = header.substring(SecurityConstant.TOKEN_PREFIX.length());
+        Claims claims = getClaims(token);
+
+        if (claims != null) return true;
+        return false;
+    }
 }
