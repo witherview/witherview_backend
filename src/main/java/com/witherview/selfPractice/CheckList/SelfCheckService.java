@@ -38,29 +38,7 @@ public class SelfCheckService {
 
     public List<SelfCheckDTO.CheckListResponseDTO> findAll() {
         List<CheckListType> listTypes = checkListTypeRepository.findAll();
-
-        return listTypes.stream()
-                .map(type -> {
-                    SelfCheckDTO.CheckListResponseDTO dto = new SelfCheckDTO.CheckListResponseDTO();
-                    dto.setCheckListTypeId(type.getId());
-                    dto.setCheckListType(type.getCheckListType());
-                    dto.setCheckLists(getCheckListInfo(type));
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
-
-    public List<SelfCheckDTO.CheckListInfoDTO> getCheckListInfo(CheckListType checkListType) {
-        List<CheckList> lists = checkListType.getCheckLists();
-        return lists.stream()
-                .map(list -> {
-                    SelfCheckDTO.CheckListInfoDTO dto = new SelfCheckDTO.CheckListInfoDTO();
-                    dto.setId(list.getId());
-                    dto.setCheckList(list.getCheckList());
-                    dto.setIsChecked(false);
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        return selfCheckMapper.toResponseDtoList(listTypes);
     }
 
     public List<SelfCheck> findResults(Long selfHistoryId) {
