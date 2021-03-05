@@ -1,10 +1,7 @@
 package com.witherview.interceptor;
 
-import com.witherview.account.exception.InvalidJwtTokenException;
 import com.witherview.constant.SecurityConstant;
-import com.witherview.exception.ErrorCode;
 import com.witherview.utils.JwtUtils;
-import io.jsonwebtoken.Claims;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +16,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         System.out.println("interceptor : " + header);
 
         JwtUtils jwtUtils = new JwtUtils();
-        if(jwtUtils.verifyToken(header)) return true;
-        return false;
+        return jwtUtils.verifyToken(header);
     }
 }
