@@ -65,9 +65,6 @@ public class JwtUtils {
             throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
 
         var token = header.substring(SecurityConstant.TOKEN_PREFIX.length());
-        Claims claims = getClaims(token);
-
-        if (claims != null) return true;
-        return false;
+        return getClaims(token) != null;
     }
 }
