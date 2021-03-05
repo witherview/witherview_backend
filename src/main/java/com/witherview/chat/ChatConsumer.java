@@ -8,6 +8,10 @@ import com.witherview.database.repository.FeedBackChatRepository;
 import com.witherview.database.repository.StudyHistoryRepository;
 import com.witherview.database.repository.StudyRoomRepository;
 import com.witherview.database.repository.StudyRoomParticipantRepository;
+import com.witherview.groupPractice.exception.NotFoundStudyRoom;
+import com.witherview.groupPractice.exception.NotJoinedStudyRoom;
+import com.witherview.groupPractice.exception.NotOwnedStudyHistory;
+import com.witherview.selfPractice.exception.NotFoundHistory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -53,30 +57,38 @@ public class ChatConsumer {
 
     @Transactional
     @RabbitListener(queues = "chat-queue")
-    public void consumeChatMessage(String message) throws JsonProcessingException {
-        ChatDTO.MessageDTO messageDTO = objectMapper.readValue(message, ChatDTO.MessageDTO.class);
-        Chat chat = objectMapper.readValue(message, Chat.class);
-        Optional<StudyRoom> studyRoom = studyRoomRepository.findById(messageDTO.getStudyRoomId());
-        var studyRoomParticipant = studyRoomParticipantRepository
-                .findByStudyRoomIdAndUserId(messageDTO.getStudyRoomId(), messageDTO.getUserId());
+    public void consumeChatMessage(String message) {
+        try {
+            ChatDTO.MessageDTO messageDTO = objectMapper.readValue(message, ChatDTO.MessageDTO.class);
+            Chat chat = objectMapper.readValue(message, Chat.class);
+            studyRoomRepository.findById(messageDTO.getStudyRoomId())
+                                .orElseThrow(NotFoundStudyRoom::new);
+            studyRoomParticipantRepository.findByStudyRoomIdAndUserId(messageDTO.getStudyRoomId(), messageDTO.getUserId())
+                                .orElseThrow(NotJoinedStudyRoom::new);
 
-        if(studyRoom.isEmpty() || studyRoomParticipant.isEmpty())
-            return;
-        chatRepository.insert(chat);
-        sendChat(message);
+            chatRepository.insert(chat);
+            sendChat(message);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     @Transactional
     @RabbitListener(queues = "feedback-queue")
-    public void consumeFeedbackMessage(String message) throws JsonProcessingException {
-        ChatDTO.FeedBackDTO feedBackDTO = objectMapper.readValue(message, ChatDTO.FeedBackDTO.class);
-        FeedBackChat feedBackChat = objectMapper.readValue(message, FeedBackChat.class);
-        Optional<StudyHistory> studyHistory = studyHistoryRepository.findById(feedBackDTO.getStudyHistoryId());
+    public void consumeFeedbackMessage(String message) {
+        try {
+            ChatDTO.FeedBackDTO feedBackDTO = objectMapper.readValue(message, ChatDTO.FeedBackDTO.class);
+            FeedBackChat feedBackChat = objectMapper.readValue(message, FeedBackChat.class);
+            StudyHistory studyHistory = studyHistoryRepository.findById(feedBackDTO.getStudyHistoryId())
+                                    .orElseThrow(NotFoundHistory::new);
 
-        if(studyHistory.isEmpty() || studyHistory.get().getUser().getId() != feedBackDTO.getReceivedUserId()) return;
+            if(studyHistory.getUser().getId() != feedBackDTO.getReceivedUserId()) throw new NotOwnedStudyHistory();
 
-        feedBackChatRepository.insert(feedBackChat);
-        sendFeedBack(message);
+            feedBackChatRepository.insert(feedBackChat);
+            sendFeedBack(message);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     private void sendChat(String message) {
