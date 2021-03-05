@@ -6,19 +6,20 @@ import com.witherview.database.repository.QuestionListRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundQuestionList;
 import com.witherview.selfPractice.exception.UserNotFoundException;
-import com.witherview.utils.QuestionListMapper;
+import com.witherview.utils.SelfQuestionListMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class SelfQuestionListService {
-    private final QuestionListMapper questionListMapper;
+    private final SelfQuestionListMapper questionListMapper;
     private final QuestionListRepository questionListRepository;
     private final UserRepository userRepository;
 
@@ -32,11 +33,14 @@ public class SelfQuestionListService {
     }
 
     @Transactional
-    public void updateList(List<SelfQuestionListDTO.QuestionListUpdateDTO> requestDto) {
-        requestDto.stream().forEach(dto -> {
+    public List<QuestionList> updateList(List<SelfQuestionListDTO.QuestionListUpdateDTO> requestDto) {
+        var result = requestDto.stream().map(dto -> {
             QuestionList questionList = findList(dto.getId());
             questionList.update(dto.getTitle(), dto.getEnterprise(), dto.getJob());
-        });
+            return questionList;
+        }).collect(Collectors.toList());
+        List<QuestionList> savedResult = (List) questionListRepository.saveAll(result);
+        return savedResult;
     }
 
     @Transactional
@@ -48,7 +52,7 @@ public class SelfQuestionListService {
 
     public QuestionList findList(Long id) {
         return questionListRepository.findById(id)
-                .orElseThrow(() -> new NotFoundQuestionList());
+                .orElseThrow(NotFoundQuestionList::new);
     }
 
     public List<QuestionList> findAllLists() {
