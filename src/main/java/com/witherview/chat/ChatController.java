@@ -1,22 +1,23 @@
 package com.witherview.chat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.witherview.account.AccountSession;
+import com.witherview.constant.SecurityConstant;
 import com.witherview.utils.AuthTokenParsing;
+import com.witherview.utils.JwtUtils;
+import io.jsonwebtoken.Claims;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -28,12 +29,16 @@ public class ChatController {
     private final ChatProducer chatProducer;
 
     @MessageMapping("/chat.room")
-    public void message(@Payload @Valid ChatDTO.MessageDTO message) throws JsonProcessingException, MethodArgumentNotValidException {
+    public void message(@Payload @Valid ChatDTO.MessageDTO message, @Header("Authorization") String token) throws JsonProcessingException {
+        Claims claims = new JwtUtils().getClaims(token.substring(SecurityConstant.TOKEN_PREFIX.length()));
+        message.setUserId(claims.get("userId").toString());
         chatProducer.sendChat(message);
     }
 
     @MessageMapping("/chat.feedback")
-    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback) throws JsonProcessingException {
+    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, @Header("Authorization") String token) throws JsonProcessingException {
+        Claims claims = new JwtUtils().getClaims(token.substring(SecurityConstant.TOKEN_PREFIX.length()));
+        feedback.setSendUserId(claims.get("userId").toString());
         chatProducer.sendFeedback(feedback);
     }
 
@@ -55,9 +60,7 @@ public class ChatController {
             @RequestParam(value = "idx", required = false) Integer idx
             ) {
 
-        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-
 
         var lists = chatService.getFeedbackMessageByReceivedUserId(userId, historyId, idx);
         return new ResponseEntity<>(lists, HttpStatus.OK);
@@ -76,7 +79,6 @@ public class ChatController {
             @RequestParam(value = "idx", required = false) Integer idx
             ) {
 
-        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
 
         var lists = chatService.getChatMessageByStudyRoomId(userId, studyRoomId, idx);
