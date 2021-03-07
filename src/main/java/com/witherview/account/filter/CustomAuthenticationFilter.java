@@ -65,7 +65,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         var userId = accountService.findUserByEmail(email).getId();
         String token = new JwtUtils().createToken(email, userId);
         Map<String, String> data = new HashMap<>();
-        data.put("data", token);
+        data.put("accessToken", token);
         String json = new ObjectMapper().writeValueAsString(data);
 //        response.addHeader(SecurityConstant.AUTHORIZATION_HEADER, SecurityConstant.TOKEN_PREFIX + token);
         response.getWriter().write(json);
