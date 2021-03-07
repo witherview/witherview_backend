@@ -72,6 +72,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String json = new ObjectMapper().writeValueAsString(data);
         response.setStatus(HttpServletResponse.SC_CREATED);
         response.setHeader("Location", "/api/user");
+
         response.setContentType("application/json");
         response.getWriter().write(json);
         log.info("User: " + email + " login Accepted. Token : " + token + " created.");

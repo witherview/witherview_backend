@@ -1,7 +1,7 @@
 server:
   port: 8080
-  host: localhost
-  url: http://localhost:8080/
+  host: 34.97.12.176
+  url: http://34.97.12.176:8080/
 
 upload:
   location: /root/videos/
