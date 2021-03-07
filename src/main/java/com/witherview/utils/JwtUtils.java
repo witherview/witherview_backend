@@ -8,6 +8,8 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
@@ -66,5 +68,15 @@ public class JwtUtils {
 
         var token = header.substring(SecurityConstant.TOKEN_PREFIX.length());
         return getClaims(token) != null;
+    }
+
+    public Boolean isTokenExpired(String token) {
+        var claims = getClaims(token);
+        var expiredDate = claims.getExpiration();
+        var expiredLocalDateTime = expiredDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        var now = LocalDateTime.now();
+        return now.isBefore(expiredLocalDateTime);
     }
 }
