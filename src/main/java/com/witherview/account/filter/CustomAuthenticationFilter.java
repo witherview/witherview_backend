@@ -63,11 +63,16 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         // email / userId값을 토큰에 넣어 사용한다.
         String email = ((User) authResult.getPrincipal()).getUsername();
         var userId = accountService.findUserByEmail(email).getId();
+
         String token = new JwtUtils().createToken(email, userId);
+
         Map<String, String> data = new HashMap<>();
         data.put("accessToken", token);
+
         String json = new ObjectMapper().writeValueAsString(data);
-//        response.addHeader(SecurityConstant.AUTHORIZATION_HEADER, SecurityConstant.TOKEN_PREFIX + token);
+        response.setStatus(HttpServletResponse.SC_CREATED);
+        response.setHeader("Location", "/api/user");
+
         response.setContentType("application/json");
         response.getWriter().write(json);
         log.info("User: " + email + " login Accepted. Token : " + token + " created.");

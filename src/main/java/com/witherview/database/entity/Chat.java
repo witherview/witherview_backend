@@ -18,7 +18,7 @@ public class Chat {
     @Id
     private String id;
     @NotNull
-    private Long userId;
+    private String userId;
 
     @NotNull
     private String userName;

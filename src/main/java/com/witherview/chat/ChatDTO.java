@@ -1,19 +1,19 @@
 package com.witherview.chat;
 
-import com.witherview.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class ChatDTO {
     @Getter @Setter @ToString
     /*
     {
         "studyRoomId" : 17,
-        "userId" : "gfhgchgfdhgdhgc",
         "userName" : "yeeun",
         "message" : "hihihh"
     }
@@ -24,7 +24,6 @@ public class ChatDTO {
         @NotNull(message = "방id는 반드시 입력해야 합니다.")
         private Long studyRoomId; // 방 id
 
-        @NotNull(message = "채팅 보낸사람 아이디는 반드시 입력해야 합니다.")
         private String userId; // 메세지 보낸사람 아이디
 
         @NotNull(message = "채팅 보낸사람 이름은 반드시 입력해야 합니다.")
@@ -32,14 +31,14 @@ public class ChatDTO {
 
         @NotBlank(message = "채팅 메세지는 반드시 입력해야 합니다.")
         private String message; // 메세지
-        private String timestamp = StringUtils.getCurrentDateTimeStamp();
+
+        private LocalDateTime timestamp = LocalDateTime.now();
     }
 
     @Getter @Setter @ToString
     /*
     {
         "studyHistoryId" : 19,
-        "sendUserId" : "qwerasdfadfqew",
         "receivedUserId" : "adfqewrasdfadf",
         "message" : "feedback"
     }
@@ -50,7 +49,6 @@ public class ChatDTO {
         @NotNull(message = "스터디 연습내역 아이디는 반드시 입력해야 합니다.")
         private Long studyHistoryId; // 방 번호
 
-        @NotNull(message = "피드백 보낸사람 아이디는 반드시 입력해야 합니다.")
         private String sendUserId; // 피드백 보낸사람 id
 
         @NotNull(message = "피드백 보낸사람 이름은 반드시 입력해야 합니다.")
@@ -65,9 +63,9 @@ public class ChatDTO {
         @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
         private String message; // 피드백
 
-        private String createdAt;
+        private LocalTime createdAt;
 
-        private String timestamp = StringUtils.getCurrentDateTimeStamp();
+        private LocalDateTime timestamp = LocalDateTime.now();
     }
 
     @Getter @Setter

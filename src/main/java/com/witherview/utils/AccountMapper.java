@@ -12,6 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface AccountMapper {
 
+    AccountDTO.ResponseLogin toResponseLogin(User user);
     AccountDTO.ResponseRegister toRegister(User user);
     AccountDTO.ResponseMyInfo toResponseMyInfo(User user);
     AccountDTO.UpdateMyInfoDTO toUpdateMyInfo(User user);
