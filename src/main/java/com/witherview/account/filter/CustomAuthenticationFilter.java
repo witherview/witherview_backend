@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Slf4j
@@ -62,9 +64,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String email = ((User) authResult.getPrincipal()).getUsername();
         var userId = accountService.findUserByEmail(email).getId();
         String token = new JwtUtils().createToken(email, userId);
-
-        response.addHeader(SecurityConstant.AUTHORIZATION_HEADER, SecurityConstant.TOKEN_PREFIX + token);
-
+        Map<String, String> data = new HashMap<>();
+        data.put("data", token);
+        String json = new ObjectMapper().writeValueAsString(data);
+//        response.addHeader(SecurityConstant.AUTHORIZATION_HEADER, SecurityConstant.TOKEN_PREFIX + token);
+        response.setContentType("application/json");
+        response.getWriter().write(json);
         log.info("User: " + email + " login Accepted. Token : " + token + " created.");
     }
 }
