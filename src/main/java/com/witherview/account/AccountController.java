@@ -68,7 +68,19 @@ public class AccountController {
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
-    @ApiOperation(value="내 정보 조회")
+    @ApiOperation("내 정보 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
+    @GetMapping("/api/user")
+    public ResponseEntity<AccountDTO.ResponseLogin> getUser(
+            @ApiIgnore Authentication authentication) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        var user = accountService.findUserById(userId);
+        return ResponseEntity.ok(accountMapper.toResponseLogin(user));
+    }
+
+    @ApiOperation(value="내 통계정보 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")
     })
