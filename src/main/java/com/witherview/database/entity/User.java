@@ -51,6 +51,8 @@ public class User {
     @ColumnDefault("0")
     private Byte reliability = 70;
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestionList> questionLists = new ArrayList<>();
 
     @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoom> hostedStudyRooms = new ArrayList<>();
@@ -82,6 +84,11 @@ public class User {
 
     public void increaseGroupPracticeCnt() {
         this.groupPracticeCnt += 1;
+    }
+
+    public void addQuestionList(QuestionList questionList) {
+        questionList.updateOwner(this);
+        this.questionLists.add(questionList);
     }
 
     public void addHostedRoom(StudyRoom studyRoom) {
