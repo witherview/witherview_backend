@@ -32,10 +32,6 @@ public class AccountService implements UserDetailsService {
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
-    private QuestionListRepository questionListRepository;
-    @Autowired
-    private StudyRoomRepository studyRoomRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AccountMapper accountMapper;
@@ -81,8 +77,8 @@ public class AccountService implements UserDetailsService {
         for (int i = 0; i < list.size(); i++) {
             questionList.addQuestion(new Question(list.get(i), "", i + 1));
         }
+        user.addQuestionList(questionList);
         var savedUser = userRepository.save(user);
-        questionListRepository.save(questionList);
         return savedUser;
     }
 
