@@ -94,6 +94,15 @@ spring:
     host: localhost
     port: 6379
 
+  rabbitmq:
+    host: localhost
+    username: witherview
+    password: witherview
+    port: 5672
+    topics:
+      chat: chat-message
+      feedback: feedback-message
+
   devtools:
     livereload:
       enabled: true
