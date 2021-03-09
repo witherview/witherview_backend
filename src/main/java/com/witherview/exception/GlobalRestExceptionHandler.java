@@ -40,6 +40,6 @@ public class GlobalRestExceptionHandler {
 
     @ExceptionHandler(InvalidJwtTokenException.class)
     public ResponseEntity<?> handle(InvalidJwtTokenException e) {
-        return new ResponseEntity<>(ErrorResponse.of(ErrorCode.INVALID_JWT_TOKEN), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ErrorResponse.of(e.getErrorCode()), HttpStatus.UNAUTHORIZED);
     }
 }

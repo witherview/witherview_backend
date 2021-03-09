@@ -63,9 +63,12 @@ public class JwtUtils {
 
     public Boolean verifyToken(String header) {
         System.out.println("들어온 header " + header);
-        if (header == null || !header.startsWith(SecurityConstant.TOKEN_PREFIX))
+        if (header == null) {
+            throw new InvalidJwtTokenException(ErrorCode.INVALID_TOKEN);
+        }
+        if (!header.startsWith(SecurityConstant.TOKEN_PREFIX)) {
             throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
-
+        }
         var token = header.substring(SecurityConstant.TOKEN_PREFIX.length());
         return getClaims(token) != null;
     }
@@ -77,6 +80,6 @@ public class JwtUtils {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         var now = LocalDateTime.now();
-        return now.isBefore(expiredLocalDateTime);
+        return now.isAfter(expiredLocalDateTime);
     }
 }
