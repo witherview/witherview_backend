@@ -143,9 +143,8 @@ public class AccountController {
             @ApiIgnore Authentication authentication,
             @RequestParam("profileImg") MultipartFile profileImg) throws URISyntaxException {
 
-        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        User user = accountService.uploadProfile(email, profileImg);
+        User user = accountService.uploadProfile(userId, profileImg);
         var result = accountMapper.toUploadProfile(user);
         URI uri = new URI(result.getProfileImg());
         return ResponseEntity.created(uri).body("");
