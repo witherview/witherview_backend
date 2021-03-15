@@ -44,7 +44,7 @@ public class StudyRoom {
     @Column(nullable = false)
     private Integer maxUserCnt;
 
-    @ColumnDefault("'자유_기타'")
+    @ColumnDefault("'자유_기타'") // 정해진 필드명이 아니면 팅겨내야 할 것 같다
     private String category;
 
     @ColumnDefault("'무관'")
@@ -58,7 +58,7 @@ public class StudyRoom {
     private LocalDate date;
 
     @Column(columnDefinition = "TIME")
-    @DateTimeFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm") // second 필요없음.
     private LocalTime time;
 
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
