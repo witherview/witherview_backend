@@ -4,11 +4,11 @@ server:
   url: http://34.97.12.176:8080/
 
 upload:
-  location: /root/videos/
-  img-location: /root/profiles/
+  location: /home/inspirit941_likelion_org/videos/
+  img-location: /home/inspirit941_likelion_org/profiles/
 
 ffmpeg:
-  path: /root/ffmpeg_sources/ffmpeg/
+  path: /home/inspirit941_likelion_org/ffmpeg_sources/ffmpeg/
 
 task:
   queue:
