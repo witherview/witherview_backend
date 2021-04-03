@@ -8,13 +8,19 @@ import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.utils.AccountMapper;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -24,23 +30,30 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class AccountService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private StudyFeedbackRepository studyFeedbackRepository;
-    @Autowired
-    private QuestionRepository questionRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private AccountMapper accountMapper;
+@RequiredArgsConstructor
+public class AccountService {
+
+    private final UserRepository userRepository;
+    private final StudyFeedbackRepository studyFeedbackRepository;
+    private final QuestionRepository questionRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AccountMapper accountMapper;
+    private final RestTemplate restTemplate;
 
     @Value("${upload.img-location}")
     private String uploadLocation;
-
     @Value("${server.url}")
     private String serverUrl;
+    @Value("${spring.security.oauth2.client.registration.witherview.client-id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.witherview.client-secret}")
+    private String clientSecret;
+    @Value("${spring.security.oauth2.client.registration.witherview.scope}")
+    private String scope;
+    @Value("${spring.security.oauth2.client.registration.witherview.authorization-grant-type}")
+    private String grantType;
+    @Value("${spring.security.oauth2.client.provider.witherview.token-uri}")
+    private String tokenUri;
 
     public User register(AccountDTO.RegisterDTO dto) {
         if (!dto.getPassword().equals(dto.getPasswordConfirm()))
@@ -109,9 +122,9 @@ public class AccountService implements UserDetailsService {
         User user = findUserById(userId);
 
         var interviewScore =
-                studyFeedbackRepository.getAvgInterviewScoreByEmail(userId).orElse(0d);
+                studyFeedbackRepository.getAvgInterviewScoreById(userId).orElse(0d);
         System.out.println(interviewScore);
-        var passFailData = studyFeedbackRepository.getPassOrFailCountByEmail(userId);
+        var passFailData = studyFeedbackRepository.getPassOrFailCountById(userId);
         Long passCnt = 0l;;
         if (passFailData.get(0)[1] != null) {
             passCnt = (Long) passFailData.get(0)[1];
@@ -146,13 +159,30 @@ public class AccountService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // 로그인하기 위해 접근했는데 아이디가 없는 경우
-        var user = userRepository.findByEmail(email)
-                .orElseThrow(InvalidLoginException::new);
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(), user.getEncryptedPassword(), new ArrayList<>()
-        );
+    public AccountDTO.ResponseTokenDTO login(String email, String password) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("username", email);
+        map.add("password", password);
+        map.add("scope", scope);
+        map.add("grant_type", grantType);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+
+        var response = restTemplate.exchange(tokenUri, HttpMethod.POST, entity, AccountDTO.ResponseTokenDTO.class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new InvalidLoginException();
+        }
+        return response.getBody();
+    }
+
+    public boolean isPasswordEquals(String userId, String password) {
+//        System.out.println(email +" " + password);
+        var dbPassword = findUserById(userId).getEncryptedPassword();
+        var result = passwordEncoder.matches(password, dbPassword);
+        return result;
     }
 }
