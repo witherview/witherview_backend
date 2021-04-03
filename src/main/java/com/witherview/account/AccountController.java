@@ -9,7 +9,6 @@ import com.witherview.utils.AccountMapper;
 import com.witherview.utils.AuthTokenParsing;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,18 +53,16 @@ public class AccountController {
             @ApiResponse(code = 401, message = "UnAuthorized")
         }
     )
+
     @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE,
                                   produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody @Valid AccountDTO.LoginDTO loginDTO,
                                    BindingResult error) {
-        // 이곳의 로직은 작동하지 않습니다. Swagger를 위해 등록해놓은 인터페이스입니다.
-        // CustomAuthentication Filter를 참고하세요.
         if (error.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer + JWT Token Value");
-        return new ResponseEntity<>(headers, HttpStatus.OK);
+        var returnValue = accountService.login(loginDTO.getEmail(), loginDTO.getPassword());
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
     @ApiOperation("내 정보 조회")
@@ -126,7 +123,6 @@ public class AccountController {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
-
         String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         User user = accountService.updateMyInfo(userId, updateMyInfoDTO);
@@ -150,4 +146,17 @@ public class AccountController {
         return ResponseEntity.created(uri).body("");
     }
 
+    // for keycloak Authentication API only.
+    @ApiIgnore
+    @GetMapping("/oauth/user/{email}")
+    public AccountDTO.ResponseLogin getUserByEmail(@PathVariable("email") String email){
+        var user = accountService.findUserByEmail(email);
+        return accountMapper.toResponseLogin(user);
+    }
+    @ApiIgnore
+    @PostMapping("/oauth/user")
+    public boolean isPasswordEquals(@RequestBody @Valid AccountDTO.LoginValidateDTO loginDTO) {
+        var result = accountService.isPasswordEquals(loginDTO.getUserId(), loginDTO.getPassword());
+        return result;
+    }
 }
