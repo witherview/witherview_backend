@@ -8,7 +8,6 @@ import com.witherview.utils.AuthTokenParsing;
 import com.witherview.utils.SelfQuestionListMapper;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
