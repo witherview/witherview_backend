@@ -1,6 +1,5 @@
 package com.witherview.selfPractice.history;
 
-import com.witherview.account.AccountSession;
 import com.witherview.database.entity.SelfHistory;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 

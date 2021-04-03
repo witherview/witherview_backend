@@ -2,8 +2,6 @@ package com.witherview.configuration;
 
 
 import com.witherview.account.AccountService;
-import com.witherview.account.filter.CustomAuthenticationFilter;
-import com.witherview.account.filter.JwtAuthenticationFilter;
 import com.witherview.constant.SecurityConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    private AccountService accountService;
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(accountService).passwordEncoder(new BCryptPasswordEncoder());
-    }
 
     // static 리소스는 따로 authentication을 적용하지 않음.
     @Override
@@ -62,11 +51,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
              .authorizeRequests()
+             .antMatchers(HttpMethod.POST, "/register").permitAll()
              .antMatchers(HttpMethod.POST, SecurityConstant.SIGN_UP_URL).permitAll()
-             .anyRequest().permitAll() // todo: 일단 모든 요청을 통과하도록 설정. 삭제 필요
+             .antMatchers(HttpMethod.GET, "/oauth/user/*").permitAll()
+             .antMatchers(HttpMethod.POST, "/oauth/user").permitAll()
+             .anyRequest().authenticated() // todo: 일단 모든 요청을 통과하도록 설정. 삭제 필요
         .and()
-            .addFilter(new CustomAuthenticationFilter(authenticationManager())) // 로그인 url에만 적용되는 필터 (확인필요)
-            .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+            .oauth2ResourceServer()
+            .jwt() // oauth2에서 생성한 토큰의 validation check.
        ;
     }
 

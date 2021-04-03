@@ -1,12 +1,13 @@
 package com.witherview.utils;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 public class AuthTokenParsing {
     public static String getAuthClaimValue(Authentication auth, String key) {
-        Claims claims = (Claims) auth.getPrincipal();
-        String value = claims.get(key, String.class);
+        JwtAuthenticationToken token = (JwtAuthenticationToken) auth;
+//        System.out.println(token.getTokenAttributes());
+        var value = (String) token.getTokenAttributes().get(key);
         return value;
     }
 }
