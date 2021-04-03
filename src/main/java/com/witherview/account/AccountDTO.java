@@ -56,6 +56,12 @@ public class AccountDTO {
     }
 
     @Getter @Setter
+    public static class LoginValidateDTO {
+        private String userId; // userId값이 들어간다.
+        private String password;
+    }
+
+    @Getter @Setter
     public static class ResponseRegister {
         private String id;
         private String email;
@@ -68,6 +74,7 @@ public class AccountDTO {
 
     @Getter @Setter
     public static class ResponseLogin {
+        private String id;
         private String email;
         private String name;
         private String profileImg;
@@ -118,5 +125,14 @@ public class AccountDTO {
         private LocalTime time;
         private Integer nowUserCnt;
         private Integer maxUserCnt;
+    }
+
+    @Getter @Setter
+    public static class ResponseTokenDTO {
+        private String token_type;
+        private String access_token;
+        private String expires_in;
+        private String refresh_token;
+        private String refresh_expires_in;
     }
 }
