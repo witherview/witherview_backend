@@ -11,9 +11,9 @@ import java.util.Optional;
 
 public interface StudyFeedbackRepository extends CrudRepository<StudyFeedback, Long> {
 
-    @Query("select avg(f.score) from StudyFeedback f inner join f.receivedUser user where user.email = :email")
-    Optional<Double> getAvgInterviewScoreByEmail(@Param("email") String email);
+    @Query("select avg(f.score) from StudyFeedback f inner join f.receivedUser user where user.id = :id")
+    Optional<Double> getAvgInterviewScoreById(@Param("id") String id);
 
-    @Query("select count(f), sum(case f.passOrFail when true then 1 else 0 end) from StudyFeedback f where f.receivedUser.email = :email")
-    List<Object[]> getPassOrFailCountByEmail(@Param("email") String email);
+    @Query("select count(f), sum(case f.passOrFail when true then 1 else 0 end) from StudyFeedback f where f.receivedUser.id = :id")
+    List<Object[]> getPassOrFailCountById(@Param("id") String id);
 }
