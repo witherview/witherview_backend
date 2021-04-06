@@ -29,16 +29,16 @@ public class ChatController {
     private final ChatProducer chatProducer;
 
     @MessageMapping("/chat.room")
-    public void message(@Payload @Valid ChatDTO.MessageDTO message, @Header("Authorization") String token) throws JsonProcessingException {
-        Claims claims = new JwtUtils().getClaims(token.substring(SecurityConstant.TOKEN_PREFIX.length()));
-        message.setUserId(claims.get("userId").toString());
+    public void message(@Payload @Valid ChatDTO.MessageDTO message, Authentication authentication) throws JsonProcessingException {
+        var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        message.setUserId(userId);
         chatProducer.sendChat(message);
     }
 
     @MessageMapping("/chat.feedback")
-    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, @Header("Authorization") String token) throws JsonProcessingException {
-        Claims claims = new JwtUtils().getClaims(token.substring(SecurityConstant.TOKEN_PREFIX.length()));
-        feedback.setSendUserId(claims.get("userId").toString());
+    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, Authentication authentication) throws JsonProcessingException {
+        var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        feedback.setSendUserId(userId);
         chatProducer.sendFeedback(feedback);
     }
 
