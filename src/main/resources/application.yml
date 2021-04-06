@@ -78,7 +78,7 @@ spring:
         registration:
           witherview:
             client-id: witherview
-            client-secret: fc04d0a1-29a4-4a9d-abdb-8ec8d034dc90 # config 따로 정리할 때 값 변경 필요
+            client-secret: 9454ffd0-1f75-40be-835a-b74a31bab989 # config 따로 정리할 때 값 변경 필요
             scope: openid
             authorization-grant-type: password
         provider:
