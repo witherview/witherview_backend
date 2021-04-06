@@ -14,6 +14,8 @@ import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -29,16 +31,17 @@ public class ChatController {
     private final ChatProducer chatProducer;
 
     @MessageMapping("/chat.room")
-    public void message(@Payload @Valid ChatDTO.MessageDTO message, Authentication authentication) throws JsonProcessingException {
-        var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        message.setUserId(userId);
+    public void message(@Payload @Valid ChatDTO.MessageDTO message, @Header("Authorization") String token) throws JsonProcessingException {
+
+        Claims claims = new JwtUtils().getClaims(token.substring(SecurityConstant.TOKEN_PREFIX.length()));
+        message.setUserId(claims.get("userId").toString());
         chatProducer.sendChat(message);
     }
 
     @MessageMapping("/chat.feedback")
-    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, Authentication authentication) throws JsonProcessingException {
-        var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        feedback.setSendUserId(userId);
+    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, @Header("Authorization") String token) throws JsonProcessingException {
+        Claims claims = new JwtUtils().getClaims(token.substring(SecurityConstant.TOKEN_PREFIX.length()));
+        feedback.setSendUserId(claims.get("userId").toString());
         chatProducer.sendFeedback(feedback);
     }
 
