@@ -16,7 +16,8 @@ import java.util.Date;
 public class JwtUtils {
     private final Key key;
     public JwtUtils() {
-        this.key = Keys.hmacShaKeyFor(SecurityConstant.SECRET.getBytes());
+        //this.key = Keys.hmacShaKeyFor(SecurityConstant.SECRET.getBytes());
+        this.key = Keys.hmacShaKeyFor("fc04d0a1-29a4-4a9d-abdb-8ec8d034dc90".getBytes());
     }
 
     // input 값으로 jwt 토큰 생성하기.

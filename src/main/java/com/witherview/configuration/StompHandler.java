@@ -27,15 +27,15 @@ public class StompHandler implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        if(StompCommand.CONNECT == accessor.getCommand() || StompCommand.SEND == accessor.getCommand()) {
-            // 토큰 검증
-            try {
-                String header = accessor.getFirstNativeHeader("Authorization");
-                if(!jwtUtils.verifyToken(header)) throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
-            } catch (Exception e) {
-                throw new MessagingException(e.getMessage());
-            }
-        }
+//        if(StompCommand.CONNECT == accessor.getCommand() || StompCommand.SEND == accessor.getCommand()) {
+//            // 토큰 검증
+//            try {
+//                String header = accessor.getFirstNativeHeader("Authorization");
+//                if(!jwtUtils.verifyToken(header)) throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
+//            } catch (Exception e) {
+//                throw new MessagingException(e.getMessage());
+//            }
+//        }
         // websocket 연결 후 subscribe 시 존재하는 방 구독하는지 체크
         if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
             System.out.println(message.getHeaders());
