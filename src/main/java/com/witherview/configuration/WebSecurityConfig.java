@@ -1,14 +1,11 @@
 package com.witherview.configuration;
 
 
-import com.witherview.account.AccountService;
 import com.witherview.constant.SecurityConstant;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,7 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
+@Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -51,7 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
              .authorizeRequests()
-             .antMatchers(HttpMethod.GET, "/socket/*").permitAll()
+             .antMatchers("/socket/**").permitAll()
              .antMatchers(HttpMethod.POST, "/register").permitAll()
              .antMatchers(HttpMethod.POST, SecurityConstant.SIGN_UP_URL).permitAll()
              .antMatchers(HttpMethod.GET, "/oauth/user/*").permitAll()
