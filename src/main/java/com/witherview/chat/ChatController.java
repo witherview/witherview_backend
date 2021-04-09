@@ -30,7 +30,10 @@ public class ChatController {
 
     @MessageMapping("/chat.room")
     public void message(@Payload @Valid ChatDTO.MessageDTO message, Authentication authentication) throws JsonProcessingException {
+        System.out.println("roooom");
+        System.out.println(authentication);
         var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        System.out.println(userId);
         message.setUserId(userId);
         chatProducer.sendChat(message);
     }
