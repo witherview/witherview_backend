@@ -53,13 +53,13 @@ public class ChatController {
     @ApiOperation(value="그룹스터디 피드백 내용 조회. 현재 버전은 세션에서 userId값을 가져와 사용한다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header"),
-            @ApiImplicitParam(name = "historyId", value = "조회할 스터디 내역 Id"),
+            @ApiImplicitParam(name = "studyHistoryId", value = "조회할 스터디 내역 Id"),
             @ApiImplicitParam(name = "idx", value = "조회할 피드백 메세지 pagination idx (디폴트 값 = 0), 현재 10개 단위")
     })
     @GetMapping(path = "/api/messages/feedbacks")
     public ResponseEntity<List<ChatDTO.FeedBackDTO>> getFeedBackMessage(
             @ApiIgnore Authentication authentication,
-            @RequestParam(value = "historyId") Long historyId,
+            @RequestParam(value = "studyHistoryId") Long historyId,
             @RequestParam(value = "idx", required = false) Integer idx
             ) {
 

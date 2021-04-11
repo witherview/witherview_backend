@@ -60,7 +60,7 @@ public class GroupStudyDTO {
         private Long studyRoomId;
 
         @NotNull(message = "스터디 연습내역 아이디는 반드시 입력해야 합니다.")
-        private Long historyId;
+        private Long studyHistoryId;
 
         @NotNull(message = "타겟 유저아이디는 반드시 입력해야 합니다.")
         private String receivedUser;
