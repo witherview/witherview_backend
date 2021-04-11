@@ -95,7 +95,7 @@ public class GroupStudyService {
         // 해당 스터디룸이 존재하는지 확인
         findRoom(requestDto.getStudyRoomId());
 
-        StudyHistory studyHistory = studyHistoryRepository.findById(requestDto.getHistoryId())
+        StudyHistory studyHistory = studyHistoryRepository.findById(requestDto.getStudyHistoryId())
                 .orElseThrow(NotFoundStudyHistory::new);;
 
         User sendUser = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
