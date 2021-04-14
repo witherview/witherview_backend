@@ -72,6 +72,7 @@ public class AccountService {
                 .subIndustry(dto.getSubIndustry())
                 .mainJob(dto.getMainJob())
                 .subJob(dto.getSubJob())
+                .phoneNumber(dto.getPhoneNumber())
                 .build();
 
         String title = "기본 질문 리스트";
@@ -101,7 +102,7 @@ public class AccountService {
     public User updateMyInfo(String userId, AccountDTO.UpdateMyInfoDTO dto) {
         User user = findUserById(userId);
         user.update(dto.getName(), dto.getMainIndustry(), dto.getSubIndustry(),
-                dto.getMainJob(), dto.getSubJob());
+                dto.getMainJob(), dto.getSubJob(), dto.getPhoneNumber());
         return user;
     }
 

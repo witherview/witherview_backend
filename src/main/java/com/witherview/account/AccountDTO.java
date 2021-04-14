@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -41,6 +42,9 @@ public class AccountDTO {
 
         @NotBlank(message = "부 관심직무는 반드시 입력해야 합니다.")
         private String subJob;
+
+        @Pattern(regexp = "(^$|[0-9]{11})")
+        private String phoneNumber;
     }
 
     @Getter @Setter
@@ -70,6 +74,7 @@ public class AccountDTO {
         private String subIndustry;
         private String mainJob;
         private String subJob;
+        private String phoneNumber;
     }
 
     @Getter @Setter
@@ -82,6 +87,7 @@ public class AccountDTO {
         private String subIndustry;
         private String mainJob;
         private String subJob;
+        private String phoneNumber;
     }
 
     @Getter @Setter
@@ -97,6 +103,7 @@ public class AccountDTO {
         private String subIndustry;
         private String mainJob;
         private String subJob;
+        private String phoneNumber;
     }
 
     @Getter @Setter
@@ -106,6 +113,7 @@ public class AccountDTO {
         private String subIndustry;
         private String mainJob;
         private String subJob;
+        private String phoneNumber;
     }
 
     @Getter @Setter

@@ -53,7 +53,6 @@ public class AccountController {
             @ApiResponse(code = 401, message = "UnAuthorized")
         }
     )
-
     @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE,
                                   produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody @Valid AccountDTO.LoginDTO loginDTO,
@@ -86,8 +85,6 @@ public class AccountController {
             @ApiIgnore Authentication authentication) {
         String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-
-        System.out.println("controller : " + email);
         var result = accountService.myInfo(userId);
         return ResponseEntity.ok(result);
     }
