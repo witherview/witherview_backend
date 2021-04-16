@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,9 @@ public class SelfQuestionApiController {
     public ResponseEntity<?> saveQuestion(
             @RequestBody @Valid SelfQuestionDTO.QuestionSaveDTO requestDto,
             BindingResult error,
-            @ApiIgnore Errors errors) {
+            @ApiIgnore Errors errors,
+            @ApiIgnore Authentication authentication
+            ) {
         // requestDTO 객체 검사
         if(error.hasErrors()) {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
@@ -68,7 +71,9 @@ public class SelfQuestionApiController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateQuestion(
             @RequestBody List<SelfQuestionDTO.QuestionUpdateDTO> requestDto,
-            @ApiIgnore Errors errors) {
+            @ApiIgnore Errors errors,
+            @ApiIgnore Authentication authentication
+    ) {
 
         customValidator.validate(requestDto, errors);
 
