@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AccountService {
 
     private final UserRepository userRepository;
@@ -55,6 +57,7 @@ public class AccountService {
     @Value("${spring.security.oauth2.client.provider.witherview.token-uri}")
     private String tokenUri;
 
+    @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
         if (!dto.getPassword().equals(dto.getPasswordConfirm()))
             throw new NotEqualPasswordException();
@@ -69,6 +72,7 @@ public class AccountService {
                 .subIndustry(dto.getSubIndustry())
                 .mainJob(dto.getMainJob())
                 .subJob(dto.getSubJob())
+                .phoneNumber(dto.getPhoneNumber())
                 .build();
 
         String title = "기본 질문 리스트";
@@ -94,14 +98,15 @@ public class AccountService {
         var savedUser = userRepository.save(user);
         return savedUser;
     }
-
+    @Transactional
     public User updateMyInfo(String userId, AccountDTO.UpdateMyInfoDTO dto) {
         User user = findUserById(userId);
         user.update(dto.getName(), dto.getMainIndustry(), dto.getSubIndustry(),
-                dto.getMainJob(), dto.getSubJob());
+                dto.getMainJob(), dto.getSubJob(), dto.getPhoneNumber());
         return user;
     }
 
+    @Transactional
     public User uploadProfile(String userId, MultipartFile profileImg) {
         User user = findUserById(userId);
         String fileOriName = profileImg.getOriginalFilename();
@@ -151,7 +156,6 @@ public class AccountService {
     }
 
     public List<StudyRoom> findRooms(String userId) {
-
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return user.getParticipatedStudyRooms()
                 .stream()

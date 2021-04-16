@@ -42,6 +42,8 @@ public class User {
 
     private String profileImg;
 
+    private String phoneNumber;
+
     @ColumnDefault("0")
     private Long selfPracticeCnt = 0L;
 
@@ -68,7 +70,7 @@ public class User {
 
     @Builder
     public User(String email, String encryptedPassword, String name,
-                String mainIndustry, String subIndustry, String mainJob, String subJob) {
+                String mainIndustry, String subIndustry, String mainJob, String subJob, String phoneNumber) {
         this.email = email;
         this.encryptedPassword = encryptedPassword;
         this.name = name;
@@ -76,6 +78,7 @@ public class User {
         this.subIndustry = subIndustry;
         this.mainJob = mainJob;
         this.subJob = subJob;
+        this.phoneNumber = phoneNumber;
     }
 
     public void increaseSelfPracticeCnt() {
@@ -111,12 +114,13 @@ public class User {
     }
 
     public void update(String name, String mainIndustry, String subIndustry,
-                       String mainJob, String subJob) {
+                       String mainJob, String subJob, String phoneNumber) {
         this.name = name;
         this.mainIndustry = mainIndustry;
         this.subIndustry = subIndustry;
         this.mainJob = mainJob;
         this.subJob = subJob;
+        this.phoneNumber = phoneNumber;
     }
 
     public void uploadImg(String profileImg) {
