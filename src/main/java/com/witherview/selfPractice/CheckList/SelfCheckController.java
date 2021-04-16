@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -73,9 +72,9 @@ public class SelfCheckController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="Authorization", paramType = "header")
     })
-    @GetMapping(path = "/api/self/checklist/result")
+    @GetMapping(path = "/api/self/checklist/result/{selfHistoryId}")
     public ResponseEntity<?> getCheckListResult(
-            @RequestParam("selfHistoryId") Long selfHistoryId,
+            @PathVariable("selfHistoryId") Long selfHistoryId,
             @ApiIgnore Authentication authentication
     ) {
         List<SelfCheck> lists = selfCheckService.findResults(selfHistoryId);
