@@ -48,7 +48,7 @@ public abstract class AccountSupporter extends MockMvcSupporter {
     public void 회원가입_토큰생성_스터디룸생성() {
         // 회원가입
         User user = userRepository.save(new User(email1, passwordEncoder.encode(password), name,
-                mainIndustry1, subIndustry1, mainJob1, subJob1));
+                mainIndustry1, subIndustry1, mainJob1, subJob1, "01000000000"));
 
         userId = user.getId();
         user.uploadImg(profileImg);
