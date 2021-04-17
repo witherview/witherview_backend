@@ -49,6 +49,7 @@ dependencies {
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	// oauth2
+	implementation group: 'org.keycloak', name: 'keycloak-spring-security-adapter', version: '12.0.4'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	// restTemplate Exception 처리를 위한 dependency
