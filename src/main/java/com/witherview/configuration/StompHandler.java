@@ -25,7 +25,7 @@ import java.util.Optional;
 public class StompHandler implements ChannelInterceptor {
 
     @Qualifier("websocket")
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
 
     private final GroupStudyService groupStudyService;
@@ -40,7 +40,7 @@ public class StompHandler implements ChannelInterceptor {
             Optional.ofNullable(accessor.getNativeHeader("Authorization"))
                     .ifPresentOrElse(auth -> {
                         var bearerToken = auth.get(0).replace("Bearer ", "");
-                        System.out.println("Received Bearer Token : " + bearerToken);
+//                        System.out.println("Received Bearer Token : " + bearerToken);
                         var jwsAuthToken = new JWSAuthenticationToken(bearerToken);
                         JWSAuthenticationToken token = (JWSAuthenticationToken) authenticationManager.authenticate(jwsAuthToken);
                         if (!token.isAuthenticated()) {
