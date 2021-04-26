@@ -48,6 +48,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-messaging'
 	// oauth2
 	implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '12.0.4'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
