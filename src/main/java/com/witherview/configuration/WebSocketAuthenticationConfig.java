@@ -6,6 +6,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
+import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -13,8 +15,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSocketMessageBroker
-@Order(Ordered.HIGHEST_PRECEDENCE + 99)
-public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketAuthenticationConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
     private final StompHandler stompHandler;
 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -33,7 +34,17 @@ public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConf
     }
 
     @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
+    protected void customizeClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompHandler);
+    }
+
+    @Override
+    protected boolean sameOriginDisabled() {
+        return true;
+    }
+
+    @Override
+    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
+        messages.anyMessage().permitAll();
     }
 }
