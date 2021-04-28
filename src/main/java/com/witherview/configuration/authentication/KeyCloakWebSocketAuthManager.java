@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,8 +28,9 @@ public class KeyCloakWebSocketAuthManager implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        JWSAuthenticationToken auth = (JWSAuthenticationToken) authentication;
-        String tokenString = (String) auth.getCredentials();
+//        authentication.getCredentials();
+//        JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
+        String tokenString = (String) authentication.getCredentials();
 //        System.out.println("authentcate : " + tokenString);
         try {
             // 들어온 jwt 토큰값을 keycloak 설정파일을 토대로 resolve
@@ -42,16 +44,18 @@ public class KeyCloakWebSocketAuthManager implements AuthenticationManager {
 //            System.out.println(accessToken.getOtherClaims());
             if (accessToken.getOtherClaims().get("userId") == null) {
                 // 이게 없으면, 인증할 수 없는 토큰
-                auth.setAuthenticated(false);
+                authentication.setAuthenticated(false);
             }
             else {
                 // 이게 있으면, 인증된 토큰.
-                auth.setAuthenticated(true);
+                String userId = (String) accessToken.getOtherClaims().get("userId");
+                authentication = new JWSAuthenticationToken(userId);
+                authentication.setAuthenticated(true);
             }
         } catch (VerificationException e) {
             e.printStackTrace();
-            auth.setAuthenticated(false);
+            authentication.setAuthenticated(false);
         }
-        return auth;
+        return authentication;
     }
 }

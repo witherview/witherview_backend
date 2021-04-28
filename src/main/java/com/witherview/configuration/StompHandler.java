@@ -20,6 +20,7 @@ import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.messaging.access.intercept.ChannelSecurityInterceptor;
 import org.springframework.security.messaging.access.intercept.MessageSecurityMetadataSource;
@@ -50,7 +51,7 @@ public class StompHandler implements ChannelInterceptor {
                         var bearerToken = auth.get(0).replace("Bearer ", "");
 //                        System.out.println("Received Bearer Token : " + bearerToken);
                         var jwsAuthToken = new JWSAuthenticationToken(bearerToken);
-                        JWSAuthenticationToken token = (JWSAuthenticationToken) authenticationManager.authenticate(jwsAuthToken);
+                        Authentication token = authenticationManager.authenticate(jwsAuthToken);
                         if (!token.isAuthenticated()) {
                             throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
                         }
