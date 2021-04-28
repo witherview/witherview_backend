@@ -79,7 +79,7 @@ public class StudyRoom {
         this.maxUserCnt = 2;
     }
 
-    protected void updateHost(User host) {
+    public void updateHost(User host) {
         this.host = host;
     }
 
@@ -103,8 +103,7 @@ public class StudyRoom {
         this.nowUserCnt++;
     }
 
-    public void decreaseNowUserCnt() {
-        if(this.nowUserCnt - 1 <= 0) throw new EmptyStudyRoom();
-        this.nowUserCnt--;
+    public int decreaseNowUserCnt() {
+        return --this.nowUserCnt;
     }
 }
