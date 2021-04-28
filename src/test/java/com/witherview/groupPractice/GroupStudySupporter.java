@@ -85,7 +85,7 @@ public class GroupStudySupporter extends MockMvcSupporter {
 
         // 스터디룸생성
         StudyRoom studyRoom = new StudyRoom(title1, description1, category1, industry1, job1, date1, time1);
-        user1.addHostedRoom(studyRoom);
+        studyRoom.updateHost(user1);
         roomId = studyRoomRepository.save(studyRoom).getId();
 
         StudyRoomParticipant studyRoomParticipant1 = StudyRoomParticipant.builder()
