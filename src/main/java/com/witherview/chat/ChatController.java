@@ -1,6 +1,7 @@
 package com.witherview.chat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nimbusds.jose.proc.SecurityContext;
 import com.witherview.constant.SecurityConstant;
 import com.witherview.utils.AuthTokenParsing;
 import com.witherview.utils.JwtUtils;
@@ -14,6 +15,7 @@ import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -32,6 +34,8 @@ public class ChatController {
     public void message(@Payload @Valid ChatDTO.MessageDTO message, Authentication authentication) throws JsonProcessingException {
         System.out.println("roooom");
         System.out.println(authentication);
+        authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication);
         var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         System.out.println(userId);
         message.setUserId(userId);
@@ -40,6 +44,7 @@ public class ChatController {
 
     @MessageMapping("/chat.feedback")
     public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, Authentication authentication) throws JsonProcessingException {
+        authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         feedback.setSendUserId(userId);
         chatProducer.sendFeedback(feedback);
