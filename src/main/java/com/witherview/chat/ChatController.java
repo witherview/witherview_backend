@@ -31,21 +31,15 @@ public class ChatController {
     private final ChatProducer chatProducer;
 
     @MessageMapping("/chat.room")
-    public void message(@Payload @Valid ChatDTO.MessageDTO message, Authentication authentication) throws JsonProcessingException {
-        System.out.println("roooom");
-        System.out.println(authentication);
-        authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication);
-        var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        System.out.println(userId);
+    public void message(@Payload @Valid ChatDTO.MessageDTO message, @Header("Authorization") String tokenString) throws JsonProcessingException {
+        String userId = chatService.getUserIdFromTokenString(tokenString);
         message.setUserId(userId);
         chatProducer.sendChat(message);
     }
 
     @MessageMapping("/chat.feedback")
-    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, Authentication authentication) throws JsonProcessingException {
-        authentication = SecurityContextHolder.getContext().getAuthentication();
-        var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, @Header("Authorization") String tokenString) throws JsonProcessingException {
+        String userId = chatService.getUserIdFromTokenString(tokenString);
         feedback.setSendUserId(userId);
         chatProducer.sendFeedback(feedback);
     }
