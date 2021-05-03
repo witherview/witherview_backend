@@ -107,7 +107,8 @@ public class GroupStudyController {
             @ApiParam(value = "조회할 방 카테고리")
             @RequestParam(value = "category", required = false) String category,
             @ApiParam(value = "조회할 page (디폴트 값 = 0)")
-            @RequestParam(value = "page", required = false) Integer current
+            @RequestParam(value = "page", required = false) Integer current,
+            @ApiIgnore Authentication authentication
     ) {
 
         List<StudyRoom> lists;
@@ -126,7 +127,8 @@ public class GroupStudyController {
     })
     @GetMapping(path = "/room/{id}/participants")
     public ResponseEntity<?> findParticipants(
-            @ApiParam(value = "참여 조회할 방 id") @PathVariable Long id
+            @ApiParam(value = "참여 조회할 방 id") @PathVariable Long id,
+            @ApiIgnore Authentication authentication
     ) {
         List<GroupStudyDTO.ParticipantDTO> lists = groupStudyService.findParticipatedUsers(id);
         return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ParticipantDTO[].class), HttpStatus.OK);

@@ -1,14 +1,11 @@
 package com.witherview.configuration;
 
 
-import com.witherview.account.AccountService;
 import com.witherview.constant.SecurityConstant;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,10 +17,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
+@Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
     // static 리소스는 따로 authentication을 적용하지 않음.
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -34,7 +30,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/swagger-resources/**", "/v2/api-docs",
                 "/webjars/**", "/swagger-ui.html", "/swagger/**", "/profiles/**");
         // todo: 로컬이미지 접근을 위해 일시적으로 풀어둠. aws s3로 저장할 경우 profiles/ 경로는 제외.
-
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.witherview.chat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nimbusds.jose.proc.SecurityContext;
 import com.witherview.constant.SecurityConstant;
 import com.witherview.utils.AuthTokenParsing;
 import com.witherview.utils.JwtUtils;
@@ -14,6 +15,7 @@ import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -29,18 +31,15 @@ public class ChatController {
     private final ChatProducer chatProducer;
 
     @MessageMapping("/chat.room")
-    public void message(@Payload @Valid ChatDTO.MessageDTO message, Authentication authentication) throws JsonProcessingException {
-        System.out.println("roooom");
-        System.out.println(authentication);
-        var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        System.out.println(userId);
+    public void message(@Payload @Valid ChatDTO.MessageDTO message, @Header("Authorization") String tokenString) throws JsonProcessingException {
+        String userId = chatService.getUserIdFromTokenString(tokenString);
         message.setUserId(userId);
         chatProducer.sendChat(message);
     }
 
     @MessageMapping("/chat.feedback")
-    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, Authentication authentication) throws JsonProcessingException {
-        var userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+    public void feedback(@Payload @Valid ChatDTO.FeedBackDTO feedback, @Header("Authorization") String tokenString) throws JsonProcessingException {
+        String userId = chatService.getUserIdFromTokenString(tokenString);
         feedback.setSendUserId(userId);
         chatProducer.sendFeedback(feedback);
     }
