@@ -1,7 +1,5 @@
 package com.witherview.selfPractice.CheckList;
 
-import com.witherview.database.entity.SelfCheck;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
