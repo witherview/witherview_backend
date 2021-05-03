@@ -50,7 +50,7 @@ public class StompHandler implements ChannelInterceptor {
                     .ifPresentOrElse(auth -> {
                         var bearerToken = auth.get(0).replace("Bearer ", "");
 //                        System.out.println("Received Bearer Token : " + bearerToken);
-                        var jwsAuthToken = new JWSAuthenticationToken(bearerToken);
+                        JWSAuthenticationToken jwsAuthToken = new JWSAuthenticationToken(bearerToken);
                         Authentication token = authenticationManager.authenticate(jwsAuthToken);
                         if (!token.isAuthenticated()) {
                             throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);

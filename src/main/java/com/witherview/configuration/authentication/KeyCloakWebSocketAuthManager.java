@@ -28,8 +28,6 @@ public class KeyCloakWebSocketAuthManager implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-//        authentication.getCredentials();
-//        JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
         String tokenString = (String) authentication.getCredentials();
 //        System.out.println("authentcate : " + tokenString);
         try {
@@ -41,7 +39,6 @@ public class KeyCloakWebSocketAuthManager implements AuthenticationManager {
             AccessToken accessToken = AdapterTokenVerifier.verifyToken(tokenString, resolve);
 //            System.out.println("AdapterTokenVerifier 사용해서 accessToken 생성" + accessToken);
 //            System.out.println(accessToken.getOtherClaims().get("userId"));
-//            System.out.println(accessToken.getOtherClaims());
             if (accessToken.getOtherClaims().get("userId") == null) {
                 // 이게 없으면, 인증할 수 없는 토큰
                 authentication.setAuthenticated(false);

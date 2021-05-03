@@ -20,7 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
     // static 리소스는 따로 authentication을 적용하지 않음.
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -29,7 +28,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         );
         web.ignoring().antMatchers(
                 "/swagger-resources/**", "/v2/api-docs",
-                "/webjars/**", "/swagger-ui.html", "/swagger/**");
+                "/webjars/**", "/swagger-ui.html", "/swagger/**"
+//                ,"/ws-endpoint/**"
+        );
     }
 
     @Override
