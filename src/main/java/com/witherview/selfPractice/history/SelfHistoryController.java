@@ -7,7 +7,6 @@ import com.witherview.utils.AuthTokenParsing;
 import com.witherview.utils.SelfHistoryMapper;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class SelfHistoryController {
-    private final ModelMapper modelMapper;
     private final SelfHistoryMapper selfHistoryMapper;
     private final SelfHistoryService selfHistoryService;
 
