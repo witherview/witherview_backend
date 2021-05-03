@@ -43,7 +43,6 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-
         if(StompCommand.CONNECT == accessor.getCommand() || StompCommand.SEND == accessor.getCommand()) {
             // 토큰이 헤더에 있는지 검증
             Optional.ofNullable(accessor.getNativeHeader("Authorization"))
