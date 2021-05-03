@@ -4,6 +4,7 @@ import com.witherview.utils.GenerateRandomId;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -11,14 +12,14 @@ import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Getter
+@Entity @Getter @Setter
 @NoArgsConstructor
 @Table(name = "tbl_user",
         indexes = @Index(name = "email", columnList = "email"))
 public class User {
 
     @Id
-    private String id = new GenerateRandomId().generateId();
+    private String id;
 
     @NotBlank
     @Column(nullable = false, unique = true)
@@ -109,7 +110,6 @@ public class User {
     }
 
     public void addSelfHistory(SelfHistory selfHistory) {
-        selfHistory.updateUser(this);
         this.selfHistories.add(selfHistory);
     }
 
