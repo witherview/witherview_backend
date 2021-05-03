@@ -4,6 +4,7 @@ import com.witherview.database.entity.SelfCheck;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
 import com.witherview.selfPractice.CustomValidator;
+import com.witherview.utils.AuthTokenParsing;
 import com.witherview.utils.SelfCheckMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,7 +31,7 @@ public class SelfCheckController {
     private final SelfCheckService selfCheckService;
     private final CustomValidator customValidator;
 
-    @ApiOperation(value="체크리스트 등록")
+    @ApiOperation(value="혼자 연습 후 셀프 체크리스트 등록")
     @ApiImplicitParams({
             @ApiImplicitParam(name="Authorization", paramType = "header")
     })
@@ -54,21 +55,22 @@ public class SelfCheckController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
-        List<SelfCheck> selfChecks = selfCheckService.save(requestDto);
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        List<SelfCheck> selfChecks = selfCheckService.save(userId, requestDto);
         return new ResponseEntity<>(selfCheckMapper.toResultArray(selfChecks), HttpStatus.CREATED);
     }
 
-    @ApiOperation(value="체크리스트 목록 조회")
+    @ApiOperation(value="기본으로 제공되는 체크리스트 질문 목 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="Authorization", paramType = "header")
     })
     @GetMapping(path = "/api/self/checklist")
     public ResponseEntity<?> getCheckList(@ApiIgnore Authentication authentication) {
-        List<SelfCheckDTO.CheckListResponseDTO> lists = selfCheckService.findAll();
-        return new ResponseEntity<>(lists.toArray(), HttpStatus.OK);
+        List<SelfCheckDTO.CheckListResponseDTO> lists = selfCheckService.findAllCheckLists();
+        return new ResponseEntity<>(lists, HttpStatus.OK);
     }
 
-    @ApiOperation(value="혼자 연습 후 체크리스트 결과 조회")
+    @ApiOperation(value="혼자 연습내역 체크리스트 결과 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="Authorization", paramType = "header")
     })
@@ -77,8 +79,8 @@ public class SelfCheckController {
             @PathVariable("selfHistoryId") Long selfHistoryId,
             @ApiIgnore Authentication authentication
     ) {
-        List<SelfCheck> lists = selfCheckService.findResults(selfHistoryId);
-        var result = selfCheckMapper.toResultArray(lists);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        List<SelfCheck> lists = selfCheckService.findResults(userId, selfHistoryId);
+        return new ResponseEntity<>(selfCheckMapper.toResultArray(lists), HttpStatus.OK);
     }
 }
