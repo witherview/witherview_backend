@@ -60,7 +60,7 @@ public class SelfCheckController {
         return new ResponseEntity<>(selfCheckMapper.toResultArray(selfChecks), HttpStatus.CREATED);
     }
 
-    @ApiOperation(value="기본으로 제공되는 체크리스트 질문 목 조회")
+    @ApiOperation(value="기본으로 제공되는 체크리스트 질문 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="Authorization", paramType = "header")
     })
