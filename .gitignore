@@ -35,5 +35,6 @@ out/
 
 ### Java ###
 .class
+src/main/generated
 
 bin/

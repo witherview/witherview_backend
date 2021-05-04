@@ -43,9 +43,9 @@ public class GroupStudySupporter extends MockMvcSupporter {
     final Byte score = 80;
     final Boolean passOrFail = true;
     final MockHttpSession mockHttpSession = new MockHttpSession();
-    Long userId1 = (long)1;
-    Long userId2 = (long)2;
-    Long userId3 = (long)3;
+    String userId1 = "1";
+    String userId2 = "2";
+    String userId3 = "3";
     Long roomId = (long) 4;
     Long studyHistoryId1 = (long) 1;
     Long studyHistoryId2 = (long) 2;
@@ -68,24 +68,24 @@ public class GroupStudySupporter extends MockMvcSupporter {
     public void 회원가입_세션생성_스터디룸생성() {
         // 회원가입
         User user1 = userRepository.save(new User(email1, passwordEncoder.encode(password1), name1,
-                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무", "01000000000"));
         userId1 = user1.getId();
 
         User user2 = userRepository.save(new User(email2, passwordEncoder.encode(password2), name2,
-                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무", "01000000001"));
         userId2 = user2.getId();
 
         User user3 = userRepository.save(new User(email3, passwordEncoder.encode(password3), name3,
-                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무", "01000000002"));
         userId3 = user3.getId();
 
         // 세션생성
-        AccountSession accountSession = new AccountSession(userId1, email1, name1);
+        AccountSession accountSession = new AccountSession(Long.parseLong(userId1), email1, name1);
         mockHttpSession.setAttribute("user", accountSession);
 
         // 스터디룸생성
         StudyRoom studyRoom = new StudyRoom(title1, description1, category1, industry1, job1, date1, time1);
-        user1.addHostedRoom(studyRoom);
+        studyRoom.updateHost(user1);
         roomId = studyRoomRepository.save(studyRoom).getId();
 
         StudyRoomParticipant studyRoomParticipant1 = StudyRoomParticipant.builder()
@@ -116,8 +116,8 @@ public class GroupStudySupporter extends MockMvcSupporter {
 
         // 피드백 등록
         StudyFeedback studyFeedback1 = StudyFeedback.builder()
-                .targetUser(user1)
-                .writtenUser(user3)
+                .receivedUser(user1)
+                .sendUser(user3)
                 .score(score)
                 .passOrFail(passOrFail)
                 .build();

@@ -4,15 +4,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
+@ActiveProfiles("test")
 public class LoginControllerTest extends AccountSupporter {
 
     @Autowired
@@ -29,15 +30,10 @@ public class LoginControllerTest extends AccountSupporter {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
-                .andExpect(status().isOk());
-
-        resultActions.andExpect(jsonPath("$.email").value(email1));
-        resultActions.andExpect(jsonPath("$.name").value(name));
-        resultActions.andExpect(jsonPath("$.profileImg").value(profileImg));
-        resultActions.andExpect(jsonPath("$.mainIndustry").value(mainIndustry1));
-        resultActions.andExpect(jsonPath("$.subIndustry").value(subIndustry1));
-        resultActions.andExpect(jsonPath("$.mainJob").value(mainJob1));
-        resultActions.andExpect(jsonPath("$.subJob").value(subJob1));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.accessToken").exists())
+                .andExpect(header().stringValues("location", "/api/user"))
+                ;
     }
 
     @Test
@@ -51,10 +47,7 @@ public class LoginControllerTest extends AccountSupporter {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
-                .andExpect(status().isNotFound());
-
-        resultActions.andExpect(jsonPath("$.status").value(404));
-        resultActions.andExpect(jsonPath("$.code").value("AUTH003"));
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -68,10 +61,7 @@ public class LoginControllerTest extends AccountSupporter {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
-                .andExpect(status().isNotFound());
-
-        resultActions.andExpect(jsonPath("$.status").value(404));
-        resultActions.andExpect(jsonPath("$.code").value("AUTH003"));
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

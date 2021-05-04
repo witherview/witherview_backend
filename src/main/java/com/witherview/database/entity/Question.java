@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class Question extends CreatedBaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_list_id", nullable = false)
+    @JsonIgnore
     private QuestionList belongList;
 
     @NotBlank

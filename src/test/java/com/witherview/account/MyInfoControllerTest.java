@@ -13,7 +13,8 @@ public class MyInfoControllerTest extends AccountSupporter {
     @Test
     public void 마이페이지_조회_성공() throws Exception {
         ResultActions resultActions = mockMvc.perform(get("/api/myinfo")
-                .session(mockHttpSession))
+                .header("Authorization", "Bearer " + token)
+        )
                 .andExpect(status().isOk());
 
         resultActions.andExpect(jsonPath("$.profileImg").value(profileImg));
@@ -39,10 +40,11 @@ public class MyInfoControllerTest extends AccountSupporter {
         dto.setSubJob(subJob2);
 
         ResultActions resultActions = mockMvc.perform(put("/api/myinfo")
-                .session(mockHttpSession)
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(dto)))
+                .content(objectMapper.writeValueAsString(dto))
+        )
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -54,7 +56,7 @@ public class MyInfoControllerTest extends AccountSupporter {
     }
 
     @Test
-    public void 마이페이지_수정_실패_유효하지_않은_사용자() throws Exception {
+    public void 마이페이지_수정_실패_토큰없이_요청() throws Exception {
         AccountDTO.UpdateMyInfoDTO dto = new AccountDTO.UpdateMyInfoDTO();
         dto.setName(name);
         dto.setMainIndustry(mainIndustry2);
@@ -65,11 +67,34 @@ public class MyInfoControllerTest extends AccountSupporter {
         ResultActions resultActions = mockMvc.perform(put("/api/myinfo")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(dto)))
+                .content(objectMapper.writeValueAsString(dto))
+        )
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
 
         resultActions.andExpect(jsonPath("$.message").value("로그인 후 이용해 주세요."));
+        resultActions.andExpect(jsonPath("$.status").value(401));
+    }
+
+    @Test
+    public void 마이페이지_수정_실패_유효하지_않은_토큰() throws Exception {
+        AccountDTO.UpdateMyInfoDTO dto = new AccountDTO.UpdateMyInfoDTO();
+        dto.setName(name);
+        dto.setMainIndustry(mainIndustry2);
+        dto.setSubIndustry(subIndustry2);
+        dto.setMainJob(mainJob2);
+        dto.setSubJob(subJob2);
+
+        ResultActions resultActions = mockMvc.perform(put("/api/myinfo")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(dto))
+                .header("Authorization", "Bearer " + token + "1")
+        )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+        resultActions.andExpect(jsonPath("$.message").value("유효하지 않은 로그인입니다."));
         resultActions.andExpect(jsonPath("$.status").value(401));
     }
 }

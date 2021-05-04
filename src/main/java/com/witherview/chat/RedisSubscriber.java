@@ -13,10 +13,19 @@ public class RedisSubscriber {
     private final ObjectMapper objectMapper;
     private final SimpMessageSendingOperations messagingTemplate;
 
-    public void sendMessage(String message) {
+    public void sendFeedback(String message) {
         try {
             ChatDTO.FeedBackDTO feedBackDTO = objectMapper.readValue(message, ChatDTO.FeedBackDTO.class);
-            messagingTemplate.convertAndSend("/topic/feedback." + feedBackDTO.getStudyHistoryId(), message);
+            messagingTemplate.convertAndSend("/sub/feedback." + feedBackDTO.getStudyHistoryId(), message);
+        } catch (Exception e) {
+            log.error("Exception {}", e);
+        }
+    }
+
+    public void sendChat(String message) {
+        try {
+            ChatDTO.MessageDTO messageDTO = objectMapper.readValue(message, ChatDTO.MessageDTO.class);
+            messagingTemplate.convertAndSend("/sub/room." + messageDTO.getStudyRoomId(), message);
         } catch (Exception e) {
             log.error("Exception {}", e);
         }

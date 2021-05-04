@@ -1,6 +1,5 @@
 package com.witherview.selfPractice.Question;
 
-import com.witherview.database.entity.Question;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +20,7 @@ public class SelfQuestionDTO {
         private List<QuestionDTO> questions;
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class QuestionDTO {
 
         @NotBlank(message = "질문은 반드시 입력해야 합니다.")
@@ -31,17 +30,9 @@ public class SelfQuestionDTO {
 
         @NotNull(message = "순서는 반드시 입력해야 합니다.")
         private Integer order;
-
-        public Question toEntity() {
-            return Question.builder()
-                    .question(question)
-                    .answer(answer)
-                    .order(order)
-                    .build();
-        }
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class QuestionUpdateDTO {
         @NotNull(message = "질문 id는 반드시 입력해야 합니다.")
         private Long id;

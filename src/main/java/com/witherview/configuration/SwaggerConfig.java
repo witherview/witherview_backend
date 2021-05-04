@@ -25,7 +25,7 @@ public class SwaggerConfig {
         title = "Witherview API ";
 
         return new Docket(DocumentationType.SWAGGER_2)
-                .host(host)
+                .host(host+":8080") // 개발을 위한 포트세팅
                 .select()
                 .apis(withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())

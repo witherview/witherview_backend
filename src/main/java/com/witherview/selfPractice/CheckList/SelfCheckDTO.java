@@ -1,7 +1,5 @@
 package com.witherview.selfPractice.CheckList;
 
-import com.witherview.database.entity.SelfCheck;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,20 +17,13 @@ public class SelfCheckDTO {
         private List<CheckListDTO> checkLists;
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class CheckListDTO {
         @NotNull(message = "체크리스트 아이디는 반드시 입력해야 합니다.")
         private Long checkListId;
 
         @NotNull(message = "체크 여부는 반드시 입력해야 합니다.")
         private Boolean isChecked;
-
-        public SelfCheck toEntity() {
-            return SelfCheck.builder()
-                    .checkListId(checkListId)
-                    .isChecked(isChecked)
-                    .build();
-        }
     }
 
     @Getter @Setter

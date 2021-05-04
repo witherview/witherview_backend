@@ -6,10 +6,12 @@ import com.witherview.database.repository.QuestionListRepository;
 import com.witherview.database.repository.QuestionRepository;
 import com.witherview.selfPractice.exception.NotFoundQuestion;
 import com.witherview.selfPractice.exception.NotFoundQuestionList;
+import com.witherview.utils.SelfQuestionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,17 +19,18 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @Service
 public class SelfQuestionService {
+    private final SelfQuestionMapper selfQuestionMapper;
     private final QuestionListRepository questionListRepository;
     private final QuestionRepository questionRepository;
 
     @Transactional
     public List<Question> save(SelfQuestionDTO.QuestionSaveDTO requestDto) {
         QuestionList questionList = questionListRepository.findById(requestDto.getListId())
-                .orElseThrow(() -> new NotFoundQuestionList());
+                .orElseThrow(NotFoundQuestionList::new);
 
         return requestDto.getQuestions().stream()
                 .map(dto -> {
-                    Question question = dto.toEntity();
+                    Question question = selfQuestionMapper.toQuestionEntity(dto);
                     questionList.addQuestion(question);
                     return questionRepository.save(question);
                 })
@@ -35,12 +38,15 @@ public class SelfQuestionService {
     }
 
     @Transactional
-    public void update(List<SelfQuestionDTO.QuestionUpdateDTO> requestDto) {
-        requestDto.stream()
-                .forEach(dto -> {
+    public List<Question> update(List<SelfQuestionDTO.QuestionUpdateDTO> requestDto) {
+        List<Question> result = requestDto.stream()
+                .map(dto -> {
                     Question question = findQuestion(dto.getId());
                     question.update(dto.getQuestion(), dto.getAnswer(), dto.getOrder());
-                });
+                    return question;
+                }).collect(Collectors.toList());
+        questionRepository.saveAll(result);
+        return result;
     }
 
     @Transactional
@@ -53,7 +59,7 @@ public class SelfQuestionService {
 
     public Question findQuestion(Long id) {
         return questionRepository.findById(id)
-                .orElseThrow(() -> new NotFoundQuestion());
+                .orElse(null);
     }
 
     public List<Question> findAllQuestions(Long listId) {

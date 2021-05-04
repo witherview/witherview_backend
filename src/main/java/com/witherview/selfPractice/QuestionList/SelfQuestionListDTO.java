@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 public class SelfQuestionListDTO {
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class QuestionListSaveDTO {
         @NotBlank(message = "질문리스트 제목은 반드시 입력해야 합니다.")
         private String title;
@@ -20,14 +20,6 @@ public class SelfQuestionListDTO {
 
         @NotBlank(message = "직무 이름은 반드시 입력해야 합니다.")
         private String job;
-
-        public QuestionList toEntity() {
-            return QuestionList.builder()
-                    .title(title)
-                    .enterprise(enterprise)
-                    .job(job)
-                    .build();
-        }
     }
 
     @Getter @Setter @Builder

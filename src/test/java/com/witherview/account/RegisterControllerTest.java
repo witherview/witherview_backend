@@ -3,6 +3,7 @@ package com.witherview.account;
 import com.witherview.database.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@ActiveProfiles("test")
 public class RegisterControllerTest extends AccountSupporter {
 
     @Test
@@ -40,7 +42,7 @@ public class RegisterControllerTest extends AccountSupporter {
     @Test
     public void 회원가입_실패케이스_이메일_중복() throws Exception {
         userRepository.save(new User(email + "2", password, name,
-                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무"));
+                "주 관심산업", "부 관심산업", "주 관심직무", "부 관심직무", "01000000000"));
 
         AccountDTO.RegisterDTO dto = new AccountDTO.RegisterDTO();
         dto.setEmail(email + "2");

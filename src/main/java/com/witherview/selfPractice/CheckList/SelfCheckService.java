@@ -4,6 +4,8 @@ import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
 import com.witherview.selfPractice.exception.NotFoundCheckList;
 import com.witherview.selfPractice.exception.NotFoundHistory;
+import com.witherview.selfPractice.exception.NotOwnedSelfHistory;
+import com.witherview.utils.SelfCheckMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,57 +21,42 @@ public class SelfCheckService {
     private final SelfCheckRepository selfCheckRepository;
     private final CheckListTypeRepository checkListTypeRepository;
     private final CheckListRepository checkListRepository;
+    private final SelfCheckMapper selfCheckMapper;
 
     @Transactional
-    public List<SelfCheck> save(SelfCheckDTO.SelfCheckRequestDTO requestDto) {
+    public List<SelfCheck> save(String userId, SelfCheckDTO.SelfCheckRequestDTO requestDto) {
         SelfHistory selfHistory = selfHistoryRepository.findById(requestDto.getSelfHistoryId())
                 .orElseThrow(NotFoundHistory::new);
 
+        authenticateOwner(userId, selfHistory);
         return requestDto.getCheckLists().stream()
                 .map(dto -> {
                     findCheckList(dto.getCheckListId());
-                    SelfCheck selfCheck = dto.toEntity();
+                    SelfCheck selfCheck = selfCheckMapper.toSelfCheckEntity(dto);
                     selfHistory.addSelfCheck(selfCheck);
                     return selfCheckRepository.save(selfCheck);
                 })
                 .collect(Collectors.toList());
     }
 
-    public List<SelfCheckDTO.CheckListResponseDTO> findAll() {
+    public List<SelfCheckDTO.CheckListResponseDTO> findAllCheckLists() {
         List<CheckListType> listTypes = checkListTypeRepository.findAll();
-
-        return listTypes.stream()
-                .map(type -> {
-                    SelfCheckDTO.CheckListResponseDTO dto = new SelfCheckDTO.CheckListResponseDTO();
-                    dto.setCheckListTypeId(type.getId());
-                    dto.setCheckListType(type.getCheckListType());
-                    dto.setCheckLists(getCheckListInfo(type));
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        return listTypes.stream().map(e -> selfCheckMapper.toResponseDto(e)).collect(Collectors.toList());
     }
 
-    public List<SelfCheckDTO.CheckListInfoDTO> getCheckListInfo(CheckListType checkListType) {
-        List<CheckList> lists = checkListType.getCheckLists();
-        return lists.stream()
-                .map(list -> {
-                    SelfCheckDTO.CheckListInfoDTO dto = new SelfCheckDTO.CheckListInfoDTO();
-                    dto.setId(list.getId());
-                    dto.setCheckList(list.getCheckList());
-                    dto.setIsChecked(false);
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
-
-    public List<SelfCheck> findResults(Long selfHistoryId) {
-        SelfHistory selfHistory = selfHistoryRepository.findById(selfHistoryId)
-                .orElseThrow(NotFoundHistory::new);
-
+    public List<SelfCheck> findResults(String userId, Long selfHistoryId) {
+        SelfHistory selfHistory = selfHistoryRepository.findById(selfHistoryId).orElseThrow(NotFoundHistory::new);
+        authenticateOwner(userId, selfHistory);
         return selfHistory.getSelfCheckList();
     }
 
     public CheckList findCheckList(Long id) {
         return checkListRepository.findById(id).orElseThrow(NotFoundCheckList::new);
+    }
+
+    private void authenticateOwner(String userId, SelfHistory selfHistory) {
+        if (!selfHistory.getUser().getId().equals(userId)) {
+          throw new NotOwnedSelfHistory();
+        }
     }
 }

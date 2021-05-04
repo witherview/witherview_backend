@@ -23,9 +23,13 @@ public class FeedBackChat {
     private String id;
     // compoundKey
     @NotNull(message = "피드백 보낸사람 아이디는 반드시 입력해야 합니다.")
-    private Long sendUserId;
+    private String sendUserId;
+    @NotNull(message = "피드백 보낸사람 이름은 반드시 입력해야 합니다.")
+    private String sendUserName; // 피드백 보낸사람 - 프론트에 표시될 이름
     @NotNull(message = "피드백 받는사람 아이디는 반드시 입력해야 합니다.")
-    private Long receivedUserId;
+    private String receivedUserId;
+    @NotNull(message = "피드백 받는사람 아이디는 반드시 입력해야 합니다.")
+    private String receivedUserName; // 피드백 받는사람 - 프론트에 표시될 이름
     @NotBlank(message = "피드백 메세지는 반드시 입력해야 합니다.")
     private Long studyHistoryId;
     

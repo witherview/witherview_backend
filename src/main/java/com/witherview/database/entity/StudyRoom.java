@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -25,7 +26,7 @@ public class StudyRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User host;
+    private User host; // host와 participant로 구분되어야 할 이유는? User - studyRoom N:M 관계면 충분하지 않나?
 
     @NotBlank
     @Column(nullable = false)
@@ -43,7 +44,7 @@ public class StudyRoom {
     @Column(nullable = false)
     private Integer maxUserCnt;
 
-    @ColumnDefault("'자유_기타'")
+    @ColumnDefault("'자유_기타'") // 정해진 필드명이 아니면 팅겨내야 할 것 같다
     private String category;
 
     @ColumnDefault("'무관'")
@@ -53,9 +54,11 @@ public class StudyRoom {
     private String job;
 
     @Column(columnDefinition = "DATE")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     @Column(columnDefinition = "TIME")
+    @DateTimeFormat(pattern = "HH:mm") // second 필요없음.
     private LocalTime time;
 
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -76,7 +79,7 @@ public class StudyRoom {
         this.maxUserCnt = 2;
     }
 
-    protected void updateHost(User host) {
+    public void updateHost(User host) {
         this.host = host;
     }
 
@@ -100,8 +103,7 @@ public class StudyRoom {
         this.nowUserCnt++;
     }
 
-    public void decreaseNowUserCnt() {
-        if(this.nowUserCnt - 1 <= 0) throw new EmptyStudyRoom();
-        this.nowUserCnt--;
+    public int decreaseNowUserCnt() {
+        return --this.nowUserCnt;
     }
 }

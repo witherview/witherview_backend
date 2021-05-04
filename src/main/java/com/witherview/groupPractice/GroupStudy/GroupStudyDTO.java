@@ -1,7 +1,6 @@
 package com.witherview.groupPractice.GroupStudy;
 
-import com.witherview.database.entity.StudyRoom;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class GroupStudyDTO {
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class StudyCreateDTO {
         @NotBlank(message = "방 제목은 반드시 입력해야 합니다.")
         @Length(min = 1, message = "방 제목은 1자 이상이어야 합니다.")
@@ -28,23 +27,13 @@ public class GroupStudyDTO {
         private String industry;
         private String job;
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate date;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
         private LocalTime time;
-
-        public StudyRoom toEntity() {
-            return StudyRoom.builder()
-                    .title(title)
-                    .description(description)
-                    .category(category)
-                    .industry(industry)
-                    .job(job)
-                    .date(date)
-                    .time(time)
-                    .build();
-        }
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class StudyUpdateDTO {
         @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
         private Long id;
@@ -59,20 +48,22 @@ public class GroupStudyDTO {
         private String industry;
         private String job;
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate date;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
         private LocalTime time;
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class StudyFeedBackDTO {
         @NotNull(message = " 아이디는 반드시 입력해야 합니다.")
         private Long studyRoomId;
 
         @NotNull(message = "스터디 연습내역 아이디는 반드시 입력해야 합니다.")
-        private Long historyId;
+        private Long studyHistoryId;
 
         @NotNull(message = "타겟 유저아이디는 반드시 입력해야 합니다.")
-        private Long targetUser;
+        private String receivedUser;
 
         @NotNull(message = "점수는 반드시 입력해야 합니다.")
         private Byte score;
@@ -85,6 +76,12 @@ public class GroupStudyDTO {
     public static class StudyRequestDTO {
         @NotNull(message = "방 아이디는 반드시 입력해야 합니다.")
         private Long id;
+    }
+
+    @Getter @Setter
+    public static class StudyHostDTO {
+        @NotBlank(message = "권한을 넘겨줄 호스트 아이디는 반드시 입력해야 합니다.")
+        private String newHostId;
     }
 
     @Getter @Setter
@@ -103,7 +100,7 @@ public class GroupStudyDTO {
 
     @Getter @Setter
     public static class ParticipantDTO {
-        private Long id;
+        private String id;
         private String email;
         private String name;
         private Long groupPracticeCnt;
@@ -114,7 +111,7 @@ public class GroupStudyDTO {
     @Getter @Setter
     public static class FeedBackResponseDTO {
         private Long id;
-        private Long targetUserId;
+        private String receivedUserId;
         private Byte score;
         private Boolean passOrFail;
     }

@@ -3,9 +3,9 @@ package com.witherview.groupPractice.GroupStudy;
 import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
 import com.witherview.groupPractice.exception.*;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
+import com.witherview.utils.GroupStudyMapper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,10 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class GroupStudyService {
-
+    private final GroupStudyMapper groupStudyMapper;
     private final StudyRoomRepository studyRoomRepository;
     private final StudyFeedbackRepository studyFeedbackRepository;
     private final StudyRoomParticipantRepository studyRoomParticipantRepository;
@@ -28,31 +27,31 @@ public class GroupStudyService {
     private final int pageSize = 6;
 
     @Transactional
-    public StudyRoom saveRoom(Long userId, GroupStudyDTO.StudyCreateDTO requestDto) {
-        StudyRoom studyRoom = requestDto.toEntity();
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
-
-        user.addHostedRoom(studyRoom);
+    public StudyRoom saveRoom(String userId, GroupStudyDTO.StudyCreateDTO requestDto) {
+        StudyRoom studyRoom = groupStudyMapper.toStudyRoomEntity(requestDto);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        studyRoom.updateHost(user);
         return studyRoomRepository.save(studyRoom);
     }
 
     @Transactional
-    public void updateRoom(Long userId, GroupStudyDTO.StudyUpdateDTO requestDto) {
-        StudyRoom studyRoom = findRoom(requestDto.getId());
+    public void updateRoom(String userId, Long roomId, GroupStudyDTO.StudyUpdateDTO requestDto) {
+        StudyRoom studyRoom = findRoom(roomId);
 
-        if(studyRoom.getHost().getId() != userId) {
+        if(!studyRoom.getHost().getId().equals(userId)) {
             throw new NotStudyRoomHost();
         }
+
         studyRoom.update(requestDto.getTitle(), requestDto.getDescription(),
-                        requestDto.getIndustry(), requestDto.getJob(),
-                        requestDto.getDate(), requestDto.getTime());
+                requestDto.getIndustry(), requestDto.getJob(),
+                requestDto.getDate(), requestDto.getTime());
     }
 
     @Transactional
-    public StudyRoom deleteRoom(Long id, Long userId) {
+    public StudyRoom deleteRoom(Long id, String userId) {
         StudyRoom studyRoom = findRoom(id);
 
-        if(studyRoom.getHost().getId() != userId) {
+        if(!studyRoom.getHost().getId().equals(userId)) {
             throw new NotStudyRoomHost();
         }
         studyRoomRepository.delete(studyRoom);
@@ -60,14 +59,14 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public StudyRoom joinRoom(Long id, Long userId) {
+    public StudyRoom joinRoom(Long id, String userId) {
         // 이미 참여하고 있는 방인 경우
         if(findParticipant(id, userId) != null) {
             throw new AlreadyJoinedStudyRoom();
         }
 
         StudyRoom studyRoom = findRoom(id);
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         StudyRoomParticipant studyRoomParticipant = StudyRoomParticipant.builder()
                                                                         .studyRoom(studyRoom)
                                                                         .user(user)
@@ -80,38 +79,47 @@ public class GroupStudyService {
     }
 
     @Transactional
-    public StudyRoom leaveRoom(Long id, Long userId) {
+    public StudyRoom leaveRoom(Long id, String userId) {
+        StudyRoom studyRoom = findRoom(id);
+
         // 참여하지 않은 방인 경우
         if(findParticipant(id, userId) == null) {
             throw new NotJoinedStudyRoom();
         }
-        StudyRoom studyRoom = findRoom(id);
-        studyRoom.decreaseNowUserCnt();
+        // 나가는 사람이 호스트인경우 -> 나갈 수 없음 (호스트 넘겨줘야함)
+        if(studyRoom.getHost().getId().equals(userId)) {
+            throw new HostNotLeaveStudyRoom();
+        }
+
         studyRoomParticipantRepository.deleteByStudyRoomIdAndUserId(id, userId);
+        // 아무도 없는 방인 경우 -> 삭제
+        if(studyRoom.decreaseNowUserCnt() == 0) studyRoomRepository.delete(studyRoom);
         return studyRoom;
     }
 
     @Transactional
-    public StudyFeedback createFeedBack(Long userId, GroupStudyDTO.StudyFeedBackDTO requestDto) {
+    public StudyFeedback createFeedBack(String userId, GroupStudyDTO.StudyFeedBackDTO requestDto) {
+        // 해당 스터디룸이 존재하는지 확인
         findRoom(requestDto.getStudyRoomId());
-        StudyHistory studyHistory = studyHistoryRepository.findById(requestDto.getHistoryId())
+
+        StudyHistory studyHistory = studyHistoryRepository.findById(requestDto.getStudyHistoryId())
                 .orElseThrow(NotFoundStudyHistory::new);;
 
-        User writtenUser = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
-        User targetUser = userRepository.findById(requestDto.getTargetUser()).orElseThrow(NotFoundUser::new);
+        User sendUser = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User receivedUser = userRepository.findById(requestDto.getReceivedUser()).orElseThrow(UserNotFoundException::new);
 
-        if(findParticipant(requestDto.getStudyRoomId(), writtenUser.getId()) == null) {
+        if(findParticipant(requestDto.getStudyRoomId(), sendUser.getId()) == null) {
             throw new NotJoinedStudyRoom();
         }
-        if(findParticipant(requestDto.getStudyRoomId(), targetUser.getId()) == null) {
+        if(findParticipant(requestDto.getStudyRoomId(), receivedUser.getId()) == null) {
             throw new NotCreatedFeedback();
         }
-        if(studyHistory.getUser().getId() != targetUser.getId()) {
+        if(!studyHistory.getUser().getId().equals(receivedUser.getId())) {
             throw new NotOwnedStudyHistory();
         }
         StudyFeedback studyFeedback = StudyFeedback.builder()
-                                                    .targetUser(targetUser)
-                                                    .writtenUser(writtenUser)
+                                                    .receivedUser(receivedUser)
+                                                    .sendUser(sendUser)
                                                     .score(requestDto.getScore())
                                                     .passOrFail(requestDto.getPassOrFail())
                                                     .build();
@@ -120,52 +128,62 @@ public class GroupStudyService {
         return studyFeedbackRepository.save(studyFeedback);
     }
 
+    @Transactional
+    public StudyRoom changeRoomHost(Long roomId, String oriHostId, String newHostId) {
+        StudyRoom studyRoom = findRoom(roomId);
+
+        // 바꿀 호스트가 해당 스터디룸 참가자인지 체크
+        if(findParticipant(roomId, newHostId) == null) {
+            throw new NotJoinedStudyRoom();
+        }
+        // 바꾸려고 하는 사람이 호스트인지 체크
+        if(!studyRoom.getHost().getId().equals(oriHostId)) throw new NotStudyRoomHost();
+
+        User newHost = userRepository.findById(newHostId).orElseThrow(UserNotFoundException::new);
+        studyRoom.updateHost(newHost);
+
+        return studyRoom;
+    }
+
     public StudyRoom findRoom(Long id) {
         return studyRoomRepository.findById(id)
                 .orElseThrow(NotFoundStudyRoom::new);
     }
 
-    public StudyRoomParticipant findParticipant(Long id, Long userId) {
-        return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId);
+    public StudyRoomParticipant findParticipant(Long id, String userId) {
+        return studyRoomParticipantRepository.findByStudyRoomIdAndUserId(id, userId).orElse(null);
     }
 
     public List<GroupStudyDTO.ParticipantDTO> findParticipatedUsers(Long id) {
         StudyRoom studyRoom = findRoom(id);
-        ModelMapper modelMapper = new ModelMapper();
-
         return studyRoom.getStudyRoomParticipants()
                 .stream()
                 .map(r -> {
                     User user = r.getUser();
-                    GroupStudyDTO.ParticipantDTO responseDto = modelMapper.map(user, GroupStudyDTO.ParticipantDTO.class);
-
-                    if(studyRoom.getHost().getId() == user.getId()) responseDto.setIsHost(true);
-                    else responseDto.setIsHost(false);
-
+                    var responseDto = groupStudyMapper.toParticipantDto(user);
+                    if (studyRoom.getHost().getId().equals(user.getId())) {
+                        responseDto.setIsHost(true);
+                    }
+                    else {
+                        responseDto.setIsHost(false);
+                    }
                     return responseDto;
                 })
                 .collect(Collectors.toList());
     }
 
-    public List<StudyRoom> findParticipatedRooms(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundUser::new);
-        return user.getParticipatedStudyRooms()
-                    .stream()
-                    .map(r -> r.getStudyRoom())
-                    .collect(Collectors.toList());
-    }
 
     public List<StudyRoom> findRooms(Integer current) {
         int page = current == null ? 0 : current;
         Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("date", "time").ascending());
-
-        return studyRoomRepository.findAll(pageRequest).getContent();
+        var result = studyRoomRepository.findAll(pageRequest).getContent();
+        return result;
     }
 
     public List<StudyRoom> findCategoryRooms(String category, Integer current) {
         int page = current == null ? 0 : current;
         Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("date", "time").ascending());
-
-        return studyRoomRepository.findAllByCategory(pageRequest, category);
+        var result = studyRoomRepository.findAllByCategory(pageRequest, category).getContent();
+        return result;
     }
 }

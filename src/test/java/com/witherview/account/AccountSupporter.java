@@ -3,14 +3,17 @@ package com.witherview.account;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.support.MockMvcSupporter;
+import com.witherview.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 
 @Transactional
+@ActiveProfiles("test")
 public abstract class AccountSupporter extends MockMvcSupporter {
     final String mainIndustry1 = "IT서비스";
     final String email = "hohoho@witherview.com";
@@ -29,11 +32,11 @@ public abstract class AccountSupporter extends MockMvcSupporter {
     final Long groupStudyCnt = 0L;
     final Long selfPracticeCnt = 0L;
     final Long questionListCnt = 0L;
-    final String interviewScore = "0.0";
+    final String interviewScore = "0.00";
     final Long passCnt = 0L;
     final Long failCnt = 0L;
-    final MockHttpSession mockHttpSession = new MockHttpSession();
-    Long userId = 0L;
+    String userId;
+    String token;
 
     @Autowired
     UserRepository userRepository;
@@ -42,16 +45,14 @@ public abstract class AccountSupporter extends MockMvcSupporter {
     PasswordEncoder passwordEncoder;
 
     @BeforeEach
-    public void 회원가입_세션생성_스터디룸생성() {
+    public void 회원가입_토큰생성_스터디룸생성() {
         // 회원가입
         User user = userRepository.save(new User(email1, passwordEncoder.encode(password), name,
-                mainIndustry1, subIndustry1, mainJob1, subJob1));
+                mainIndustry1, subIndustry1, mainJob1, subJob1, "01000000000"));
 
         userId = user.getId();
         user.uploadImg(profileImg);
+        token = new JwtUtils().createToken(user.getEmail(), user.getId());
 
-        // 세션생성
-        AccountSession accountSession = new AccountSession(userId, email1, name);
-        mockHttpSession.setAttribute("user", accountSession);
     }
 }

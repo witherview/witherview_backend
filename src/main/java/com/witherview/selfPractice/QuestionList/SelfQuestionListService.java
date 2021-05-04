@@ -5,37 +5,42 @@ import com.witherview.database.entity.User;
 import com.witherview.database.repository.QuestionListRepository;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotFoundQuestionList;
-import com.witherview.selfPractice.exception.NotFoundUser;
+import com.witherview.selfPractice.exception.UserNotFoundException;
+import com.witherview.utils.SelfQuestionListMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class SelfQuestionListService {
+    private final SelfQuestionListMapper questionListMapper;
     private final QuestionListRepository questionListRepository;
     private final UserRepository userRepository;
 
     @Transactional
-    public QuestionList saveList(Long userId, SelfQuestionListDTO.QuestionListSaveDTO requestDto) {
-        QuestionList questionList = requestDto.toEntity();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundUser());
-        user.addQuestionList(questionList);
-
+    public QuestionList saveList(String userId, SelfQuestionListDTO.QuestionListSaveDTO requestDto) {
+        // 해당 list의 owner인 사용자 확인
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        QuestionList questionList = questionListMapper.toQuestionList(requestDto);
+        questionList.setOwner(user);
         return questionListRepository.save(questionList);
     }
 
     @Transactional
-    public void updateList(List<SelfQuestionListDTO.QuestionListUpdateDTO> requestDto) {
-        requestDto.stream().forEach(dto -> {
+    public List<QuestionList> updateList(List<SelfQuestionListDTO.QuestionListUpdateDTO> requestDto) {
+        var result = requestDto.stream().map(dto -> {
             QuestionList questionList = findList(dto.getId());
             questionList.update(dto.getTitle(), dto.getEnterprise(), dto.getJob());
-        });
+            return questionList;
+        }).collect(Collectors.toList());
+        List<QuestionList> savedResult = (List) questionListRepository.saveAll(result);
+        return savedResult;
     }
 
     @Transactional
@@ -47,14 +52,14 @@ public class SelfQuestionListService {
 
     public QuestionList findList(Long id) {
         return questionListRepository.findById(id)
-                .orElseThrow(() -> new NotFoundQuestionList());
+                .orElseThrow(NotFoundQuestionList::new);
     }
 
     public List<QuestionList> findAllLists() {
-        return questionListRepository.findAll();
+        return (List) questionListRepository.findAll();
     }
 
-    public List<QuestionList> findAllLists(Long userId) {
+    public List<QuestionList> findAllLists(String userId) {
         return questionListRepository.findAllByOwnerId(userId);
     }
 }
