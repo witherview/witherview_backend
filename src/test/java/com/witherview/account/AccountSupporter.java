@@ -3,7 +3,6 @@ package com.witherview.account;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.UserRepository;
 import com.witherview.support.MockMvcSupporter;
-import com.witherview.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
@@ -52,7 +51,5 @@ public abstract class AccountSupporter extends MockMvcSupporter {
 
         userId = user.getId();
         user.uploadImg(profileImg);
-        token = new JwtUtils().createToken(user.getEmail(), user.getId());
-
     }
 }

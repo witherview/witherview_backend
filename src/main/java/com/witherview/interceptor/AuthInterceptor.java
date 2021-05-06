@@ -1,11 +1,6 @@
 package com.witherview.interceptor;
 
-import com.witherview.constant.SecurityConstant;
-import com.witherview.utils.JwtUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class AuthInterceptor implements HandlerInterceptor {
 
