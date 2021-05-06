@@ -7,7 +7,6 @@ import com.witherview.utils.AuthTokenParsing;
 import com.witherview.utils.SelfHistoryMapper;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class SelfHistoryController {
-    private final ModelMapper modelMapper;
     private final SelfHistoryMapper selfHistoryMapper;
     private final SelfHistoryService selfHistoryService;
 
@@ -52,11 +50,11 @@ public class SelfHistoryController {
     })
     @PostMapping(path = "/api/self/history/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
                                                    produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
-                                         @RequestParam("historyId") Long historyId,
+    public ResponseEntity<SelfHistoryDTO.SelfHistoryDefaultResponseDTO> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
+                                         @RequestParam("selfHistoryId") Long selfHistoryId,
                                          @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        SelfHistory selfHistory = selfHistoryService.uploadVideo(videoFile, historyId, userId);
+        SelfHistory selfHistory = selfHistoryService.uploadVideo(videoFile, selfHistoryId, userId);
         return new ResponseEntity<>(selfHistoryMapper.toResponseDto(selfHistory), HttpStatus.OK);
     }
 

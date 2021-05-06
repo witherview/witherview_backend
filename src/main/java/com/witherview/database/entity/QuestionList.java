@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Getter
+@Entity @Getter @Setter
 @NoArgsConstructor
 @Table(name = "tbl_question_list")
 public class QuestionList {
@@ -21,7 +21,6 @@ public class QuestionList {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @Setter
     private User owner;
 
     @NotBlank

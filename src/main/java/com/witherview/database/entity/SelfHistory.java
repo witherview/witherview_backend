@@ -3,12 +3,13 @@ package com.witherview.database.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Getter
+@Entity @Getter @Setter
 @NoArgsConstructor
 @Table(name = "tbl_self_study")
 public class SelfHistory extends CreatedBaseEntity {
@@ -32,10 +33,6 @@ public class SelfHistory extends CreatedBaseEntity {
     @Builder
     public SelfHistory(QuestionList questionList) {
         this.questionList = questionList;
-    }
-
-    protected void updateUser(User user) {
-        this.user = user;
     }
 
     public void updateSavedLocation(String savedLocation) {
