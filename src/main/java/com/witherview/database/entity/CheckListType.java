@@ -1,8 +1,6 @@
 package com.witherview.database.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -11,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@NoArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @Builder @AllArgsConstructor
 @Table(name = "tbl_checklist_type")
 public class CheckListType {
     @Id
@@ -21,12 +19,7 @@ public class CheckListType {
 
     @NotNull
     @NotBlank
-    private String checkListType;
-
-    @Builder
-    public CheckListType(String checkListType) {
-        this.checkListType = checkListType;
-    }
+    private String checkListField;
 
     @OneToMany(mappedBy = "checkListType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CheckList> checkLists = new ArrayList<>();
