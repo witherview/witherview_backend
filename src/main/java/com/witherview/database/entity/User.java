@@ -110,6 +110,7 @@ public class User {
     }
 
     public void addSelfHistory(SelfHistory selfHistory) {
+        selfHistory.setUser(this);
         this.selfHistories.add(selfHistory);
     }
 
