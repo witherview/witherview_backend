@@ -28,11 +28,12 @@ public enum ErrorCode {
     // Group-Practice
     NOT_FOUND_STUDYROOM(404, "GROUP-PRACTICE001", "해당 스터디룸이 없습니다."),
     ALREADY_JOIN_STUDYROOM(400, "GROUP-PRACTICE002", "이미 참여하고 있는 스터디룸입니다."),
-    NOT_JOIN_STUDYROOM(400, "GROUP-PRACTICE003", "참여하지 않은 스터디룸입니다."),
+    NOT_JOIN_STUDYROOM(400, "GROUP-PRACTICE003", "해당 스터디룸 참여자가 아닙니다."),
     ALREADY_FULL_STUDYROOM(400, "GROUP-PRACTICE004", "이미 스터디룸이 꽉 차 있습니다."),
     EMPTY_STUDYROOM(400, "GROUP-PRACTICE005", "스터디룸에 참여자가 없으면 안됩니다."),
     NOT_CREATED_FEEDBACK(404, "GROUP-PRACTICE006", "스터디룸에 참여하지 않은 사람에게 피드백을 줄 수 없습니다."),
     NOT_STUDYROOM_HOST(400, "GROUP-PRACTICE007", "해당 스터디룸의 호스트가 아닙니다."),
+    HOST_NOT_LEAVE_STUDYROOM(400, "GROUP-PRACTICE006", "호스트는 스터디 방을 나갈 수 없습니다. 호스트 권한을 변경해주세요."),
 
     // group-History
     NOT_FOUND_STUDYHISTORY(404, "GROUP-HISTORY001", "해당 스터디 연습 내역이 없습니다."),
@@ -41,6 +42,7 @@ public enum ErrorCode {
     // Self-History
     NOT_FOUND_HISTORY(404, "SELF-HISTORY001", "해당 혼자 연습 내역이 없습니다."),
     NOT_DELETED_FILE(500, "SELF_HISTORY002", "혼자 연습 영상 삭제에 실패하였습니다"),
+    NOT_OWNED_SELFHISTORY(400, "SELF_HISTORY003", "혼자 연습내역의 타겟 유저가 아닙니다."),
 
     // Self-Check
     NOT_FOUND_CHECKLIST(404, "SELF-CHECK001", "해당 체크리스트가 없습니다."),

@@ -7,7 +7,6 @@ import com.witherview.utils.AuthTokenParsing;
 import com.witherview.utils.GroupStudyMapper;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/group")
 public class GroupStudyController {
-    private final ModelMapper modelMapper;
     private final GroupStudyMapper groupStudyMapper;
     private final GroupStudyService groupStudyService;
 
@@ -131,7 +129,7 @@ public class GroupStudyController {
             @ApiIgnore Authentication authentication
     ) {
         List<GroupStudyDTO.ParticipantDTO> lists = groupStudyService.findParticipatedUsers(id);
-        return new ResponseEntity<>(modelMapper.map(lists, GroupStudyDTO.ParticipantDTO[].class), HttpStatus.OK);
+        return new ResponseEntity<>(lists, HttpStatus.OK);
     }
 
     @ApiOperation(value="스터디방에 참여")
@@ -155,14 +153,32 @@ public class GroupStudyController {
     public ResponseEntity<?> leaveRoom(@ApiParam(value = "나갈 방 id", required = true) @PathVariable("id") Long roomId,
                                        @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        // todo: 다른 사용자에게 host 넘기는 로직이 필요함.
         StudyRoom leftRoom = groupStudyService.leaveRoom(roomId, userId);
         return ResponseEntity.ok(groupStudyMapper.toDeleteResponseDto(leftRoom));
     }
 
+    @ApiOperation(value = "스터디방 호스트 권한 넘기기")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name="authorization", paramType = "header")
+    })
+    @PatchMapping(path = "/room/{id}/host")
+    public ResponseEntity<?> changeHost(@ApiParam(value = "권한바꿀 방 id", required = true) @PathVariable("id") Long roomId,
+                                        @RequestBody @Valid GroupStudyDTO.StudyHostDTO requestDto,
+                                        BindingResult error,
+                                        @ApiIgnore Authentication authentication) {
+        if(error.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        StudyRoom studyRoom = groupStudyService.changeRoomHost(roomId, userId, requestDto.getNewHostId());
+        return ResponseEntity.ok(groupStudyMapper.toResponseDto(studyRoom));
+    }
+
     @ApiOperation(value="스터디 피드백")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="authorization", paramType = "header")
+        @ApiImplicitParam(name="authorization", paramType = "header")
     })
     @PostMapping(path = "/feedback", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> feedback(@RequestBody @Valid GroupStudyDTO.StudyFeedBackDTO requestDto,

@@ -1,6 +1,5 @@
 package com.witherview.selfPractice.history;
 
-import com.witherview.account.AccountSession;
 import com.witherview.database.entity.QuestionList;
 import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
@@ -11,6 +10,7 @@ import com.witherview.database.repository.UserRepository;
 import com.witherview.selfPractice.exception.NotDeletedFile;
 import com.witherview.selfPractice.exception.NotFoundHistory;
 import com.witherview.selfPractice.exception.NotFoundQuestionList;
+import com.witherview.selfPractice.exception.NotOwnedSelfHistory;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.video.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -100,7 +100,7 @@ public class SelfHistoryService {
 
     private void authenticateOwner(User user, SelfHistory selfHistory) {
         if (!user.getId().equals(selfHistory.getUser().getId())) {
-            throw new NotFoundHistory();
+            throw new NotOwnedSelfHistory();
         }
     }
 }

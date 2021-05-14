@@ -79,6 +79,12 @@ public class GroupStudyDTO {
     }
 
     @Getter @Setter
+    public static class StudyHostDTO {
+        @NotBlank(message = "권한을 넘겨줄 호스트 아이디는 반드시 입력해야 합니다.")
+        private String newHostId;
+    }
+
+    @Getter @Setter
     public static class ResponseDTO {
         private Long id;
         private String title;

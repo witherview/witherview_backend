@@ -30,7 +30,7 @@ public class GroupStudyService {
     public StudyRoom saveRoom(String userId, GroupStudyDTO.StudyCreateDTO requestDto) {
         StudyRoom studyRoom = groupStudyMapper.toStudyRoomEntity(requestDto);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        user.addHostedRoom(studyRoom);
+        studyRoom.updateHost(user);
         return studyRoomRepository.save(studyRoom);
     }
 
@@ -80,13 +80,20 @@ public class GroupStudyService {
 
     @Transactional
     public StudyRoom leaveRoom(Long id, String userId) {
+        StudyRoom studyRoom = findRoom(id);
+
         // 참여하지 않은 방인 경우
         if(findParticipant(id, userId) == null) {
             throw new NotJoinedStudyRoom();
         }
-        StudyRoom studyRoom = findRoom(id);
-        studyRoom.decreaseNowUserCnt();
+        // 나가는 사람이 호스트인경우 -> 나갈 수 없음 (호스트 넘겨줘야함)
+        if(studyRoom.getHost().getId().equals(userId)) {
+            throw new HostNotLeaveStudyRoom();
+        }
+
         studyRoomParticipantRepository.deleteByStudyRoomIdAndUserId(id, userId);
+        // 아무도 없는 방인 경우 -> 삭제
+        if(studyRoom.decreaseNowUserCnt() == 0) studyRoomRepository.delete(studyRoom);
         return studyRoom;
     }
 
@@ -119,6 +126,23 @@ public class GroupStudyService {
 
         studyHistory.addStudyFeedBack(studyFeedback);
         return studyFeedbackRepository.save(studyFeedback);
+    }
+
+    @Transactional
+    public StudyRoom changeRoomHost(Long roomId, String oriHostId, String newHostId) {
+        StudyRoom studyRoom = findRoom(roomId);
+
+        // 바꿀 호스트가 해당 스터디룸 참가자인지 체크
+        if(findParticipant(roomId, newHostId) == null) {
+            throw new NotJoinedStudyRoom();
+        }
+        // 바꾸려고 하는 사람이 호스트인지 체크
+        if(!studyRoom.getHost().getId().equals(oriHostId)) throw new NotStudyRoomHost();
+
+        User newHost = userRepository.findById(newHostId).orElseThrow(UserNotFoundException::new);
+        studyRoom.updateHost(newHost);
+
+        return studyRoom;
     }
 
     public StudyRoom findRoom(Long id) {

@@ -4,20 +4,15 @@ import com.witherview.database.entity.CheckListType;
 import com.witherview.database.entity.SelfCheck;
 import com.witherview.selfPractice.CheckList.SelfCheckDTO;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface SelfCheckMapper {
-    // service
+    @Mapping(target= "checkListTypeId", source = "id")
     SelfCheckDTO.CheckListResponseDTO toResponseDto(CheckListType checkListType);
-    List<SelfCheckDTO.CheckListResponseDTO> toResponseDtoList(List<CheckListType> checkListType);
-    List<SelfCheck> toSelfCheckEntityList(List<SelfCheckDTO.CheckListDTO> checkListDTOs);
     SelfCheck toSelfCheckEntity(SelfCheckDTO.CheckListDTO checkListDTO);
-    // controller
     SelfCheckDTO.CheckListResultDTO[] toResultArray(List<SelfCheck> selfChecksList);
-    SelfCheckDTO.CheckListResponseDTO[] toResponseArray(List<SelfCheckDTO.CheckListResponseDTO> checkListResponseDTOList);
-
-
 }

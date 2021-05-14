@@ -10,6 +10,7 @@ import com.witherview.database.repository.SelfCheckRepository;
 import com.witherview.database.repository.SelfHistoryRepository;
 import com.witherview.selfPractice.exception.NotFoundCheckList;
 import com.witherview.selfPractice.exception.NotFoundHistory;
+import com.witherview.selfPractice.exception.NotOwnedSelfHistory;
 import com.witherview.utils.SelfCheckMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 @Transactional(readOnly = true)
 public class SelfCheckService {
@@ -36,9 +38,7 @@ public class SelfCheckService {
         if (!selfHistory.getUser().getId().equals(userId)) {
             throw new NotFoundHistory();
         }
-
-        // 혼자연습의 체크리스트 영역 덮어쓰기. (중복저장 문제 해결을 위해)
-//        selfHistory.setSelfCheckList(new ArrayList<>());
+        authenticateOwner(userId, selfHistory);
         List<SelfCheck> result = new ArrayList<>();
         for (var data: requestDto.getCheckLists()) {
             SelfCheck selfCheck = selfCheckMapper.toSelfCheckEntity(data);
@@ -47,20 +47,25 @@ public class SelfCheckService {
         return selfHistory.getSelfCheckList();
     }
 
-//    public List<SelfCheckDTO.CheckListResponseDTO> findAll(String userId) {
-//        List<CheckListType> listTypes = checkListTypeRepository.findAll();
-//        return selfCheckMapper.toResponseDtoList(listTypes);
-//    }
+    public List<SelfCheckDTO.CheckListResponseDTO> findAllCheckLists() {
+        List<CheckListType> listTypes = checkListTypeRepository.findAll();
+        return listTypes.stream().map(e -> selfCheckMapper.toResponseDto(e)).collect(Collectors.toList());
+    }
 
     @Transactional
-    public List<SelfCheck> findResults(Long selfHistoryId) {
-        SelfHistory selfHistory = selfHistoryRepository.findById(selfHistoryId)
-                .orElseThrow(NotFoundHistory::new);
-
+    public List<SelfCheck> findResults(String userId, Long selfHistoryId) {
+        SelfHistory selfHistory = selfHistoryRepository.findById(selfHistoryId).orElseThrow(NotFoundHistory::new);
+        authenticateOwner(userId, selfHistory);
         return selfHistory.getSelfCheckList();
     }
 
     public CheckList findCheckList(Long id) {
         return checkListRepository.findById(id).orElseThrow(NotFoundCheckList::new);
+    }
+
+    private void authenticateOwner(String userId, SelfHistory selfHistory) {
+        if (!selfHistory.getUser().getId().equals(userId)) {
+          throw new NotOwnedSelfHistory();
+        }
     }
 }

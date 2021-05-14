@@ -57,9 +57,6 @@ public class User {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionList> questionLists = new ArrayList<>();
 
-    @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StudyRoom> hostedStudyRooms = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoomParticipant> participatedStudyRooms = new ArrayList<>();
 
@@ -93,11 +90,6 @@ public class User {
     public void addQuestionList(QuestionList questionList) {
         questionList.updateOwner(this);
         this.questionLists.add(questionList);
-    }
-
-    public void addHostedRoom(StudyRoom studyRoom) {
-        studyRoom.updateHost(this);
-        this.hostedStudyRooms.add(studyRoom);
     }
 
     public void addStudyHistory(StudyHistory studyHistory) {
