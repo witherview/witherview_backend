@@ -1,11 +1,11 @@
 server:
   port: 8080
-  host: localhost
-  url: http://localhost:8080/
+  host: 15.164.232.147
+  url: http://15.164.232.147:8080/
 
 upload:
   location: /root/videos/
-  img-location: /root/profiles/
+  img-location: /home/ubuntu/witherview_backend/profiles
 
 ffmpeg:
   path: /root/ffmpeg_sources/ffmpeg/
@@ -23,21 +23,21 @@ spring:
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://172.31.32.53:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
 
   redis:
-    host: localhost
+    host: 172.31.32.53
     port: 6379
 
   data:
     mongodb:
-      host: localhost
+      host: 172.31.32.53
       port: 27017
       database: witherview
       auto-index-creation: true
 
   rabbitmq:
-    host: localhost
+    host: 172.31.32.53
     username: witherview
     password: witherview
     port: 5672
@@ -73,19 +73,23 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/auth/realms/witherview
+          issuer-uri: http://52.79.202.205:8080/auth/realms/witherview
       client:
         registration:
           witherview:
             client-id: witherview
-            client-secret: fc04d0a1-29a4-4a9d-abdb-8ec8d034dc90 # config 따로 정리할 때 값 변경 필요
+            client-secret: ed70fa2e-c610-470f-b8d8-1f73fb33504e # config 따로 정리할 때 값 변경 필요
             scope: openid
             authorization-grant-type: password
         provider:
           witherview:
-            token-uri: http://localhost:8180/auth/realms/witherview/protocol/openid-connect/token
+            token-uri: http://52.79.202.205:8080/auth/realms/witherview/protocol/openid-connect/token
             username-attribute: preferred_username
 
+keycloak:
+  realm: witherview
+  resource: witherview
+  auth-server-url: http://localhost:8180/auth
 
 logging:
   level:

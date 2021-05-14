@@ -31,11 +31,12 @@ public class SelfCheckController {
     private final SelfCheckService selfCheckService;
     private final CustomValidator customValidator;
 
-    @ApiOperation(value="혼자 연습 후 셀프 체크리스트 등록")
+
+    @ApiOperation(value="혼자연습 체크리스트 결과 등록")
     @ApiImplicitParams({
             @ApiImplicitParam(name="Authorization", paramType = "header")
     })
-    @PostMapping(path = "/api/self/checklist", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(path = "/api/self/checklist/result", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> saveCheckList(@RequestBody @Valid SelfCheckDTO.SelfCheckRequestDTO requestDto,
                                            BindingResult error,
@@ -69,7 +70,7 @@ public class SelfCheckController {
         List<SelfCheckDTO.CheckListResponseDTO> lists = selfCheckService.findAllCheckLists();
         return new ResponseEntity<>(lists, HttpStatus.OK);
     }
-
+  
     @ApiOperation(value="혼자 연습내역 체크리스트 결과 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="Authorization", paramType = "header")

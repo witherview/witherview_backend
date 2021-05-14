@@ -74,6 +74,7 @@ public class AccountDTO {
         private String subIndustry;
         private String mainJob;
         private String subJob;
+        private String phoneNumber;
     }
 
     @Getter @Setter

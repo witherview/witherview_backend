@@ -1,38 +1,35 @@
 package com.witherview.database.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Getter
-@NoArgsConstructor
+@Getter @Setter @Builder
+@NoArgsConstructor @AllArgsConstructor
 @Table(name = "tbl_self_check")
 public class SelfCheck {
     @Id
     @GeneratedValue
     private Long id;
 
+    private Long idx;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "self_history_id", nullable = false)
     private SelfHistory selfHistory;
 
     @NotNull
-    private Long checkListId;
+    private Long checkListTypeId;
 
     @NotNull
     private Boolean isChecked;
 
-    @Builder
-    public SelfCheck(Long checkListId, Boolean isChecked) {
-        this.checkListId = checkListId;
-        this.isChecked = isChecked;
-    }
+    @NotNull
+    private String checkListField;
 
-    protected void updateSelfHistory(SelfHistory selfHistory) {
+    public void updateSelfHistory(SelfHistory selfHistory) {
         this.selfHistory = selfHistory;
     }
 }
