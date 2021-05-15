@@ -20,7 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
     // static 리소스는 따로 authentication을 적용하지 않음.
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -29,7 +28,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         );
         web.ignoring().antMatchers(
                 "/swagger-resources/**", "/v2/api-docs",
-                "/webjars/**", "/swagger-ui.html", "/swagger/**");
+                "/webjars/**", "/swagger-ui.html", "/swagger/**", "/profiles/**");
+        // todo: 로컬이미지 접근을 위해 일시적으로 풀어둠. aws s3로 저장할 경우 profiles/ 경로는 제외.
     }
 
     @Override

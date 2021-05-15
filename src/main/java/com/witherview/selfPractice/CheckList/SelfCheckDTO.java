@@ -19,8 +19,14 @@ public class SelfCheckDTO {
 
     @Getter @Setter
     public static class CheckListDTO {
+        @NotNull
+        private Long idx;
+
         @NotNull(message = "체크리스트 아이디는 반드시 입력해야 합니다.")
-        private Long checkListId;
+        private Long checkListTypeId;
+
+        @NotNull(message = "체크리스트 항목은 반드시 입력해야 합니다.")
+        private String checkListField;
 
         @NotNull(message = "체크 여부는 반드시 입력해야 합니다.")
         private Boolean isChecked;
@@ -42,8 +48,8 @@ public class SelfCheckDTO {
 
     @Getter @Setter
     public static class CheckListResultDTO {
-        private Long id;
-        private Long checkListId;
+        private Long idx;
+        private Long checkListTypeId;
         private Boolean isChecked;
     }
 }

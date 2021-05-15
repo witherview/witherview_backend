@@ -8,6 +8,7 @@ import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.utils.AccountMapper;
+import com.witherview.utils.GenerateRandomId;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ public class AccountService {
                 .subJob(dto.getSubJob())
                 .phoneNumber(dto.getPhoneNumber())
                 .build();
-
+        user.setId(new GenerateRandomId().generateId());
         String title = "기본 질문 리스트";
         String enterprise = "공통";
         String job = "공통";
