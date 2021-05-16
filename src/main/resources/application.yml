@@ -89,7 +89,7 @@ spring:
 keycloak:
   realm: witherview
   resource: witherview
-  auth-server-url: http://localhost:8180/auth
+  auth-server-url: http://52.79.202.205:8080/auth
 
 logging:
   level:
