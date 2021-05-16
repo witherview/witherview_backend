@@ -57,7 +57,7 @@ public class SelfCheckController {
         }
 
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        List<SelfCheck> selfChecks = selfCheckService.save(userId, requestDto);
+        List<SelfCheck> selfChecks = selfCheckService.save(requestDto, userId);
         return new ResponseEntity<>(selfCheckMapper.toResultArray(selfChecks), HttpStatus.CREATED);
     }
 
