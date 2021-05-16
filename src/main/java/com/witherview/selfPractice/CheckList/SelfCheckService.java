@@ -21,9 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
-@Transactional(readOnly = true)
 public class SelfCheckService {
     private final SelfHistoryRepository selfHistoryRepository;
     private final SelfCheckRepository selfCheckRepository;
