@@ -9,6 +9,7 @@ import com.witherview.utils.AccountMapper;
 import com.witherview.utils.AuthTokenParsing;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -135,12 +136,46 @@ public class AccountController {
     public ResponseEntity<?> uploadProfile(
             @ApiIgnore Authentication authentication,
             @RequestParam("profileImg") MultipartFile profileImg) throws URISyntaxException {
-
+        // todo: 이미지 파일이 이미 있는 경우 -> 기존 이미지 삭제 후 업로드하는 로직 필요.
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        User user = accountService.uploadProfile(userId, profileImg);
+        User user = accountService.uploadProfileOnAWS(userId, profileImg);
         var result = accountMapper.toUploadProfile(user);
         URI uri = new URI(result.getProfileImg());
         return ResponseEntity.created(uri).body("");
+    }
+
+    @ApiOperation(value="프로필 이미지파일 받기")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
+    // todo: 프론트에서 파일을 받는 형태가 어떠면 좋을지 협의 필요. (현재는 바이트 스트림.)
+    @GetMapping("/api/myinfo/profile/image")
+    public ResponseEntity<ByteArrayResource> downloadProfileImage(
+            @ApiIgnore Authentication authentication
+    ) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        byte[] data = accountService.getFileFromS3(userId);
+        ByteArrayResource resource = new ByteArrayResource(data);
+        String file = "profile_image";
+        return ResponseEntity
+                .ok()
+                .contentLength(data.length)
+                .header("Content-type", "application/octet-stream")
+                .header("Content-disposition", "attachment; filename=\"" + file + "\"")
+                .body(resource);
+    }
+    
+    @ApiOperation(value="프로필 이미지 삭제")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", paramType = "header")
+    })
+    @DeleteMapping("/api/myinfo/profile/image")
+    public ResponseEntity<?> deleteProfileImage(
+            @ApiIgnore Authentication authentication
+    ) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        accountService.deleteFileFromS3(userId);
+        return ResponseEntity.ok().body("");
     }
 
     // for keycloak Authentication API only.
