@@ -164,7 +164,7 @@ public class AccountController {
                 .header("Content-disposition", "attachment; filename=\"" + file + "\"")
                 .body(resource);
     }
-    
+
     @ApiOperation(value="프로필 이미지 삭제")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")

@@ -230,7 +230,6 @@ public class AccountService {
         String fileName = user.getProfileImg();
         if (!fileName.isEmpty() && (fileName != null)) {
             s3Client.deleteObject(bucketName, fileName);
-            return fileName + " removed.";
         }
         user.setProfileImg(null);
         return null;
