@@ -24,6 +24,13 @@ spring:
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://172.31.32.53:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+  hikari:
+    pool-name: SpringBootJPAHikariCP
+    maximun-pool-size: 10
+    connection-timeout: 10000
+    validation-timeout: 10000
+    max-lifetime: 580000
+    connection-init-ql: set wait_timeout = 600
 
   redis:
     host: 172.31.32.53
