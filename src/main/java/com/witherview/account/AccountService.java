@@ -4,19 +4,15 @@ import com.witherview.account.exception.DuplicateEmailException;
 import com.witherview.account.exception.InvalidLoginException;
 import com.witherview.account.exception.NotEqualPasswordException;
 import com.witherview.account.exception.NotSavedProfileImgException;
+import com.witherview.account.exception.StudyHostNotWithdrawUser;
 import com.witherview.database.entity.*;
 import com.witherview.database.repository.*;
 import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.utils.AccountMapper;
 import com.witherview.utils.GenerateRandomId;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +34,7 @@ public class AccountService {
 
     private final UserRepository userRepository;
     private final StudyFeedbackRepository studyFeedbackRepository;
+    private final QuestionListRepository questionListRepository;
     private final QuestionRepository questionRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountMapper accountMapper;
@@ -76,12 +73,14 @@ public class AccountService {
                 .phoneNumber(dto.getPhoneNumber())
                 .build();
         user.setId(new GenerateRandomId().generateId());
+        var savedUser = userRepository.save(user);
+
         String title = "기본 질문 리스트";
         String enterprise = "공통";
         String job = "공통";
 
         // todo: 질문 리스트를 쉽게 수정하거나 변경할 수 있는 로직이 있다면 좋을 것 같다.
-        QuestionList questionList = new QuestionList(user, title, enterprise, job);
+        QuestionList questionList = new QuestionList(savedUser.getId(), title, enterprise, job);
         List<String> list = new ArrayList<>();
         list.add("간단한 자기소개 해주세요."); list.add("이 직무를 선택하게 된 이유가 무엇인가요?");
         list.add("지원 직무의 핵심 역량은 무엇이라고 생각하나요?");  list.add("그 역량을 갖추기 위해 어떤 노력을 했는지 구체적으로 말씀해 주시겠어요?");
@@ -95,8 +94,7 @@ public class AccountService {
         for (int i = 0; i < list.size(); i++) {
             questionList.addQuestion(new Question(list.get(i), "", i + 1));
         }
-        user.addQuestionList(questionList);
-        var savedUser = userRepository.save(user);
+        questionListRepository.save(questionList);
         return savedUser;
     }
     @Transactional
@@ -129,7 +127,6 @@ public class AccountService {
 
         var interviewScore =
                 studyFeedbackRepository.getAvgInterviewScoreById(userId).orElse(0d);
-        System.out.println(interviewScore);
         var passFailData = studyFeedbackRepository.getPassOrFailCountById(userId);
         Long passCnt = 0l;;
         if (passFailData.get(0)[1] != null) {
@@ -184,8 +181,19 @@ public class AccountService {
         return response.getBody();
     }
 
+    @Transactional
+    public void withdrawUser(String userId) {
+        User user = findUserById(userId);
+        // 스터디룸 호스트인 경우 -> 회원탈퇴 실패
+        user.getParticipatedStudyRooms().forEach(e -> {
+            if(e.getStudyRoom().getHost().equals(userId)) throw new StudyHostNotWithdrawUser();
+        });
+        // 셀프 연습영상 삭제
+        // 그룹 스터디 영상 삭제
+        userRepository.delete(user);
+    }
+
     public boolean isPasswordEquals(String userId, String password) {
-//        System.out.println(email +" " + password);
         var dbPassword = findUserById(userId).getEncryptedPassword();
         var result = passwordEncoder.matches(password, dbPassword);
         return result;
