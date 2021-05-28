@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface QuestionListRepository extends CrudRepository<QuestionList, Long> {
 
-    List<QuestionList> findAllByOwnerId(String ownerId);
+    List<QuestionList> findAllByUserId(String userId);
 
-    @Query("select count(q) from QuestionList q where q.owner.id = :ownerId")
+    @Query("select count(q) from QuestionList q where q.userId = :ownerId")
     Long CountByOwnerId(@Param("ownerId") String ownerId);
 }

@@ -28,7 +28,7 @@ public class SelfQuestionListService {
         // 해당 list의 owner인 사용자 확인
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         QuestionList questionList = questionListMapper.toQuestionList(requestDto);
-        questionList.setOwner(user);
+        questionList.setUserId(user.getId());
         return questionListRepository.save(questionList);
     }
 
@@ -39,8 +39,8 @@ public class SelfQuestionListService {
             questionList.update(dto.getTitle(), dto.getEnterprise(), dto.getJob());
             return questionList;
         }).collect(Collectors.toList());
-        List<QuestionList> savedResult = (List) questionListRepository.saveAll(result);
-        return savedResult;
+
+        return result;
     }
 
     @Transactional
@@ -60,6 +60,6 @@ public class SelfQuestionListService {
     }
 
     public List<QuestionList> findAllLists(String userId) {
-        return questionListRepository.findAllByOwnerId(userId);
+        return questionListRepository.findAllByUserId(userId);
     }
 }
