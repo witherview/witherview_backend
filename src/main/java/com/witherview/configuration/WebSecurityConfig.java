@@ -53,6 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
              .antMatchers(HttpMethod.POST, SecurityConstant.SIGN_UP_URL).permitAll()
              .antMatchers(HttpMethod.GET, "/oauth/user/*").permitAll()
              .antMatchers(HttpMethod.POST, "/oauth/user").permitAll()
+             .antMatchers(HttpMethod.GET, "/api/self/questionList").permitAll()
              .anyRequest().authenticated() // todo: 일단 모든 요청을 통과하도록 설정. 삭제 필요
         .and()
             .oauth2ResourceServer()

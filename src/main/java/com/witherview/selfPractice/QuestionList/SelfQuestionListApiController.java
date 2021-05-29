@@ -51,7 +51,7 @@ public class SelfQuestionListApiController {
     // 토큰 없으면 해당 사용자가 등록한 리스트 전체, 토큰 있으면 해당 사용자 소유의 리스트.
     @ApiOperation(value="질문리스트 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="authorization - 값 없을 시 전체 질문리스트 조회.", paramType = "header")
+            @ApiImplicitParam(name="authorization", paramType = "header")
     })
     @GetMapping(path = "/api/self/questionList/{id}")
     public ResponseEntity<?> findList(
@@ -62,10 +62,11 @@ public class SelfQuestionListApiController {
         return new ResponseEntity<>(selfQuestionListMapper.toResponseDtoArray(lists), HttpStatus.OK);
     }
 
-    @ApiOperation(value="질문리스트 조회")
+    @ApiOperation(value="질문리스트 전체 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization - 값 없을 시 전체 질문리스트 조회.", paramType = "header")
     })
+    // todo: pagination과 같은, 리스트 전체를 내리는 방법 대신 적용할 게 뭔지 고민해봐야 함.
     @GetMapping(path = "/api/self/questionList")
     public ResponseEntity<?> findAllList(
             @ApiIgnore Authentication authentication) {
