@@ -18,7 +18,10 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(400, "AUTH001", "중복된 이메일 입니다. 다른 이메일을 사용해 주세요."),
     NOT_EQUAL_PASSWORD(400, "AUTH002", "입력하신 두 비밀번호가 일치하지 않습니다."),
     INVALID_LOGIN(401, "AUTH003", "입력하신 이메일 혹은 비밀번호가 일치하지 않습니다."),
-    NOT_SAVED_PROFILE(500, "AUTH004", "프로필 이미지를 저장하는데 실패하였습니다."),
+
+    // Account
+    NOT_SAVED_PROFILE(500, "ACCOUNT001", "프로필 이미지를 저장하는데 실패하였습니다."),
+    STUDYHOST_NOT_WITHDRAW_USER(404, "ACCOUNT002", "호스트 권한을 넘긴 후 회원탈퇴를 진행해주세요."),
 
     // Self-Practice
     NOT_FOUND_USER(404, "SELF-PRACTICE001", "해당 유저가 없습니다."),

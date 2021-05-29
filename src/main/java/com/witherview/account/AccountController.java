@@ -4,7 +4,6 @@ import com.witherview.database.entity.StudyRoom;
 import com.witherview.database.entity.User;
 import com.witherview.exception.ErrorCode;
 import com.witherview.exception.ErrorResponse;
-import com.witherview.groupPractice.GroupStudy.GroupStudyService;
 import com.witherview.utils.AccountMapper;
 import com.witherview.utils.AuthTokenParsing;
 import io.swagger.annotations.*;
@@ -30,7 +29,6 @@ import java.util.List;
 public class AccountController {
     private final AccountMapper accountMapper;
     private final AccountService accountService;
-    private final GroupStudyService groupStudyService;
 
     @ApiOperation(value="회원가입")
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -102,7 +100,6 @@ public class AccountController {
             @ApiParam(value = "조회할 page (디폴트 값 = 0)")
             @RequestParam(value = "page", required = false) Integer current,
             @ApiIgnore Authentication authentication) {
-        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         List<StudyRoom> lists = accountService.findRooms(userId);
         return ResponseEntity.ok(accountMapper.toResponseDtoArray(lists));
@@ -121,7 +118,6 @@ public class AccountController {
             ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
-        String email = AuthTokenParsing.getAuthClaimValue(authentication, "email");
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         User user = accountService.updateMyInfo(userId, updateMyInfoDTO);
         var result = accountMapper.toUpdateMyInfo(user);
@@ -176,6 +172,18 @@ public class AccountController {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         accountService.deleteFileFromS3(userId);
         return ResponseEntity.ok().body("");
+
+    @ApiOperation(value = "회원 탈퇴")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name="authorization", paramType = "header")
+    })
+    @DeleteMapping(path="/withdraw")
+    public ResponseEntity<?> withdrawUser(
+        @ApiIgnore Authentication authentication) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        accountService.withdrawUser(userId);
+        return ResponseEntity.ok("회원 탈퇴 성공");
+
     }
 
     // for keycloak Authentication API only.

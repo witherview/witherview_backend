@@ -118,8 +118,8 @@ public class GroupStudyService {
             throw new NotOwnedStudyHistory();
         }
         StudyFeedback studyFeedback = StudyFeedback.builder()
-                                                    .receivedUser(receivedUser)
-                                                    .sendUser(sendUser)
+                                                    .receivedUser(receivedUser.getId())
+                                                    .sendUser(sendUser.getId())
                                                     .score(requestDto.getScore())
                                                     .passOrFail(requestDto.getPassOrFail())
                                                     .build();

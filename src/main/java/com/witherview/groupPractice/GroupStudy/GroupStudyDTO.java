@@ -111,7 +111,7 @@ public class GroupStudyDTO {
     @Getter @Setter
     public static class FeedBackResponseDTO {
         private Long id;
-        private String receivedUserId;
+        private String receivedUser;
         private Byte score;
         private Boolean passOrFail;
     }

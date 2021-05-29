@@ -19,7 +19,5 @@ public interface GroupStudyMapper {
     GroupStudyDTO.ResponseDTO toResponseDto(StudyRoom studyRoom);
     GroupStudyDTO.ResponseDTO[] toResponseDtoArray(List<StudyRoom> studyRoomList);
     GroupStudyDTO.DeleteResponseDTO toDeleteResponseDto(StudyRoom studyRoom);
-    @Mapping(source = "receivedUser.id", target = "receivedUserId")
     GroupStudyDTO.FeedBackResponseDTO toFeedBackResponseDto(StudyFeedback studyFeedback);
-
 }

@@ -67,7 +67,7 @@ public class GroupStudyController {
     })
     @PatchMapping(value = "/room/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateRoom(
-            @ApiParam(value = "조회할 방 id") @PathVariable("id") Long roomId,
+            @ApiParam(value = "수정할 방 id") @PathVariable("id") Long roomId,
             @RequestBody @Valid GroupStudyDTO.StudyUpdateDTO requestDto,
             BindingResult error,
             @ApiIgnore Authentication authentication) {

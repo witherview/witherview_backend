@@ -22,8 +22,7 @@ public class SelfHistoryDTO {
     public static class SelfHistoryResponseDTO {
         private Long id;
         private Long questionListId;
-        private String questionListEnterprise;
-        private String questionListJob;
+        private String historyTitle;
         private String savedLocation;
         private LocalDateTime createdAt;
     }
