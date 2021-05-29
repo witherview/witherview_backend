@@ -59,7 +59,20 @@ public class SelfQuestionListService {
         return (List) questionListRepository.findAll();
     }
 
-    public List<QuestionList> findAllLists(String userId) {
-        return questionListRepository.findAllByUserId(userId);
+    public List<QuestionList> findLists(String userId, Long listId) {
+        if (userId == null) {
+            return findAllLists(); // 이 부분은 추후에 페이지네이션 등으로 처리해야 할 것 같다.
+        }
+        // userid만 있고 questionList 값이 null이면, 해당 사용자의 QuestionListId 전부 가져오기.
+        if (listId == null){
+            return questionListRepository.findAllByUserId(userId);
+        }
+        else {
+            return questionListRepository.findByUserIdAndId(userId, listId);
+        }
+
+    }
+    public List<QuestionList> findSampleList(String userId){
+        return questionListRepository.findFirstByUserId(userId);
     }
 }
