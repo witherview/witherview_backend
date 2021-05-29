@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity @Getter @Setter
 @NoArgsConstructor
-@Table(name = "tbl_question_list")
+@Table(name = "tbl_question_list", indexes = {@Index(name = "user", columnList = "userId")})
 public class QuestionList {
 
     @Id @GeneratedValue
