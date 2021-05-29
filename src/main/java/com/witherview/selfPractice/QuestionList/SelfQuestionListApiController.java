@@ -48,15 +48,30 @@ public class SelfQuestionListApiController {
         return new ResponseEntity<>(selfQuestionListMapper.toResponseDto(questionList), HttpStatus.CREATED);
     }
 
-    // 모든 질문 리스트 조회
+    // 질문 리스트 조회
+    // 토큰 없으면 전체리스트, 토큰 있으면 해당 사용자 소유의 리스트.
     @ApiOperation(value="질문리스트 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization - 값 없을 시 전체 질문리스트 조회.", paramType = "header")
+    })
+    @GetMapping(path = "/api/self/questionList/{id}")
+    public ResponseEntity<?> findList(
+            @ApiParam(value = "조회할 질문리스트 id. 없으면 모든 질문리스트 조회") @PathVariable("id") Long listId,
+            @ApiIgnore Authentication authentication) {
+        String userId = authentication != null ? AuthTokenParsing.getAuthClaimValue(authentication, "userId") : null;
+        List<QuestionList> lists = selfQuestionListService.findLists(userId, listId);
+        return new ResponseEntity<>(selfQuestionListMapper.toResponseDtoArray(lists), HttpStatus.OK);
+    }
+
+    @ApiOperation(value="기본 질문리스트 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")
     })
-    @GetMapping(path = "/api/self/questionList")
-    public ResponseEntity<?> findList(@ApiIgnore Authentication authentication) {
+    @GetMapping(path = "/api/self/questionList/basic")
+    public ResponseEntity<?> finSampleList(
+            @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        List<QuestionList> lists = selfQuestionListService.findAllLists(userId);
+        List<QuestionList> lists = selfQuestionListService.findSampleList(userId);
         return new ResponseEntity<>(selfQuestionListMapper.toResponseDtoArray(lists), HttpStatus.OK);
     }
 

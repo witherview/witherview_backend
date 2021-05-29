@@ -1,5 +1,6 @@
 package com.witherview.database.entity;
 
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,9 +22,10 @@ public class SelfHistory extends CreatedBaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_list_id", nullable = false)
-    private QuestionList questionList;
+    @NotNull
+    private Long questionListId;
+
+    private String historyTitle;
 
     private String savedLocation;
 
@@ -31,9 +33,11 @@ public class SelfHistory extends CreatedBaseEntity {
     private List<SelfCheck> selfCheckList = new ArrayList<>();
 
     @Builder
-    public SelfHistory(QuestionList questionList) {
-        this.questionList = questionList;
+    public SelfHistory(Long questionListId) {
+        this.questionListId = questionListId;
     }
+
+    public void updateHistoryTitle(String historyTitle) { this.historyTitle = historyTitle; }
 
     public void updateSavedLocation(String savedLocation) {
         this.savedLocation = savedLocation;

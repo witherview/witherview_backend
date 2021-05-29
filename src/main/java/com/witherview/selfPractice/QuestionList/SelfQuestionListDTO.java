@@ -1,12 +1,10 @@
 package com.witherview.selfPractice.QuestionList;
 
-import com.witherview.database.entity.QuestionList;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 
 public class SelfQuestionListDTO {
 
@@ -22,7 +20,7 @@ public class SelfQuestionListDTO {
         private String job;
     }
 
-    @Getter @Setter @Builder
+    @Getter @Setter
     public static class QuestionListUpdateDTO {
         @NotNull(message = "질문리스트 아이디는 반드시 입력해야 합니다.")
         private Long id;
