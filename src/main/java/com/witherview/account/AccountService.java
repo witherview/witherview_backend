@@ -1,5 +1,10 @@
 package com.witherview.account;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
 import com.witherview.account.exception.DuplicateEmailException;
 import com.witherview.account.exception.InvalidLoginException;
 import com.witherview.account.exception.NotEqualPasswordException;
@@ -11,6 +16,8 @@ import com.witherview.selfPractice.exception.UserNotFoundException;
 import com.witherview.utils.AccountMapper;
 import com.witherview.utils.GenerateRandomId;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +29,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +41,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class AccountService {
 
     private final UserRepository userRepository;
@@ -39,6 +51,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountMapper accountMapper;
     private final RestTemplate restTemplate;
+    private final AmazonS3 s3Client;
 
     @Value("${upload.img-location}")
     private String uploadLocation;
@@ -54,6 +67,9 @@ public class AccountService {
     private String grantType;
     @Value("${spring.security.oauth2.client.provider.witherview.token-uri}")
     private String tokenUri;
+    @Value("${application.bucket.name}")
+    private String bucketName;
+
 
     @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
@@ -106,16 +122,22 @@ public class AccountService {
     }
 
     @Transactional
-    public User uploadProfile(String userId, MultipartFile profileImg) {
+    public User uploadProfileOnAWS(String userId, MultipartFile profileImg) {
         User user = findUserById(userId);
         String fileOriName = profileImg.getOriginalFilename();
         String orgFileExtension = fileOriName.substring(fileOriName.lastIndexOf("."));
         String profileName = user.getId() + "_" + UUID.randomUUID() + orgFileExtension;
 
-        File newImg = new File(uploadLocation, profileName);
+        File newImg = new File(Path.of("").toAbsolutePath().toString(), fileOriName);
         try {
             profileImg.transferTo(newImg);
-            user.uploadImg(serverUrl + "profiles/" + profileName);
+            // s3에 이미지 업로드
+            // bucketName, key, value
+            s3Client.putObject(
+                    new PutObjectRequest(bucketName, profileName, newImg)
+            );
+            newImg.delete();
+            user.uploadImg(profileName);
         } catch(Exception e) {
             throw new NotSavedProfileImgException();
         }
@@ -197,5 +219,30 @@ public class AccountService {
         var dbPassword = findUserById(userId).getEncryptedPassword();
         var result = passwordEncoder.matches(password, dbPassword);
         return result;
+    }
+
+    public byte[] getFileFromS3(String userId) {
+        var user = findUserById(userId);
+        String fileName = user.getProfileImg();
+        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        try {
+            byte[] content = IOUtils.toByteArray(inputStream);
+            return content;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Transactional
+    public String deleteFileFromS3(String userId) {
+        User user = findUserById(userId);
+        String fileName = user.getProfileImg();
+        if (!fileName.isEmpty() && (fileName != null)) {
+            s3Client.deleteObject(bucketName, fileName);
+        }
+        user.setProfileImg(null);
+        return null;
     }
 }
