@@ -28,7 +28,7 @@ public class SelfQuestionListService {
         // 해당 list의 owner인 사용자 확인
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         QuestionList questionList = questionListMapper.toQuestionList(requestDto);
-        questionList.setOwner(user);
+        questionList.setUserId(user.getId());
         return questionListRepository.save(questionList);
     }
 
@@ -39,8 +39,8 @@ public class SelfQuestionListService {
             questionList.update(dto.getTitle(), dto.getEnterprise(), dto.getJob());
             return questionList;
         }).collect(Collectors.toList());
-        List<QuestionList> savedResult = (List) questionListRepository.saveAll(result);
-        return savedResult;
+
+        return result;
     }
 
     @Transactional
@@ -59,7 +59,20 @@ public class SelfQuestionListService {
         return (List) questionListRepository.findAll();
     }
 
-    public List<QuestionList> findAllLists(String userId) {
-        return questionListRepository.findAllByOwnerId(userId);
+    public List<QuestionList> findLists(String userId, Long listId) {
+        if (userId == null) {
+            return findAllLists(); // 이 부분은 추후에 페이지네이션 등으로 처리해야 할 것 같다.
+        }
+        // userid만 있고 questionList 값이 null이면, 해당 사용자의 QuestionListId 전부 가져오기.
+        if (listId == null){
+            return questionListRepository.findAllByUserId(userId);
+        }
+        else {
+            return questionListRepository.findByUserIdAndId(userId, listId);
+        }
+
+    }
+    public List<QuestionList> findSampleList(String userId){
+        return questionListRepository.findFirstByUserId(userId);
     }
 }

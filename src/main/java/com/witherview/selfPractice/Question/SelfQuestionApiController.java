@@ -91,6 +91,8 @@ public class SelfQuestionApiController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="Authorization", paramType = "header")
     })
+    // todo: QuestionList API와 중복됨. 로직 변경 필요.
+    //  이 부분은 프론트엔드가 어떤 식으로 사용하고 있는지 + 질문 수정과 삭제로직을 어떻게 쓰는지 확인하고 작업해야 한다.
     @GetMapping(path = "/api/self/question/{id}")
     public ResponseEntity<?> findAllQuestion(
             @ApiParam(value = "조회할 질문리스트 id", required = true) @PathVariable("id") Long listId) {

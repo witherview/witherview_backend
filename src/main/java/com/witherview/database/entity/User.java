@@ -14,8 +14,7 @@ import java.util.List;
 
 @Entity @Getter @Setter
 @NoArgsConstructor
-@Table(name = "tbl_user",
-        indexes = @Index(name = "email", columnList = "email"))
+@Table(name = "tbl_user", indexes = @Index(name = "email", columnList = "email"))
 public class User {
 
     @Id
@@ -54,9 +53,6 @@ public class User {
     @ColumnDefault("0")
     private Byte reliability = 70;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QuestionList> questionLists = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoomParticipant> participatedStudyRooms = new ArrayList<>();
 
@@ -85,11 +81,6 @@ public class User {
 
     public void increaseGroupPracticeCnt() {
         this.groupPracticeCnt += 1;
-    }
-
-    public void addQuestionList(QuestionList questionList) {
-        questionList.updateOwner(this);
-        this.questionLists.add(questionList);
     }
 
     public void addStudyHistory(StudyHistory studyHistory) {

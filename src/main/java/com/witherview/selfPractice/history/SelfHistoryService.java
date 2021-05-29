@@ -1,6 +1,5 @@
 package com.witherview.selfPractice.history;
 
-import com.witherview.database.entity.QuestionList;
 import com.witherview.database.entity.SelfHistory;
 import com.witherview.database.entity.User;
 import com.witherview.database.repository.QuestionListRepository;
@@ -39,14 +38,10 @@ public class SelfHistoryService {
     @Transactional
     public SelfHistory save(Long questionListId, String userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        QuestionList questionList = questionListRepository.findById(questionListId)
-                .orElseThrow(NotFoundQuestionList::new);
-        if (!user.getId().equals(questionList.getOwner().getId())) {
-            throw new NotFoundQuestionList();
-        }
-        SelfHistory selfHistory = new SelfHistory(questionList);
+        questionListRepository.findById(questionListId).orElseThrow(NotFoundQuestionList::new);
+
+        SelfHistory selfHistory = new SelfHistory(questionListId);
         user.addSelfHistory(selfHistory);
-        questionList.addSelfHistory(selfHistory);
         selfHistoryRepository.save(selfHistory);
         user.increaseSelfPracticeCnt();
         return selfHistory;
