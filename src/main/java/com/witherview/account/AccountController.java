@@ -172,7 +172,8 @@ public class AccountController {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         accountService.deleteFileFromS3(userId);
         return ResponseEntity.ok().body("");
-
+    }
+    
     @ApiOperation(value = "회원 탈퇴")
     @ApiImplicitParams({
         @ApiImplicitParam(name="authorization", paramType = "header")
