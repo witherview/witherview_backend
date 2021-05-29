@@ -10,7 +10,7 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findAllByBelongListId(Long belongListId);
 
-    @Query("select count(q) from QuestionList q where q.owner.id = :ownerId")
+    @Query("select count(q) from QuestionList q where q.userId = :ownerId")
     Long CountByOwnerId(@Param("ownerId") String ownerId);
 
 }
