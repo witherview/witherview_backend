@@ -67,7 +67,7 @@ public class AccountService {
     private String grantType;
     @Value("${spring.security.oauth2.client.provider.witherview.token-uri}")
     private String tokenUri;
-    @Value("${application.bucket.name}")
+    @Value("${application.bucket.profile}")
     private String bucketName;
 
 
@@ -137,7 +137,9 @@ public class AccountService {
                     new PutObjectRequest(bucketName, profileName, newImg)
             );
             newImg.delete();
-            user.uploadImg(profileName);
+            // todo: s3 링크를 그냥 줄지, 클라우드프론트 등의 작업을 할지 / 내부 api로 대체할지 고민해야 함.
+            var url = s3Client.getUrl(bucketName, profileName).toString();
+            user.uploadImg(url);
         } catch(Exception e) {
             throw new NotSavedProfileImgException();
         }
@@ -238,9 +240,13 @@ public class AccountService {
     @Transactional
     public String deleteFileFromS3(String userId) {
         User user = findUserById(userId);
-        String fileName = user.getProfileImg();
-        if (!fileName.isEmpty() && (fileName != null)) {
-            s3Client.deleteObject(bucketName, fileName);
+        if (user.getProfileImg() == null) {
+            return null;
+        }
+        String[] url = user.getProfileImg().split("/");
+        String key = url[url.length-1];
+        if (!key.isEmpty() && (key != null)) {
+            s3Client.deleteObject(bucketName, key);
         }
         user.setProfileImg(null);
         return null;
