@@ -137,7 +137,8 @@ public class AccountService {
                     new PutObjectRequest(bucketName, profileName, newImg)
             );
             newImg.delete();
-            user.uploadImg(profileName);
+            var url = s3Client.getUrl(bucketName, profileName).toString();
+            user.uploadImg(url);
         } catch(Exception e) {
             throw new NotSavedProfileImgException();
         }
