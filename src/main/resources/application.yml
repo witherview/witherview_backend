@@ -115,7 +115,8 @@ cloud:
 
 application:
   bucket:
-    name: yapp-storage
+    profile: yapp-storage/profiles
+    videos: yapp-storage/video
 
 ---
 
