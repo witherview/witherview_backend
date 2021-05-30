@@ -240,9 +240,13 @@ public class AccountService {
     @Transactional
     public String deleteFileFromS3(String userId) {
         User user = findUserById(userId);
-        String fileName = user.getProfileImg();
-        if (!fileName.isEmpty() && (fileName != null)) {
-            s3Client.deleteObject(bucketName, fileName);
+        if (user.getProfileImg() == null) {
+            return null;
+        }
+        String[] url = user.getProfileImg().split("/");
+        String key = url[url.length-1];
+        if (!key.isEmpty() && (key != null)) {
+            s3Client.deleteObject(bucketName, key);
         }
         user.setProfileImg(null);
         return null;
