@@ -1,7 +1,7 @@
 server:
   port: 8080
-  host: localhost
-  url: http://localhost:8080/
+  host: 15.164.232.147
+  url: http://15.164.232.147:8080/
 
 upload:
   location: /root/videos/
@@ -23,7 +23,7 @@ spring:
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://172.31.32.53:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
   hikari:
     pool-name: SpringBootJPAHikariCP
     maximun-pool-size: 10
@@ -33,18 +33,18 @@ spring:
     connection-init-ql: set wait_timeout = 600
 
   redis:
-    host: localhost
+    host: 172.31.32.53
     port: 6379
 
   data:
     mongodb:
-      host: localhost
+      host: 172.31.32.53
       port: 27017
       database: witherview
       auto-index-creation: true
 
   rabbitmq:
-    host: localhost
+    host: 172.31.32.53
     username: witherview
     password: witherview
     port: 5672
@@ -80,7 +80,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/auth/realms/witherview
+          issuer-uri: http://52.79.202.205:8080/auth/realms/witherview
       client:
         registration:
           witherview:
@@ -90,13 +90,13 @@ spring:
             authorization-grant-type: password
         provider:
           witherview:
-            token-uri: http://localhost:8180/auth/realms/witherview/protocol/openid-connect/token
+            token-uri: http://52.79.202.205:8080/auth/realms/witherview/protocol/openid-connect/token
             username-attribute: preferred_username
 
 keycloak:
   realm: witherview
   resource: witherview
-  auth-server-url: http://localhost:8180/auth
+  auth-server-url: http://52.79.202.205:8080/auth
 
 
 logging:
