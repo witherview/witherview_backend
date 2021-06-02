@@ -143,4 +143,10 @@ public class AccountDTO {
         private String refresh_token;
         private String refresh_expires_in;
     }
+
+    @Getter @Setter
+    public static class WithdrawUserDTO {
+        @NotBlank(message = "비밀번호는 반드시 입력해야 합니다.")
+        private String password;
+    }
 }

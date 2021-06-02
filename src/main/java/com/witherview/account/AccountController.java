@@ -145,9 +145,16 @@ public class AccountController {
     })
     @DeleteMapping(path="/withdraw")
     public ResponseEntity<?> withdrawUser(
-        @ApiIgnore Authentication authentication) {
+        @ApiIgnore Authentication authentication,
+        @RequestBody @Valid AccountDTO.WithdrawUserDTO withdrawUserDTO,
+        BindingResult error) {
+
+        if (error.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        accountService.withdrawUser(userId);
+        accountService.withdrawUser(userId, withdrawUserDTO.getPassword());
         return ResponseEntity.ok("회원 탈퇴 성공");
     }
 

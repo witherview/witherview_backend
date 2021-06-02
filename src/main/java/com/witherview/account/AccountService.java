@@ -182,11 +182,14 @@ public class AccountService {
     }
 
     @Transactional
-    public void withdrawUser(String userId) {
+    public void withdrawUser(String userId, String password) {
         User user = findUserById(userId);
+        // 올바른 비밀번호 입력하지 않은 경우 -> 회원탈퇴 실패
+        if(!isPasswordEquals(userId, password)) throw new NotEqualPasswordException();
+
         // 스터디룸 호스트인 경우 -> 회원탈퇴 실패
         user.getParticipatedStudyRooms().forEach(e -> {
-            if(e.getStudyRoom().getHost().equals(userId)) throw new StudyHostNotWithdrawUser();
+            if(e.getStudyRoom().getHost().getId().equals(userId)) throw new StudyHostNotWithdrawUser();
         });
         // 셀프 연습영상 삭제
         // 그룹 스터디 영상 삭제
