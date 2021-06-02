@@ -21,7 +21,7 @@ public enum ErrorCode {
 
     // Account
     NOT_SAVED_PROFILE(500, "ACCOUNT001", "프로필 이미지를 저장하는데 실패하였습니다."),
-    STUDYHOST_NOT_WITHDRAW_USER(404, "ACCOUNT002", "호스트 권한을 넘긴 후 회원탈퇴를 진행해주세요."),
+    STUDYHOST_NOT_WITHDRAW_USER(400, "ACCOUNT002", "호스트 권한을 넘긴 후 회원탈퇴를 진행해주세요."),
 
     // Self-Practice
     NOT_FOUND_USER(404, "SELF-PRACTICE001", "해당 유저가 없습니다."),
@@ -34,7 +34,7 @@ public enum ErrorCode {
     NOT_JOIN_STUDYROOM(400, "GROUP-PRACTICE003", "해당 스터디룸 참여자가 아닙니다."),
     ALREADY_FULL_STUDYROOM(400, "GROUP-PRACTICE004", "이미 스터디룸이 꽉 차 있습니다."),
     EMPTY_STUDYROOM(400, "GROUP-PRACTICE005", "스터디룸에 참여자가 없으면 안됩니다."),
-    NOT_CREATED_FEEDBACK(404, "GROUP-PRACTICE006", "스터디룸에 참여하지 않은 사람에게 피드백을 줄 수 없습니다."),
+    NOT_CREATED_FEEDBACK(400, "GROUP-PRACTICE006", "스터디룸에 참여하지 않은 사람에게 피드백을 줄 수 없습니다."),
     NOT_STUDYROOM_HOST(400, "GROUP-PRACTICE007", "해당 스터디룸의 호스트가 아닙니다."),
     HOST_NOT_LEAVE_STUDYROOM(400, "GROUP-PRACTICE006", "호스트는 스터디 방을 나갈 수 없습니다. 호스트 권한을 변경해주세요."),
 
