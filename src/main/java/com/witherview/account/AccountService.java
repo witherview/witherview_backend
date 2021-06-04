@@ -70,6 +70,8 @@ public class AccountService {
     @Value("${application.bucket.profile}")
     private String bucketName;
 
+    private static String CDNUrl = "https://d1kb4tgqkzokon.cloudfront.net/";
+
 
     @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
@@ -138,7 +140,8 @@ public class AccountService {
             );
             newImg.delete();
             // todo: s3 링크를 그냥 줄지, 클라우드프론트 등의 작업을 할지 / 내부 api로 대체할지 고민해야 함.
-            var url = s3Client.getUrl(bucketName, profileName).toString();
+//            var url = s3Client.getUrl(bucketName, profileName).toString();
+            var url = CDNUrl + profileName;
             user.uploadImg(url);
         } catch(Exception e) {
             throw new NotSavedProfileImgException();
