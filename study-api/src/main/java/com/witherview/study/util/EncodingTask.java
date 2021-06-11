@@ -1,4 +1,4 @@
-package com.witherview.video;
+package com.witherview.study.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
