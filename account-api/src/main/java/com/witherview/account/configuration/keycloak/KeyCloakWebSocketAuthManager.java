@@ -1,4 +1,4 @@
-package com.witherview.account.configuration.keycloack;
+package com.witherview.account.configuration.keycloak;
 
 import com.witherview.account.configuration.JWSAuthenticationToken;
 import lombok.AllArgsConstructor;

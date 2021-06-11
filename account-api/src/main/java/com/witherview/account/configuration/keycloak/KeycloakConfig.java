@@ -1,4 +1,4 @@
-package com.witherview.account.configuration.keycloack;
+package com.witherview.account.configuration.keycloak;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.context.annotation.Bean;
