@@ -1,0 +1,18 @@
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // mongoDB
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jar {
+    enabled = true
+}
+bootJar {
+    enabled = false
+}
