@@ -5,8 +5,8 @@ import com.witherview.chat.dto.ChatDTO.FeedBackDTO;
 import com.witherview.chat.dto.ChatDTO.MessageDTO;
 import com.witherview.chat.mapper.ChatMessageMapper;
 import com.witherview.chat.mapper.FeedBackMapper;
-import entity.StudyHistory;
-import entity.StudyRoom;
+import com.witherview.mysql.entity.StudyHistory;
+import com.witherview.mysql.entity.StudyRoom;
 import exception.ErrorCode;
 import exception.account.InvalidJwtTokenException;
 import exception.study.NotFoundStudyHistory;
@@ -22,11 +22,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
-import mongo.repository.ChatRepository;
-import mongo.repository.FeedBackChatRepository;
-import repository.StudyHistoryRepository;
-import repository.StudyRoomParticipantRepository;
-import repository.StudyRoomRepository;
+import com.witherview.mongo.repository.ChatRepository;
+import com.witherview.mongo.repository.FeedBackChatRepository;
+import com.witherview.mysql.repository.StudyHistoryRepository;
+import com.witherview.mysql.repository.StudyRoomParticipantRepository;
+import com.witherview.mysql.repository.StudyRoomRepository;
 
 @RequiredArgsConstructor
 @Service

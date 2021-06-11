@@ -1,7 +1,7 @@
 package com.witherview.chat.mapper;
 
 import com.witherview.chat.dto.ChatDTO.FeedBackDTO;
-import mongo.entity.FeedBackChat;
+import com.witherview.mongo.entity.FeedBackChat;
 import org.mapstruct.Mapper;
 import util.EntityMapper;
 
