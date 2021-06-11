@@ -1,5 +1,6 @@
 package entity;
 
+import exception.study.AlreadyFullStudyRoom;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -98,10 +99,9 @@ public class StudyRoom {
         this.time = time;
     }
 
-    public boolean increaseNowUserCnt() {
-        if(this.nowUserCnt + 1 > this.maxUserCnt) return false;
+    public void increaseNowUserCnt() {
+        if(this.nowUserCnt + 1 > this.maxUserCnt) throw new AlreadyFullStudyRoom();
         this.nowUserCnt++;
-        return true;
     }
 
     public int decreaseNowUserCnt() {
