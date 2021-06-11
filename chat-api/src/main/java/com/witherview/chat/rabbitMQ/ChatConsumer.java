@@ -3,24 +3,24 @@ package com.witherview.chat.rabbitMQ;
 import com.witherview.chat.dto.ChatDTO.FeedBackDTO;
 import com.witherview.chat.dto.ChatDTO.MessageDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import entity.StudyHistory;
+import com.witherview.mysql.entity.StudyHistory;
 import exception.study.NotFoundHistory;
 import exception.study.NotFoundStudyRoom;
 import exception.study.NotJoinedStudyRoom;
 import exception.study.NotOwnedStudyHistory;
 import lombok.RequiredArgsConstructor;
-import mongo.entity.Chat;
-import mongo.entity.FeedBackChat;
+import com.witherview.mongo.entity.Chat;
+import com.witherview.mongo.entity.FeedBackChat;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import mongo.repository.ChatRepository;
-import mongo.repository.FeedBackChatRepository;
-import repository.StudyHistoryRepository;
-import repository.StudyRoomParticipantRepository;
-import repository.StudyRoomRepository;
+import com.witherview.mongo.repository.ChatRepository;
+import com.witherview.mongo.repository.FeedBackChatRepository;
+import com.witherview.mysql.repository.StudyHistoryRepository;
+import com.witherview.mysql.repository.StudyRoomParticipantRepository;
+import com.witherview.mysql.repository.StudyRoomRepository;
 
 @Component
 @RequiredArgsConstructor

@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages="repository")
-@EnableMongoRepositories(basePackages="mongo.repository")
-@EntityScan(basePackages={"mongo.entity", "entity"})
+@EnableJpaRepositories(basePackages="com.witherview.mysql.repository")
+@EnableMongoRepositories(basePackages="com.witherview.mongo.repository")
+@EntityScan(basePackages={"com.witherview.mongo", "com.witherview.mysql"})
 public class ChatApiApplication {
   public static void main(String[] args) {
     SpringApplication.run(ChatApiApplication.class, args);
