@@ -21,12 +21,15 @@ public class SwaggerConfig {
     @Value("${server.host}")
     private String host;
 
+    @Value("${server.port}")
+    private String port;
+
     @Bean
     public Docket apiV1() {
         title = "Witherview API ";
 
         return new Docket(DocumentationType.SWAGGER_2)
-                .host(host+":8080") // 개발을 위한 포트세팅
+                .host(host+":"+port) // 개발을 위한 포트세팅
                 .select()
                 .apis(withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
