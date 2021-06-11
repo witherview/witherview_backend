@@ -1,13 +1,13 @@
-package com.witherview.account;
+package com.witherview.account.dto;
 
-import lombok.*;
-import org.hibernate.validator.constraints.Length;
-
+import java.time.LocalDate;
+import java.time.LocalTime;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 public class AccountDTO {
     @Getter @Setter

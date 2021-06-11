@@ -1,18 +1,34 @@
-package com.witherview.account;
+package com.witherview.account.service;
 
-import com.witherview.account.exception.DuplicateEmailException;
-import com.witherview.account.exception.InvalidLoginException;
-import com.witherview.account.exception.NotEqualPasswordException;
-import com.witherview.account.exception.NotSavedProfileImgException;
-import com.witherview.account.exception.StudyHostNotWithdrawUser;
-import com.witherview.database.entity.*;
-import com.witherview.database.repository.*;
-import com.witherview.selfPractice.exception.UserNotFoundException;
-import com.witherview.utils.AccountMapper;
-import com.witherview.utils.GenerateRandomId;
+import com.witherview.account.dto.AccountDTO;
+import com.witherview.account.mapper.AccountMapper;
+import com.witherview.account.util.GenerateRandomId;
+import com.witherview.mysql.entity.Question;
+import com.witherview.mysql.entity.QuestionList;
+import com.witherview.mysql.entity.StudyRoom;
+import com.witherview.mysql.entity.User;
+import com.witherview.mysql.repository.QuestionListRepository;
+import com.witherview.mysql.repository.QuestionRepository;
+import com.witherview.mysql.repository.StudyFeedbackRepository;
+import com.witherview.mysql.repository.UserRepository;
+import exception.account.DuplicateEmailException;
+import exception.account.InvalidLoginException;
+import exception.account.NotEqualPasswordException;
+import exception.account.NotSavedProfileImgException;
+import exception.account.StudyHostNotWithdrawUser;
+import exception.study.UserNotFoundException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +36,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

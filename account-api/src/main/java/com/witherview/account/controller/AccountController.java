@@ -1,26 +1,41 @@
-package com.witherview.account;
+package com.witherview.account.controller;
 
-import com.witherview.database.entity.StudyRoom;
-import com.witherview.database.entity.User;
-import com.witherview.exception.ErrorCode;
-import com.witherview.exception.ErrorResponse;
-import com.witherview.utils.AccountMapper;
-import com.witherview.utils.AuthTokenParsing;
-import io.swagger.annotations.*;
+import com.witherview.account.dto.AccountDTO;
+import com.witherview.account.mapper.AccountMapper;
+import com.witherview.account.service.AccountService;
+import com.witherview.account.util.AuthTokenParsing;
+import com.witherview.mysql.entity.StudyRoom;
+import com.witherview.mysql.entity.User;
+import exception.ErrorCode;
+import exception.ErrorResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 
 @Api(tags = "Account API")
 @RestController
