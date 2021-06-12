@@ -201,6 +201,11 @@ public class AccountService {
         user.getParticipatedStudyRooms().forEach(e -> {
             if(e.getStudyRoom().getHost().getId().equals(userId)) throw new StudyHostNotWithdrawUser();
         });
+
+        // 참여하고 있는 스터디룸 카운트 감소
+        user.getParticipatedStudyRooms().forEach(e -> {
+            e.getStudyRoom().decreaseNowUserCnt();
+        });
         // 셀프 연습영상 삭제
         // 그룹 스터디 영상 삭제
         userRepository.delete(user);
