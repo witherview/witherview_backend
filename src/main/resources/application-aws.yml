@@ -23,7 +23,7 @@ spring:
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.31.32.53:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://172.31.33.143:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
   hikari:
     pool-name: SpringBootJPAHikariCP
     maximun-pool-size: 10
@@ -33,18 +33,18 @@ spring:
     connection-init-ql: set wait_timeout = 600
 
   redis:
-    host: 172.31.32.53
+    host: 172.31.33.143
     port: 6379
 
   data:
     mongodb:
-      host: 172.31.32.53
+      host: 172.31.33.143
       port: 27017
       database: witherview
       auto-index-creation: true
 
   rabbitmq:
-    host: 172.31.32.53
+    host: 172.31.33.143
     username: witherview
     password: witherview
     port: 5672
