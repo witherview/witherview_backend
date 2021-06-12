@@ -1,6 +1,8 @@
 package com.witherview.account.configuration.keycloak;
 
 import com.witherview.account.configuration.JWSAuthenticationToken;
+import exception.ErrorCode;
+import exception.account.InvalidJwtTokenException;
 import lombok.AllArgsConstructor;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.rotation.AdapterTokenVerifier;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,7 +48,8 @@ public class KeyCloakWebSocketAuthManager implements AuthenticationManager {
             }
         } catch (VerificationException e) {
             e.printStackTrace();
-            authentication.setAuthenticated(false);
+            throw new InvalidJwtTokenException(ErrorCode.INVALID_JWT_TOKEN);
+            //authentication.setAuthenticated(false);
         }
         return authentication;
     }

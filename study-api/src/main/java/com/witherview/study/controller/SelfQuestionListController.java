@@ -63,11 +63,11 @@ public class SelfQuestionListController {
     // 토큰 없으면 전체리스트, 토큰 있으면 해당 사용자 소유의 리스트.
     @ApiOperation(value="질문리스트 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="authorization - 값 없을 시 전체 질문리스트 조회.", paramType = "header")
+            @ApiImplicitParam(name="authorization", paramType = "header")
     })
     @GetMapping(path = "/api/self/questionList/{id}")
     public ResponseEntity<?> findList(
-            @ApiParam(value = "조회할 질문리스트 id. 없으면 모든 질문리스트 조회") @PathVariable("id") Long listId,
+            @ApiParam(value = "조회할 질문리스트 id") @PathVariable(value = "id") Long listId,
             @ApiIgnore Authentication authentication) {
         String userId = authentication != null ? AuthTokenParsing.getAuthClaimValue(authentication, "userId") : null;
         List<QuestionList> lists = selfQuestionListService.findLists(userId, listId);
