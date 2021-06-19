@@ -137,8 +137,7 @@ public class AccountService {
                     new PutObjectRequest(bucketName, profileName, newImg)
             );
             newImg.delete();
-            // todo: s3 링크를 그냥 줄지, 클라우드프론트 등의 작업을 할지 / 내부 api로 대체할지 고민해야 함.
-            var url = s3Client.getUrl(bucketName, profileName).toString();
+            var url = CDNUrl + "profiles/" + profileName;
             user.uploadImg(url);
         } catch(Exception e) {
             throw new NotSavedProfileImgException();
