@@ -49,9 +49,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountMapper accountMapper;
     private final RestTemplate restTemplate;
-
-    @Value("${upload.img-location}")
-    private String uploadLocation;
+    
     @Value("${server.url}")
     private String serverUrl;
     @Value("${spring.security.oauth2.client.registration.witherview.client-id}")
