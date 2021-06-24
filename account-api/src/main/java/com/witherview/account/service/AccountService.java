@@ -1,5 +1,7 @@
 package com.witherview.account.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.witherview.account.dto.AccountDTO;
 import com.witherview.account.mapper.AccountMapper;
 import com.witherview.account.util.GenerateRandomId;
@@ -18,6 +20,7 @@ import exception.account.NotSavedProfileImgException;
 import exception.account.StudyHostNotWithdrawUser;
 import exception.study.UserNotFoundException;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -49,7 +52,8 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountMapper accountMapper;
     private final RestTemplate restTemplate;
-    
+    private final AmazonS3 s3Client;
+
     @Value("${server.url}")
     private String serverUrl;
     @Value("${spring.security.oauth2.client.registration.witherview.client-id}")
@@ -62,6 +66,10 @@ public class AccountService {
     private String grantType;
     @Value("${spring.security.oauth2.client.provider.witherview.token-uri}")
     private String tokenUri;
+    @Value("${application.bucket.profile}")
+    private String bucketName;
+
+    private static String CDNUrl = "https://d1lh9zszqbjykc.cloudfront.net/";
 
     @Transactional
     public User register(AccountDTO.RegisterDTO dto) {
@@ -114,16 +122,23 @@ public class AccountService {
     }
 
     @Transactional
-    public User uploadProfile(String userId, MultipartFile profileImg) {
+    public User uploadProfileOnAWS(String userId, MultipartFile profileImg) {
         User user = findUserById(userId);
         String fileOriName = profileImg.getOriginalFilename();
         String orgFileExtension = fileOriName.substring(fileOriName.lastIndexOf("."));
         String profileName = user.getId() + "_" + UUID.randomUUID() + orgFileExtension;
 
-        File newImg = new File(uploadLocation, profileName);
+        File newImg = new File(Path.of("").toAbsolutePath().toString(), fileOriName);
         try {
             profileImg.transferTo(newImg);
-            user.uploadImg(serverUrl + "profiles/" + profileName);
+            // s3에 이미지 업로드
+            // bucketName, key, value
+            s3Client.putObject(
+                    new PutObjectRequest(bucketName, profileName, newImg)
+            );
+            newImg.delete();
+            var url = CDNUrl + "profiles/" + profileName;
+            user.uploadImg(url);
         } catch(Exception e) {
             throw new NotSavedProfileImgException();
         }

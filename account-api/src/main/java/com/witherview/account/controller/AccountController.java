@@ -148,7 +148,7 @@ public class AccountController {
             @RequestParam("profileImg") MultipartFile profileImg) throws URISyntaxException {
 
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        User user = accountService.uploadProfile(userId, profileImg);
+        User user = accountService.uploadProfileOnAWS(userId, profileImg);
         var result = accountMapper.toUploadProfile(user);
         URI uri = new URI(result.getProfileImg());
         return ResponseEntity.created(uri).body("");

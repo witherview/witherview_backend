@@ -82,3 +82,18 @@ keycloak:
 logging:
   level:
     org.hibernate: error
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAZ3SKFZJOKETNMGPV
+      secret-key: 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
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+
+application:
+  bucket:
+    profile: yapp-storage/profiles
+    videos: yapp-storage/video
