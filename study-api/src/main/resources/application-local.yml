@@ -1,0 +1,89 @@
+server:
+  port: 8083
+  host: localhost
+  url: http://localhost:8083/
+
+spring:
+  datasource:
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/witherview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+  hikari:
+    pool-name: SpringBootJPAHikariCP
+    maximun-pool-size: 10
+    connection-timeout: 10000
+    validation-timeout: 10000
+    max-lifetime: 580000
+    connection-init-ql: set wait_timeout = 600
+
+  redis:
+    host: localhost
+    port: 6379
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: witherview
+      auto-index-creation: true
+
+  rabbitmq:
+    host: localhost
+    username: witherview
+    password: witherview
+    port: 5672
+    topics:
+      chat: chat-message
+      feedback: feedback-message
+
+  devtools:
+    livereload:
+      enabled: true
+
+  freemarker:
+    cache: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/auth/realms/witherview
+      client:
+        registration:
+          witherview:
+            client-id: witherview
+            client-secret: fc04d0a1-29a4-4a9d-abdb-8ec8d034dc90 # config 따로 정리할 때 값 변경 필요
+            scope: openid
+            authorization-grant-type: password
+        provider:
+          witherview:
+            token-uri: http://localhost:8180/auth/realms/witherview/protocol/openid-connect/token
+            username-attribute: preferred_username
+
+keycloak:
+  realm: witherview
+  resource: witherview
+  auth-server-url: http://localhost:8180/auth
+
+
+logging:
+  level:
+    org.hibernate: error
