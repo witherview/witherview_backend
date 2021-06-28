@@ -1,8 +1,8 @@
 package util;
 
-import org.springframework.context.annotation.Configuration;
+//import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class SecurityConstant {
     public static final long EXPIRATION_TIME = 3600 * 1000; // 1시간 (ms)
     public static final String TOKEN_PREFIX = "Bearer ";

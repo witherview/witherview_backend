@@ -48,7 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
              .authorizeRequests()
              .antMatchers(HttpMethod.POST, "/register").permitAll()
-             .antMatchers(HttpMethod.POST, SecurityConstant.SIGN_UP_URL).permitAll()
+             .antMatchers(HttpMethod.POST, "/login").permitAll()
              .antMatchers(HttpMethod.GET, "/oauth/user/*").permitAll()
              .antMatchers(HttpMethod.POST, "/oauth/user").permitAll()
              .anyRequest().authenticated() // todo: 일단 모든 요청을 통과하도록 설정. 삭제 필요
