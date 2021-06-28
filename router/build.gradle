@@ -14,11 +14,7 @@ dependencyManagement {
 }
 
 dependencies {
-//    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies
-//    runtimeOnly group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR8', ext: 'pom'
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     testCompile group: 'junit', name: 'junit', version: '4.12'
-
-//    implementation project(':router')
 }
