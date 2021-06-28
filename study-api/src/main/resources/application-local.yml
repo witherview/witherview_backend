@@ -3,6 +3,10 @@ server:
   host: localhost
   url: http://localhost:8083/
 
+upload:
+  location: /root/videos/
+  img-location: /home/ubuntu/witherview_backend/profiles
+
 spring:
   datasource:
     username: root

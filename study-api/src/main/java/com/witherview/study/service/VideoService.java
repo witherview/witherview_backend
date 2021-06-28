@@ -1,6 +1,6 @@
 package com.witherview.study.service;
 
-import com.witherview.study.util.EncodingTaskQueue;
+//import com.witherview.study.util.EncodingTaskQueue;
 import exception.video.NotSavedVideo;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
@@ -23,7 +23,7 @@ public class VideoService {
 
         try {
             FileUtils.copyInputStreamToFile(videoFile.getInputStream(), newVideoFile);
-            EncodingTaskQueue.addAndRun(uploadLocation + fileName);
+//            EncodingTaskQueue.addAndRun(uploadLocation + fileName);
             return serverUrl + "videos/" + fileName + ".m3u8";
         } catch (Exception e) {
             FileUtils.deleteQuietly(newVideoFile);
