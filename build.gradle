@@ -38,11 +38,12 @@ subprojects {
 		implementation 'org.mapstruct:mapstruct:1.4.2.Final'
 		annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
 		// swagger
-		compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-		compile("io.springfox:springfox-swagger2:2.9.2") { exclude module: 'swagger-annotations' exclude module: 'swagger-models' }
-		compile("io.swagger:swagger-annotations:1.5.21")
-		compile("io.swagger:swagger-models:1.5.21")
-
+		if (project.name != "router") {
+			compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+			compile("io.springfox:springfox-swagger2:2.9.2") { exclude module: 'swagger-annotations' exclude module: 'swagger-models' }
+			compile("io.swagger:swagger-annotations:1.5.21")
+			compile("io.swagger:swagger-models:1.5.21")
+		}
 		developmentOnly 'org.springframework.boot:spring-boot-devtools'
 		implementation 'org.springframework.boot:spring-boot-starter-validation'
 		compileOnly 'org.projectlombok:lombok'
