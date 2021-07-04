@@ -149,4 +149,21 @@ public class AccountDTO {
         @NotBlank(message = "비밀번호는 반드시 입력해야 합니다.")
         private String password;
     }
+
+    @Getter @Setter
+    public static class PasswordResetRequestDto {
+        private String email;
+    }
+
+    @Getter @Setter
+    public static class UpdatePasswordDto {
+        private String token;
+        private String newPassword;
+        private String newPasswordConfirm;
+    }
+
+    @Getter @Setter
+    public static class PasswordResetResponseDto {
+        private boolean result;
+    }
 }
