@@ -49,6 +49,8 @@ public class User {
 
     private String phoneNumber;
 
+    private String passwordResetToken;
+
     @ColumnDefault("0")
     private Long selfPracticeCnt = 0L;
 
