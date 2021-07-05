@@ -30,8 +30,6 @@ public class PasswordResetTokenUtils {
                 .parseClaimsJws(token).getBody();
         var expireDate = claims.getExpiration();
         var today = new Date();
-        var t = expireDate.before(today);
-        System.out.println(t);
         return expireDate.before(today);
     }
 
