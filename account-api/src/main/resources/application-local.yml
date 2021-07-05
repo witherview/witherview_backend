@@ -97,6 +97,8 @@ cloud:
       auto: false
     region:
       static: ap-northeast-2
+  email-server:
+    url: http://localhost:8888/
 
 application:
   bucket:
