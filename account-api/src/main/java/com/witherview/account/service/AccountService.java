@@ -229,17 +229,14 @@ public class AccountService {
         return result;
     }
 
-    @Transactional
-    public void updatePasswordResetToken(User user, String token) {
-        user.setPasswordResetToken(token);
-    }
 
+    @Transactional
     public AccountDTO.PasswordResetResponseDto passwordResetRequest(String email) {
         var user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         // 토큰 생성.
         var generatedToken = PasswordResetTokenUtils.generatePasswordResetToken(email);
         // user정보에 passwordResetToken 필드 업데이트.
-        updatePasswordResetToken(user, generatedToken);
+        user.setPasswordResetToken(generatedToken);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -256,7 +253,8 @@ public class AccountService {
     public boolean verifyUserByPasswordToken(String token) {
         var email = PasswordResetTokenUtils.getUserEmail(token);
         var user = findUserByEmail(email);
-        return user.getPasswordResetToken().equals(token);
+        var savedToken = user.getPasswordResetToken();
+        return savedToken.equals(token);
     }
 
     @Transactional
@@ -265,6 +263,7 @@ public class AccountService {
             throw new NotEqualPasswordException();
 
         var user = findUserByEmail(PasswordResetTokenUtils.getUserEmail(token));
+        user.setPasswordResetToken(null);
         user.setEncryptedPassword(passwordEncoder.encode(newPassword));
         return user;
     }
