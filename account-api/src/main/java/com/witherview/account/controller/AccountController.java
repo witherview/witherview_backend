@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -178,16 +179,25 @@ public class AccountController {
         return ResponseEntity.badRequest().body("이메일 전송에 실패했습니다.");
     }
 
-    @ApiOperation(value = "비밀번호 재설정 토큰으로 사용자 정보 확인")
+    @ApiOperation(value = "비밀번호 재설정 토큰으로 사용자 검증")
     @GetMapping("/api/myinfo/password-reset")
-    public ResponseEntity<?> verifyPasswordResetToken(@RequestParam(value = "token") String token) {
+    public ResponseEntity<?> verifyPasswordResetToken(@RequestParam(value = "token") String token) throws URISyntaxException {
         // todo: 만료된 토큰일 경우
         if (PasswordResetTokenUtils.isTokenExpired(token)) {
-            return null;
+            return ResponseEntity.badRequest().body("만료된 토큰입니다.");
         };
         var result = accountService.verifyUserByPasswordToken(token);
         // todo: 올바른 토큰인 경우 / 잘못된 토큰인 경우 분기처리 필요. redirect로 프론트엔드 링크 넘겨야 할듯.
-        return ResponseEntity.ok("");
+        //  redirect에서도 같은 토큰 넘겨도 문제없음.-> redirect url의 parameter에 토큰값 넣으면 될 듯.
+        if (result) {
+            URI redirectUrl = new URI("https://witherview.com/password-reset?token=" + token);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(redirectUrl);
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+        }
+        else {
+            return ResponseEntity.badRequest().body("인증에 실패한 토큰입니다.");
+        }
     }
 
     @ApiOperation(value = "비밀번호 변경")
@@ -195,7 +205,7 @@ public class AccountController {
     public ResponseEntity<?> resetPassword(@RequestBody AccountDTO.UpdatePasswordDto updatePasswordDto) {
         // todo: 만료된 경우
         if ((PasswordResetTokenUtils.isTokenExpired(updatePasswordDto.getToken())))
-            return null;
+            return ResponseEntity.badRequest().body("만료된 토큰입니다.");
         var user = accountService.updateUserPassword(
                 updatePasswordDto.getToken(),
                 updatePasswordDto.getNewPassword(),
