@@ -1,1 +1,9 @@
 rootProject.name = 'witherview'
+include 'witherview-core'
+include 'mysql-domain'
+include 'mongo-domain'
+include 'chat-api'
+include 'account-api'
+include 'study-api'
+include 'router'
+
