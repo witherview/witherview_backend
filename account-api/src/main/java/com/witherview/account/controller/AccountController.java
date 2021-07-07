@@ -4,6 +4,7 @@ import com.witherview.account.dto.AccountDTO;
 import com.witherview.account.mapper.AccountMapper;
 import com.witherview.account.service.AccountService;
 import com.witherview.account.util.AuthTokenParsing;
+import com.witherview.account.util.PasswordResetTokenUtils;
 import com.witherview.mysql.entity.StudyRoom;
 import com.witherview.mysql.entity.User;
 import exception.ErrorCode;
@@ -21,19 +22,13 @@ import java.net.URISyntaxException;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -171,6 +166,52 @@ public class AccountController {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         accountService.withdrawUser(userId, withdrawUserDTO.getPassword());
         return ResponseEntity.ok("회원 탈퇴 성공");
+    }
+
+    @ApiOperation(value = "비밀번호 리셋이메일 전송.")
+    @PostMapping("/api/myinfo/password-reset")
+    public ResponseEntity<?> passwordReset(
+            @RequestBody AccountDTO.PasswordResetRequestDto passwordResetDto ) {
+
+        var result = accountService.passwordResetRequest(passwordResetDto.getEmail());
+
+        if (result.isResult()) return ResponseEntity.status(201).body("이메일 전송이 완료되었습니다.");
+        return ResponseEntity.badRequest().body("이메일 전송에 실패했습니다.");
+    }
+
+    @ApiOperation(value = "비밀번호 재설정 토큰으로 사용자 검증")
+    @GetMapping("/api/myinfo/password-reset")
+    public ResponseEntity<?> verifyPasswordResetToken(@RequestParam(value = "token") String token) throws URISyntaxException {
+        // todo: 만료된 토큰일 경우
+        if (PasswordResetTokenUtils.isTokenExpired(token)) {
+            return ResponseEntity.badRequest().body("만료된 토큰입니다.");
+        };
+        var result = accountService.verifyUserByPasswordToken(token);
+        // todo: 올바른 토큰인 경우 / 잘못된 토큰인 경우 분기처리 필요. redirect로 프론트엔드 링크 넘겨야 할듯.
+        //  redirect에서도 같은 토큰 넘겨도 문제없음.-> redirect url의 parameter에 토큰값 넣으면 될 듯.
+        if (result) {
+            URI redirectUrl = new URI("https://witherview.com/password-reset?token=" + token);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(redirectUrl);
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+        }
+        else {
+            return ResponseEntity.badRequest().body("인증에 실패한 토큰입니다.");
+        }
+    }
+
+    @ApiOperation(value = "비밀번호 변경")
+    @PatchMapping("/api/myinfo/password-reset")
+    public ResponseEntity<?> resetPassword(@RequestBody AccountDTO.UpdatePasswordDto updatePasswordDto) {
+        // todo: 만료된 경우
+        if ((PasswordResetTokenUtils.isTokenExpired(updatePasswordDto.getToken())))
+            return ResponseEntity.badRequest().body("만료된 토큰입니다.");
+        var user = accountService.updateUserPassword(
+                updatePasswordDto.getToken(),
+                updatePasswordDto.getNewPassword(),
+                updatePasswordDto.getNewPasswordConfirm());
+
+        return ResponseEntity.ok("패스워드 재설정이 완료되었습니다.");
     }
 
     // for keycloak Authentication API only.

@@ -36,8 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
             .httpBasic().disable() // rest api 이므로 기본설정은 전부 disable;
-            .cors()
-        .and()
+//            .cors()
+//        .and()
             .csrf().disable()
             .formLogin().disable()
             .headers().frameOptions().disable()
@@ -49,9 +49,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
              .authorizeRequests()
              .antMatchers("/socket/**").permitAll()
              .antMatchers(HttpMethod.POST, "/register").permitAll()
-             .antMatchers(HttpMethod.POST, SecurityConstant.SIGN_UP_URL).permitAll()
+             .antMatchers(HttpMethod.POST, "/login").permitAll()
              .antMatchers(HttpMethod.GET, "/oauth/user/*").permitAll()
              .antMatchers(HttpMethod.POST, "/oauth/user").permitAll()
+             .antMatchers(HttpMethod.GET, "/api/self/questionList").permitAll()
              .anyRequest().authenticated() // todo: 일단 모든 요청을 통과하도록 설정. 삭제 필요
         .and()
             .oauth2ResourceServer()
@@ -60,20 +61,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.addAllowedOrigin("*");
+//        configuration.addAllowedHeader("*");
+//        configuration.addAllowedMethod("*");
+//        configuration.setAllowCredentials(true);
+//        configuration.setMaxAge(3600L);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

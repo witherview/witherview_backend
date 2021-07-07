@@ -40,6 +40,7 @@ public class SelfQuestionListDTO {
         private String title;
         private String enterprise;
         private String job;
+        private int length;
     }
 
     @Getter @Setter
