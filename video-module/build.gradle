@@ -4,8 +4,6 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    // rabbitmq
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     // AWS s3 연결
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
     testCompile group: 'junit', name: 'junit', version: '4.12'
