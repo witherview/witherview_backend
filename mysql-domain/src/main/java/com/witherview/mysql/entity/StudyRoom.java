@@ -88,11 +88,12 @@ public class StudyRoom {
         this.studyRoomParticipants.add(studyRoomParticipant);
     }
 
-    public void update(String title, String description,
+    public void update(String title, String description,String category,
                        String industry, String job,
                        LocalDate date, LocalTime time) {
         this.title = title;
         this.description = description;
+        this.category = category;
         this.industry = industry;
         this.job = job;
         this.date = date;
