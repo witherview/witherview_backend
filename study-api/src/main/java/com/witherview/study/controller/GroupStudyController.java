@@ -110,26 +110,23 @@ public class GroupStudyController {
     }
 
 
-    @ApiOperation(value="전체 / 카테고리별 스터디룸 데이터 조회.")
+    @ApiOperation(value="스터디 방 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")
     })
     @GetMapping("/room")
     public ResponseEntity<?> findAllRooms(
-            @ApiParam(value = "조회할 방 카테고리")
-            @RequestParam(value = "category", required = false) String category,
-            @ApiParam(value = "조회할 page (디폴트 값 = 0)")
-            @RequestParam(value = "page", required = false) Integer current,
+            @ApiParam(value = "조회할 방 직무")
+            @RequestParam(value = "job", required = false) String job,
+            @ApiParam(value = "조회할 방 키워드")
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @ApiParam(value = "마지막으로 조회된 스터디룸 id (페이징 처리를 위해 사용)")
+            @RequestParam(value = "lastStudyRoomId", required = false) Long lastId,
             @ApiIgnore Authentication authentication
     ) {
 
-        List<StudyRoom> lists;
-
-        if (category != null) {
-            lists = groupStudyService.findCategoryRooms(category, current);
-        } else {
-            lists = groupStudyService.findRooms(current);
-        }
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        List<StudyRoom> lists = groupStudyService.findRooms(userId, job, keyword, lastId);
         return ResponseEntity.ok(groupStudyMapper.toResponseDtoArray(lists));
     }
 
