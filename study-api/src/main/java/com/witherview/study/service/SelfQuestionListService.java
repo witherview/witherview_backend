@@ -2,10 +2,10 @@ package com.witherview.study.service;
 
 import com.witherview.mysql.entity.QuestionList;
 import com.witherview.mysql.entity.User;
-import com.witherview.mysql.repository.QuestionListRepository;
-import com.witherview.mysql.repository.UserRepository;
 import com.witherview.study.dto.SelfQuestionListDTO;
 import com.witherview.study.mapper.SelfQuestionListMapper;
+import com.witherview.study.repository.QuestionListRepository;
+import com.witherview.study.repository.UserRepository;
 import exception.study.NotFoundQuestionList;
 import exception.study.UserNotFoundException;
 import java.util.List;
