@@ -5,13 +5,13 @@ import com.witherview.mysql.entity.StudyHistory;
 import com.witherview.mysql.entity.StudyRoom;
 import com.witherview.mysql.entity.StudyRoomParticipant;
 import com.witherview.mysql.entity.User;
-import com.witherview.mysql.repository.StudyFeedbackRepository;
-import com.witherview.mysql.repository.StudyHistoryRepository;
-import com.witherview.mysql.repository.StudyRoomParticipantRepository;
-import com.witherview.mysql.repository.StudyRoomRepository;
-import com.witherview.mysql.repository.UserRepository;
 import com.witherview.study.dto.GroupStudyDTO;
 import com.witherview.study.mapper.GroupStudyMapper;
+import com.witherview.study.repository.StudyFeedbackRepository;
+import com.witherview.study.repository.StudyHistoryRepository;
+import com.witherview.study.repository.StudyRoomParticipantRepository;
+import com.witherview.study.repository.StudyRoomRepository;
+import com.witherview.study.repository.UserRepository;
 import exception.study.AlreadyJoinedStudyRoom;
 import exception.study.HostNotLeaveStudyRoom;
 import exception.study.NotCreatedFeedback;
@@ -21,12 +21,10 @@ import exception.study.NotJoinedStudyRoom;
 import exception.study.NotOwnedStudyHistory;
 import exception.study.NotStudyRoomHost;
 import exception.study.UserNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +55,8 @@ public class GroupStudyService {
             throw new NotStudyRoomHost();
         }
 
-        studyRoom.update(requestDto.getTitle(), requestDto.getDescription(),
+        studyRoom.update(requestDto.getTitle(),
+                requestDto.getDescription(), requestDto.getCategory(),
                 requestDto.getIndustry(), requestDto.getJob(),
                 requestDto.getDate(), requestDto.getTime());
     }
@@ -187,18 +186,20 @@ public class GroupStudyService {
                 .collect(Collectors.toList());
     }
 
+    /* 1. 로그인한 사용자가 현재 참여한 방 (첫페이지에 무조건 포함)
+       2. 로그인한 사용자가 현재 참여 가능한 방 */
+    public List<StudyRoom> findRooms(String userId, String job, String keyword, Long lastId) {
+        List<StudyRoom> lists = new ArrayList<>();
 
-    public List<StudyRoom> findRooms(Integer current) {
-        int page = current == null ? 0 : current;
-        Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("date", "time").ascending());
-        var result = studyRoomRepository.findAll(pageRequest).getContent();
-        return result;
-    }
+        // 첫페이지 -> 참여한 방 포함해서 보여주기
+        if(lastId == null) {
+            User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+            lists = user.getParticipatedStudyRooms()
+                .stream().map(e -> e.getStudyRoom()).collect(Collectors.toList());
+        }
 
-    public List<StudyRoom> findCategoryRooms(String category, Integer current) {
-        int page = current == null ? 0 : current;
-        Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("date", "time").ascending());
-        var result = studyRoomRepository.findAllByCategory(pageRequest, category).getContent();
-        return result;
+        var result = studyRoomRepository.findRooms(userId, job, keyword, lastId, pageSize);
+        lists.addAll(result);
+        return lists;
     }
 }
