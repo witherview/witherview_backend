@@ -5,6 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long> {
+public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long>, StudyRoomQDslRepository {
     Page<StudyRoom> findAllByCategory(Pageable pageable, String category);
 }
