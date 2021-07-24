@@ -6,4 +6,5 @@ include 'chat-api'
 include 'account-api'
 include 'study-api'
 include 'router'
+include 'video-module'
 

@@ -21,4 +21,5 @@ dependencies {
 
     implementation project(':witherview-core')
     implementation project(':mysql-domain')
+    implementation project(':video-module')
 }

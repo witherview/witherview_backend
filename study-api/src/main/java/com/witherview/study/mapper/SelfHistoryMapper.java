@@ -8,7 +8,7 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface SelfHistoryMapper {
-    SelfHistoryDTO.SelfHistoryDefaultResponseDTO toResponseDto(SelfHistory selfHistory);
-
-    SelfHistoryDTO.SelfHistoryResponseDTO[] toResponseArray(List<SelfHistory> selfHistoryList);
+    SelfHistoryDTO.DefaultResponseDTO toResponseDto(SelfHistory selfHistory);
+    SelfHistoryDTO.VideoSaveResponseDTO toUploadResponseDto(SelfHistory selfHistory);
+    SelfHistoryDTO.ResponseDTO[] toResponseArray(List<SelfHistory> selfHistoryList);
 }
