@@ -15,6 +15,7 @@ public enum ErrorCode {
     // AUTH
     INVALID_TOKEN(401, "AUTH004", "로그인 후 이용해 주세요."),
     INVALID_JWT_TOKEN(401, "AUTH004", "유효하지 않은 로그인입니다."),
+    INVALID_RESET_TOKEN(401, "AUTH004", "유효하지 않은 인증토큰입니다."),
     DUPLICATE_EMAIL(400, "AUTH001", "중복된 이메일 입니다. 다른 이메일을 사용해 주세요."),
     NOT_EQUAL_PASSWORD(400, "AUTH002", "입력하신 두 비밀번호가 일치하지 않습니다."),
     INVALID_LOGIN(401, "AUTH003", "입력하신 이메일 혹은 비밀번호가 일치하지 않습니다."),
