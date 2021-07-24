@@ -69,8 +69,8 @@ public class SelfQuestionListService {
         else {
             return questionListRepository.findByUserIdAndId(userId, listId);
         }
-
     }
+
     public List<QuestionList> findSampleList(String userId){
         return questionListRepository.findFirstByUserId(userId);
     }

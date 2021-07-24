@@ -6,11 +6,13 @@ import com.witherview.mysql.repository.StudyHistoryRepository;
 import com.witherview.mysql.repository.StudyRoomParticipantRepository;
 import com.witherview.mysql.repository.StudyRoomRepository;
 import com.witherview.mysql.repository.UserRepository;
+import com.witherview.upload.service.UploadService;
 import exception.study.NotFoundStudyHistory;
 import exception.study.NotFoundStudyRoom;
 import exception.study.NotJoinedStudyRoom;
 import exception.study.NotOwnedStudyHistory;
 import exception.study.UserNotFoundException;
+import exception.video.NotSavedVideo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,7 @@ public class StudyHistoryService {
     private final StudyRoomRepository studyRoomRepository;
     private final StudyHistoryRepository studyHistoryRepository;
     private final StudyRoomParticipantRepository studyRoomParticipantRepository;
-    private final VideoService videoService;
+    private final UploadService uploadService;
 
     @Transactional
     public StudyHistory uploadVideo(MultipartFile videoFile, Long historyId, String userId) {
@@ -34,17 +36,16 @@ public class StudyHistoryService {
         if (!user.getId().equals(studyHistory.getUser().getId())) {
             throw new NotOwnedStudyHistory();
         }
-        String savedLocation = videoService.upload(videoFile,
-                user.getEmail() + "/group/" + historyId);
-        studyHistory.updateSavedLocation(savedLocation);
+
+        var loc = uploadService.upload(userId, videoFile);
+        studyHistory.updateSavedLocation(loc);
         return studyHistory;
     }
     @Transactional
     public StudyHistory saveStudyHistory(Long studyRoomId, String userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         studyRoomRepository.findById(studyRoomId).orElseThrow(NotFoundStudyRoom::new);
-        var studyRoomParticipant = studyRoomParticipantRepository
-                .findByStudyRoomIdAndUserId(studyRoomId, userId).orElseThrow(NotJoinedStudyRoom::new);
+        studyRoomParticipantRepository.findByStudyRoomIdAndUserId(studyRoomId, userId).orElseThrow(NotJoinedStudyRoom::new);
 
         StudyHistory studyHistory = StudyHistory.builder().studyRoom(studyRoomId).build();
         user.addStudyHistory(studyHistory);

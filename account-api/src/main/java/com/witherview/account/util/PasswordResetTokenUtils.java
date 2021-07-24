@@ -37,7 +37,6 @@ public class PasswordResetTokenUtils {
         } catch(Exception e) {
             throw new InvalidJwtTokenException(ErrorCode.INVALID_RESET_TOKEN);
         }
-
     }
 
     public static String getUserEmail(String token) {
