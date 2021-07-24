@@ -1,5 +1,7 @@
 package com.witherview.account.util;
 
+import exception.ErrorCode;
+import exception.account.InvalidJwtTokenException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -24,13 +26,17 @@ public class PasswordResetTokenUtils {
     }
 
     public static boolean isTokenExpired(String token) {
-        var claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token).getBody();
-        var expireDate = claims.getExpiration();
-        var today = new Date();
-        return expireDate.before(today);
+        try {
+            var claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token).getBody();
+            var expireDate = claims.getExpiration();
+            var today = new Date();
+            return expireDate.before(today);
+        } catch(Exception e) {
+            throw new InvalidJwtTokenException(ErrorCode.INVALID_RESET_TOKEN);
+        }
     }
 
     public static String getUserEmail(String token) {
