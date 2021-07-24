@@ -2,11 +2,10 @@ package com.witherview.study.service;
 
 import com.witherview.mysql.entity.SelfHistory;
 import com.witherview.mysql.entity.User;
-
-import com.witherview.study.repository.QuestionListRepository;
-import com.witherview.study.repository.SelfCheckRepository;
-import com.witherview.study.repository.SelfHistoryRepository;
-import com.witherview.study.repository.UserRepository;
+import com.witherview.mysql.repository.QuestionListRepository;
+import com.witherview.mysql.repository.SelfCheckRepository;
+import com.witherview.mysql.repository.SelfHistoryRepository;
+import com.witherview.mysql.repository.UserRepository;
 import exception.study.NotDeletedFile;
 import exception.study.NotFoundHistory;
 import exception.study.NotFoundQuestionList;

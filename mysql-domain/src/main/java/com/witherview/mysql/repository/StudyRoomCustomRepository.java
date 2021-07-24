@@ -1,4 +1,4 @@
-package com.witherview.study.repository;
+package com.witherview.mysql.repository;
 
 import com.witherview.mysql.entity.StudyRoom;
 import java.util.List;

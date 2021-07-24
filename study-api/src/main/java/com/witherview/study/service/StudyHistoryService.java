@@ -2,11 +2,10 @@ package com.witherview.study.service;
 
 import com.witherview.mysql.entity.StudyHistory;
 import com.witherview.mysql.entity.User;
-
-import com.witherview.study.repository.StudyHistoryRepository;
-import com.witherview.study.repository.StudyRoomParticipantRepository;
-import com.witherview.study.repository.StudyRoomRepository;
-import com.witherview.study.repository.UserRepository;
+import com.witherview.mysql.repository.StudyHistoryRepository;
+import com.witherview.mysql.repository.StudyRoomParticipantRepository;
+import com.witherview.mysql.repository.StudyRoomRepository;
+import com.witherview.mysql.repository.UserRepository;
 import exception.study.NotFoundStudyHistory;
 import exception.study.NotFoundStudyRoom;
 import exception.study.NotJoinedStudyRoom;

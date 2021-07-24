@@ -1,6 +1,5 @@
 package com.witherview.mysql.repository;
 
-
 import com.witherview.mysql.entity.Question;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

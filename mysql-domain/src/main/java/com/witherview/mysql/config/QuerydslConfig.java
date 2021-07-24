@@ -1,4 +1,4 @@
-package com.witherview.study.configuration;
+package com.witherview.mysql.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;

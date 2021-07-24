@@ -1,4 +1,4 @@
-package com.witherview.study.repository.impl;
+package com.witherview.mysql.repository.impl;
 
 import static com.witherview.mysql.entity.QStudyRoom.studyRoom;
 import static com.witherview.mysql.entity.QStudyRoomParticipant.studyRoomParticipant;
@@ -6,10 +6,10 @@ import static com.witherview.mysql.entity.QStudyRoomParticipant.studyRoomPartici
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.witherview.mysql.entity.StudyRoom;
-import com.witherview.study.repository.StudyRoomCustomRepository;
+import com.witherview.mysql.repository.StudyRoomCustomRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 @RequiredArgsConstructor
 public class StudyRoomCustomRepositoryImpl implements StudyRoomCustomRepository {
@@ -38,12 +38,12 @@ public class StudyRoomCustomRepositoryImpl implements StudyRoomCustomRepository 
   }
 
   private BooleanExpression eqJob(String job) {
-    if(StringUtils.isBlank(job)) return null;
+    if(StringUtils.isEmpty(job) || job.equals(" ")) return null;
     return studyRoom.job.equalsIgnoreCase(job);
   }
 
   private BooleanExpression findKeyword(String keyword) {
-    if(StringUtils.isBlank(keyword)) return null;
+    if(StringUtils.isEmpty(keyword) || keyword.equals(" ")) return null;
     return studyRoom.title.containsIgnoreCase(keyword).or(studyRoom.description.containsIgnoreCase(keyword));
   }
 }

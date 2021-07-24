@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages="com.witherview.study")
+@EnableJpaRepositories(basePackages="com.witherview.mysql.repository")
 @EntityScan(basePackages="com.witherview.mysql")
 public class StudyApiApplication {
   public static void main(String[] args) {
