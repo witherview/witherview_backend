@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.witherview.account.dto.AccountDTO;
 import com.witherview.account.mapper.AccountMapper;
 import com.witherview.account.util.GenerateRandomId;
+import com.witherview.account.util.PasswordResetTokenUtils;
 import com.witherview.mysql.entity.Question;
 import com.witherview.mysql.entity.QuestionList;
 import com.witherview.mysql.entity.StudyRoom;
@@ -26,12 +27,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +52,7 @@ public class AccountService {
     private final RestTemplate restTemplate;
     private final AmazonS3 s3Client;
 
-    @Value("${server.url}")
-    private String serverUrl;
+
     @Value("${spring.security.oauth2.client.registration.witherview.client-id}")
     private String clientId;
     @Value("${spring.security.oauth2.client.registration.witherview.client-secret}")
@@ -68,6 +65,8 @@ public class AccountService {
     private String tokenUri;
     @Value("${application.bucket.profile}")
     private String bucketName;
+    @Value("${cloud.email-server.url}")
+    private String emailServerUrl;
 
     private static String CDNUrl = "https://d1lh9zszqbjykc.cloudfront.net/";
 
@@ -229,4 +228,46 @@ public class AccountService {
         var result = passwordEncoder.matches(password, dbPassword);
         return result;
     }
+
+
+    @Transactional
+    public AccountDTO.PasswordResetResponseDto passwordResetRequest(String email) {
+        var user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        // 토큰 생성.
+        var generatedToken = PasswordResetTokenUtils.generatePasswordResetToken(email);
+        // user정보에 passwordResetToken 필드 업데이트.
+        user.setPasswordResetToken(generatedToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        var body = new JSONObject();
+        body.put("email", user.getEmail());
+        body.put("name", user.getName());
+        body.put("emailVerificationToken", generatedToken);
+        HttpEntity<String> entity = new HttpEntity<>(body.toString(), headers);
+
+        var result = restTemplate.exchange(emailServerUrl + "/password-reset", HttpMethod.POST, entity, AccountDTO.PasswordResetResponseDto.class);
+        return result.getBody();
+    }
+
+    public boolean verifyUserByPasswordToken(String token) {
+        var email = PasswordResetTokenUtils.getUserEmail(token);
+        var user = findUserByEmail(email);
+        var savedToken = user.getPasswordResetToken();
+        return savedToken.equals(token);
+    }
+
+    @Transactional
+    public User updateUserPassword(String token, String newPassword, String newPasswordConfirm) {
+        if (!newPassword.equals(newPasswordConfirm))
+            throw new NotEqualPasswordException();
+
+        var user = findUserByEmail(PasswordResetTokenUtils.getUserEmail(token));
+        user.setPasswordResetToken(null);
+        user.setEncryptedPassword(passwordEncoder.encode(newPassword));
+        return user;
+    }
+
 }
+
+
