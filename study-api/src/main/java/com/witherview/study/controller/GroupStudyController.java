@@ -116,6 +116,8 @@ public class GroupStudyController {
     })
     @GetMapping("/room")
     public ResponseEntity<?> findAllRooms(
+            @ApiParam(value = "조회할 방 산업")
+            @RequestParam(value = "industry", required = false) String industry,
             @ApiParam(value = "조회할 방 직무")
             @RequestParam(value = "job", required = false) String job,
             @ApiParam(value = "조회할 방 키워드")
@@ -126,7 +128,7 @@ public class GroupStudyController {
     ) {
 
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        List<StudyRoom> lists = groupStudyService.findRooms(userId, job, keyword, lastId);
+        List<StudyRoom> lists = groupStudyService.findRooms(userId, industry, job, keyword, lastId);
         return ResponseEntity.ok(groupStudyMapper.toResponseDtoArray(lists));
     }
 

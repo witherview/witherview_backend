@@ -16,14 +16,14 @@ public class StudyRoomCustomRepositoryImpl implements StudyRoomCustomRepository 
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public List<StudyRoom> findRooms(String userId, String job, String keyword, Long lastId, int pageSize) {
+  public List<StudyRoom> findRooms(String userId, String industry, String job, String keyword, Long lastId, int pageSize) {
 
     return queryFactory
         .selectDistinct(studyRoom)
         .from(studyRoomParticipant)
         .join(studyRoomParticipant.studyRoom, studyRoom)
         .on(studyRoomParticipant.user.id.notEqualsIgnoreCase(userId))
-        .where(findKeyword(keyword), eqJob(job), gtCurrentId(lastId), availableRooms())
+        .where(findKeyword(keyword), eqIndustry(industry), eqJob(job), gtCurrentId(lastId), availableRooms())
         .limit(pageSize)
         .fetch();
   }
@@ -35,6 +35,11 @@ public class StudyRoomCustomRepositoryImpl implements StudyRoomCustomRepository 
   private BooleanExpression gtCurrentId(Long lastId) {
     if(lastId == null) return null;
     return studyRoom.id.gt(lastId);
+  }
+
+  private BooleanExpression eqIndustry(String industry) {
+    if(StringUtils.isEmpty(industry) || industry.equals(" ")) return null;
+    return studyRoom.industry.equalsIgnoreCase(industry);
   }
 
   private BooleanExpression eqJob(String job) {
