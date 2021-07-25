@@ -61,12 +61,12 @@ public class SelfHistoryController {
     })
     @PostMapping(path = "/api/self/history/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
                                                    produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SelfHistoryDTO.SelfHistoryDefaultResponseDTO> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
+    public ResponseEntity<?> uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,
                                          @RequestParam("selfHistoryId") Long selfHistoryId,
                                          @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         SelfHistory selfHistory = selfHistoryService.uploadVideo(videoFile, selfHistoryId, userId);
-        return new ResponseEntity<>(selfHistoryMapper.toResponseDto(selfHistory), HttpStatus.OK);
+        return new ResponseEntity<>(selfHistoryMapper.toUploadResponseDto(selfHistory), HttpStatus.OK);
     }
 
     @ApiOperation(value="혼자 연습 기록 조회")

@@ -13,12 +13,18 @@ public class SelfHistoryDTO {
     }
 
     @Getter @Setter
-    public static class SelfHistoryDefaultResponseDTO {
+    public static class DefaultResponseDTO {
         private Long id;
     }
 
     @Getter @Setter
-    public static class SelfHistoryResponseDTO {
+    public static class VideoSaveResponseDTO {
+        private Long id;
+        private String savedLocation;
+    }
+
+    @Getter @Setter
+    public static class ResponseDTO {
         private Long id;
         private Long questionListId;
         private String historyTitle;
