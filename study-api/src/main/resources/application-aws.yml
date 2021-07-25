@@ -7,17 +7,6 @@ upload:
   location: /root/videos/
   img-location: /home/ubuntu/witherview_backend/profiles
 
-ffmpeg:
-  path: /root/ffmpeg_sources/ffmpeg/
-
-task:
-  queue:
-    maximum-attempt-count: 5
-    cpu:
-      limit-percentage: 40
-    thread:
-      wait-milliseconds: 3000
-
 spring:
   datasource:
     username: root
@@ -72,6 +61,25 @@ spring:
           witherview:
             token-uri: http://52.79.202.205:8080/auth/realms/witherview/protocol/openid-connect/token
             username-attribute: preferred_username
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAZ3SKFZJOKETNMGPV
+      secret-key: 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
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+    cdn:
+      url: https://d1lh9zszqbjykc.cloudfront.net/
+    gateway:
+      url: https://0j8bzna2x3.execute-api.ap-northeast-2.amazonaws.com/witherview-api
+
+application:
+  bucket:
+    profile: yapp-storage/profiles
+    videos: yapp-storage/video
 
 keycloak:
   realm: witherview
