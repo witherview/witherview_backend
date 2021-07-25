@@ -1,11 +1,11 @@
-package com.witherview;
+package com.witherview.chat;
 
-import com.witherview.database.entity.Question;
-import com.witherview.database.entity.QuestionList;
-import com.witherview.database.entity.User;
-import com.witherview.database.repository.QuestionListRepository;
-import com.witherview.database.repository.UserRepository;
-import com.witherview.utils.GenerateRandomId;
+import com.witherview.chat.util.GenerateRandomId;
+import com.witherview.mysql.entity.Question;
+import com.witherview.mysql.entity.QuestionList;
+import com.witherview.mysql.entity.User;
+import com.witherview.mysql.repository.QuestionListRepository;
+import com.witherview.mysql.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
