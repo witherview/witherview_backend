@@ -59,8 +59,7 @@ public class SelfQuestionListController {
         return new ResponseEntity<>(selfQuestionListMapper.toResponseDto(questionList), HttpStatus.CREATED);
     }
 
-    // 질문 리스트 조회
-    // 토큰 없으면 전체리스트, 토큰 있으면 해당 사용자 소유의 리스트.
+    // 토큰 없으면 해당 사용자가 등록한 리스트 전체, 토큰 있으면 해당 사용자 소유의 리스트.
     @ApiOperation(value="질문리스트 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", paramType = "header")
