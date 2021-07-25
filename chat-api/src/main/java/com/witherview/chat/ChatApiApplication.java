@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"com.witherview.chat","com.witherview.mysql"})
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages="com.witherview.mysql.repository")
 @EnableMongoRepositories(basePackages="com.witherview.mongo.repository")

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"com.witherview.study","com.witherview.mysql"})
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages="com.witherview.mysql.repository")
 @EntityScan(basePackages="com.witherview.mysql")
