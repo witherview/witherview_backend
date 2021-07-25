@@ -49,6 +49,7 @@ public class SelfHistoryService {
 
         var loc = uploadService.upload(userId, videoFile);
         selfHistory.updateSavedLocation(loc);
+        selfHistory.setThumbnail(loc.replace(".m3u8", ".png"));
         return selfHistory;
     }
 

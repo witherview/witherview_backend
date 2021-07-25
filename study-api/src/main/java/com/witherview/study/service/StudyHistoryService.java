@@ -39,6 +39,7 @@ public class StudyHistoryService {
 
         var loc = uploadService.upload(userId, videoFile);
         studyHistory.updateSavedLocation(loc);
+        studyHistory.setThumbnail(loc.replace(".m3u8", ".png"));
         return studyHistory;
     }
     @Transactional

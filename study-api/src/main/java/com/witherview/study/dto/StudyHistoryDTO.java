@@ -23,6 +23,7 @@ public class StudyHistoryDTO {
     public static class VideoSaveResponseDTO {
         private Long id;
         private String savedLocation;
+        private String thumbnail;
         // 썸네일 url.
     }
 }

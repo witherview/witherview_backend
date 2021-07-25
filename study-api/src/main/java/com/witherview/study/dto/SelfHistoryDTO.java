@@ -21,6 +21,7 @@ public class SelfHistoryDTO {
     public static class VideoSaveResponseDTO {
         private Long id;
         private String savedLocation;
+        private String thumbnail;
     }
 
     @Getter @Setter
