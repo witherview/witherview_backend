@@ -12,11 +12,12 @@ import exception.study.NotFoundHistory;
 import exception.study.NotFoundQuestionList;
 import exception.study.NotOwnedSelfHistory;
 import exception.study.UserNotFoundException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -50,6 +51,7 @@ public class SelfHistoryService {
         var loc = uploadService.upload(userId, videoFile);
         selfHistory.updateSavedLocation(loc);
         selfHistory.setThumbnail(loc.replace(".m3u8", ".png"));
+        selfHistory.setVideoInfo(loc.replace(".m3u8", ".json"));
         return selfHistory;
     }
 

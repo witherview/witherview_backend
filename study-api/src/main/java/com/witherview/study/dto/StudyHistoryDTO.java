@@ -24,6 +24,6 @@ public class StudyHistoryDTO {
         private Long id;
         private String savedLocation;
         private String thumbnail;
-        // 썸네일 url.
+        private String videoInfo;
     }
 }

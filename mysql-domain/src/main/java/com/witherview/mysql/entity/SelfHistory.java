@@ -39,6 +39,8 @@ public class SelfHistory extends CreatedBaseEntity {
     private String savedLocation;
     @Setter
     private String thumbnail;
+    @Setter
+    private String videoInfo;
 
     @OneToMany(mappedBy = "selfHistory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelfCheck> selfCheckList = new ArrayList<>();
