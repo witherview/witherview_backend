@@ -13,11 +13,10 @@ import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @Table(name = "tbl_user", indexes = @Index(name = "email", columnList = "email"))
 public class User {
@@ -100,7 +99,7 @@ public class User {
     }
 
     public void addSelfHistory(SelfHistory selfHistory) {
-        selfHistory.setUser(this);
+        selfHistory.updateUser(this);
         this.selfHistories.add(selfHistory);
     }
 

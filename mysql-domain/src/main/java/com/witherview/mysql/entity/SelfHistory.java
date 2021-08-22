@@ -15,10 +15,9 @@ import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @Table(name = "tbl_self_study")
 public class SelfHistory extends CreatedBaseEntity {
@@ -37,23 +36,37 @@ public class SelfHistory extends CreatedBaseEntity {
     private String historyTitle;
 
     private String savedLocation;
-    @Setter
+
     private String thumbnail;
-    @Setter
+
     private String videoInfo;
 
     @OneToMany(mappedBy = "selfHistory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelfCheck> selfCheckList = new ArrayList<>();
 
     @Builder
-    public SelfHistory(Long questionListId) {
+    public SelfHistory(Long questionListId, String historyTitle) {
+
         this.questionListId = questionListId;
+        this.historyTitle = historyTitle;
+    }
+
+    protected void updateUser(User user) {
+        this.user = user;
     }
 
     public void updateHistoryTitle(String historyTitle) { this.historyTitle = historyTitle; }
 
     public void updateSavedLocation(String savedLocation) {
         this.savedLocation = savedLocation;
+    }
+
+    public void updateThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public void updateVideoInfo(String videoInfo) {
+        this.videoInfo = videoInfo;
     }
 
     public void addSelfCheck(SelfCheck selfCheck) {
