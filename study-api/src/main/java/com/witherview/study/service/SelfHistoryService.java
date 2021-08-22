@@ -6,6 +6,7 @@ import com.witherview.mysql.repository.QuestionListRepository;
 import com.witherview.mysql.repository.SelfCheckRepository;
 import com.witherview.mysql.repository.SelfHistoryRepository;
 import com.witherview.mysql.repository.UserRepository;
+import com.witherview.study.dto.SelfHistoryDTO;
 import com.witherview.upload.service.DeleteService;
 import com.witherview.upload.service.UploadService;
 import exception.study.NotFoundHistory;
@@ -31,15 +32,17 @@ public class SelfHistoryService {
     private final DeleteService deleteService;
 
     @Transactional
-    public SelfHistory save(Long questionListId, String userId) {
+    public SelfHistory saveSelfHistory(String userId, Long questionListId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         questionListRepository.findById(questionListId).orElseThrow(NotFoundQuestionList::new);
 
-        SelfHistory selfHistory = new SelfHistory(questionListId);
+            SelfHistory selfHistory = SelfHistory.builder()
+                                                 .questionListId(questionListId)
+                                                 .historyTitle("제목없음")
+                                                 .build();
         user.addSelfHistory(selfHistory);
-        selfHistoryRepository.save(selfHistory);
         user.increaseSelfPracticeCnt();
-        return selfHistory;
+        return selfHistoryRepository.save(selfHistory);
     }
 
     @Transactional
@@ -50,13 +53,23 @@ public class SelfHistoryService {
 
         var loc = uploadService.upload(userId, videoFile);
         selfHistory.updateSavedLocation(loc);
-        selfHistory.setThumbnail(loc.replace(".m3u8", ".png"));
-        selfHistory.setVideoInfo(loc.replace(".m3u8", ".json"));
+        selfHistory.updateThumbnail(loc.replace(".m3u8", ".png"));
+        selfHistory.updateVideoInfo(loc.replace(".m3u8", ".json"));
         return selfHistory;
     }
 
     @Transactional
-    public SelfHistory deleteHistory(String userId, Long historyId) {
+    public SelfHistory updateSelfHistory(String userId, SelfHistoryDTO.SelfHistoryUpdateRequestDTO dto) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        SelfHistory selfHistory = selfHistoryRepository.findById(dto.getId()).orElseThrow(NotFoundHistory::new);
+        authenticateOwner(user, selfHistory);
+
+        selfHistory.updateHistoryTitle(dto.getHistoryTitle());
+        return selfHistory;
+    }
+
+    @Transactional
+    public SelfHistory deleteSelfHistory(String userId, Long historyId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         SelfHistory selfHistory = selfHistoryRepository.findById(historyId).orElseThrow(NotFoundHistory::new);
         authenticateOwner(user, selfHistory);
@@ -64,7 +77,7 @@ public class SelfHistoryService {
         selfCheckRepository.deleteAll(selfHistory.getSelfCheckList());
         selfHistoryRepository.delete(selfHistory);
 
-        deleteService.delete(selfHistory.getSavedLocation());
+        //deleteService.delete(selfHistory.getSavedLocation());
         return selfHistory;
     }
 
