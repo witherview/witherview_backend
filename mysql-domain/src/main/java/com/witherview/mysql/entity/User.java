@@ -13,10 +13,11 @@ import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @Table(name = "tbl_user", indexes = @Index(name = "email", columnList = "email"))
 public class User {
