@@ -27,7 +27,7 @@ public class SelfQuestionListService {
         // 해당 list의 owner인 사용자 확인
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         QuestionList questionList = questionListMapper.toQuestionList(requestDto);
-        questionList.setUserId(user.getId());
+        questionList.updateUser(user.getId());
         return questionListRepository.save(questionList);
     }
 
