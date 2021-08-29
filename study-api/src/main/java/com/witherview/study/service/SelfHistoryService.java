@@ -13,12 +13,14 @@ import exception.study.NotFoundHistory;
 import exception.study.NotFoundQuestionList;
 import exception.study.NotOwnedSelfHistory;
 import exception.study.UserNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,6 +32,7 @@ public class SelfHistoryService {
     private final SelfCheckRepository selfCheckRepository;
     private final UploadService uploadService;
     private final DeleteService deleteService;
+    private final int pageSize = 6;
 
     @Transactional
     public SelfHistory saveSelfHistory(String userId, Long questionListId) {
@@ -61,7 +64,7 @@ public class SelfHistoryService {
     @Transactional
     public SelfHistory updateSelfHistory(String userId, SelfHistoryDTO.SelfHistoryUpdateRequestDTO dto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        SelfHistory selfHistory = selfHistoryRepository.findById(dto.getId()).orElseThrow(NotFoundHistory::new);
+        SelfHistory selfHistory = selfHistoryRepository.findById(dto.getHistoryId()).orElseThrow(NotFoundHistory::new);
         authenticateOwner(user, selfHistory);
 
         selfHistory.updateHistoryTitle(dto.getHistoryTitle());
@@ -81,9 +84,11 @@ public class SelfHistoryService {
         return selfHistory;
     }
 
-    public List<SelfHistory> findAll(String userId) {
+    public List<SelfHistory> findAll(String userId, Integer lastPage) {
+        int page = lastPage == null ? 0 : lastPage;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return selfHistoryRepository.findAllByUserId(user.getId());
+        return selfHistoryRepository.findAllByUserId(user.getId(), pageable);
     }
 
     private void authenticateOwner(User user, SelfHistory selfHistory) {

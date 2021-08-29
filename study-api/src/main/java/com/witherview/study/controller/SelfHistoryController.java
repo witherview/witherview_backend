@@ -77,9 +77,12 @@ public class SelfHistoryController {
         @ApiImplicitParam(name = "Authorization", paramType = "header")
     })
     @GetMapping
-    public ResponseEntity<?> getList(@ApiIgnore Authentication authentication) {
+    public ResponseEntity<?> getList(
+        @ApiParam(value = "마지막으로 조회된 페이지")
+        @RequestParam(value = "lastPage", required = false) Integer lastPage,
+        @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        List<SelfHistory> selfHistories = selfHistoryService.findAll(userId);
+        List<SelfHistory> selfHistories = selfHistoryService.findAll(userId, lastPage);
         return new ResponseEntity<>(selfHistoryMapper.toResponseArray(selfHistories), HttpStatus.OK);
     }
 
