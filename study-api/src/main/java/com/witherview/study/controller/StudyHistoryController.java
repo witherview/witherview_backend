@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,9 +77,12 @@ public class StudyHistoryController {
         @ApiImplicitParam(name = "Authorization", paramType = "header")
     })
     @GetMapping
-    public ResponseEntity<?> getList(@ApiIgnore Authentication authentication) {
+    public ResponseEntity<?> getList(
+        @ApiParam(value = "마지막으로 조회된 페이지")
+        @RequestParam(value = "lastPage", required = false) Integer lastPage,
+        @ApiIgnore Authentication authentication) {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
-        List<StudyHistory> studyHistories = studyHistoryService.findAll(userId);
+        List<StudyHistory> studyHistories = studyHistoryService.findAll(userId, lastPage);
         return new ResponseEntity<>(studyHistoryMapper.toResponseArray(studyHistories), HttpStatus.OK);
     }
 
@@ -95,5 +101,17 @@ public class StudyHistoryController {
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         StudyHistory studyHistory = studyHistoryService.updateStudyHistory(userId, dto);
         return new ResponseEntity<>(studyHistoryMapper.toResponseDto(studyHistory), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "스터디 연습 기록 삭제")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "Authorization", paramType = "header")
+    })
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> deleteSelfHistory(@ApiParam(value = "삭제할 내역 id", required = true) @PathVariable("id") Long historyId,
+        @ApiIgnore Authentication authentication) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        StudyHistory studyHistory = studyHistoryService.deleteStudyHistory(userId, historyId);
+        return new ResponseEntity<>(studyHistoryMapper.toHistoryIdDto(studyHistory), HttpStatus.OK);
     }
 }

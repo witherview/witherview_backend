@@ -16,6 +16,9 @@ import exception.study.NotOwnedStudyHistory;
 import exception.study.UserNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +32,7 @@ public class StudyHistoryService {
     private final StudyHistoryRepository studyHistoryRepository;
     private final StudyRoomParticipantRepository studyRoomParticipantRepository;
     private final UploadService uploadService;
+    private final int pageSize = 6;
 
     @Transactional
     public StudyHistory saveStudyHistory(Long studyRoomId, String userId) {
@@ -65,10 +69,20 @@ public class StudyHistoryService {
     @Transactional
     public StudyHistory updateStudyHistory(String userId, StudyHistoryDTO.HistoryUpdateRequestDTO dto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        StudyHistory studyHistory = studyHistoryRepository.findById(dto.getId()).orElseThrow(NotFoundHistory::new);
+        StudyHistory studyHistory = studyHistoryRepository.findById(dto.getHistoryId()).orElseThrow(NotFoundHistory::new);
         authenticateOwner(user, studyHistory);
 
         studyHistory.updateHistoryTitle(dto.getHistoryTitle());
+        return studyHistory;
+    }
+
+    @Transactional
+    public StudyHistory deleteStudyHistory(String userId, Long historyId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        StudyHistory studyHistory = studyHistoryRepository.findById(historyId).orElseThrow(NotFoundHistory::new);
+        authenticateOwner(user, studyHistory);
+
+        studyHistoryRepository.delete(studyHistory);
         return studyHistory;
     }
 
@@ -76,9 +90,11 @@ public class StudyHistoryService {
         return studyHistoryRepository.findById(id).orElseThrow(NotFoundStudyHistory::new);
     }
 
-    public List<StudyHistory> findAll(String userId) {
+    public List<StudyHistory> findAll(String userId, Integer lastPage) {
+        int page = lastPage == null ? 0 : lastPage;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return studyHistoryRepository.findAllByUserId(user.getId());
+        return studyHistoryRepository.findAllByUserId(user.getId(), pageable);
     }
 
     private void authenticateOwner(User user, StudyHistory studyHistory) {

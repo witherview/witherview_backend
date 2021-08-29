@@ -9,7 +9,7 @@ public class StudyHistoryDTO {
     @Getter @Setter
     public static class HistoryUpdateRequestDTO {
         @NotNull(message = "연습내역 아이디는 반드시 입력해야 합니다.")
-        private Long id;
+        private Long historyId;
         private String historyTitle;
     }
 
