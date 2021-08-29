@@ -18,4 +18,5 @@ public interface GroupStudyMapper {
     GroupStudyDTO.ResponseDTO[] toResponseDtoArray(List<StudyRoom> studyRoomList);
     GroupStudyDTO.DeleteResponseDTO toDeleteResponseDto(StudyRoom studyRoom);
     GroupStudyDTO.FeedBackResponseDTO toFeedBackResponseDto(StudyFeedback studyFeedback);
+    GroupStudyDTO.UserRankResponseDTO toUserRankResponseDto(User user);
 }
