@@ -14,10 +14,9 @@ import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @Table(name = "tbl_question_list", indexes = {@Index(name = "user", columnList = "userId")})
 public class QuestionList {
@@ -55,6 +54,10 @@ public class QuestionList {
     public void addQuestion(Question question) {
         question.updateBelongList(this);
         this.questions.add(question);
+    }
+
+    public void updateUser(String userId) {
+        this.userId = userId;
     }
 
     public void update(String title, String enterprise, String job) {

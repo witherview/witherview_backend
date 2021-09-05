@@ -14,7 +14,7 @@ public class GroupStudyDTO {
     public static class StudyCreateDTO {
         @NotBlank(message = "방 제목은 반드시 입력해야 합니다.")
         @Length(min = 1, message = "방 제목은 1자 이상이어야 합니다.")
-        @Length(max = 20, message = "방 제목은 20자 이하여야 합니다.")
+        @Length(max = 50, message = "방 제목은 50자 이하여야 합니다.")
         private String title;
 
         @NotBlank(message = "방 설명은 반드시 입력해야 합니다.")
@@ -115,5 +115,14 @@ public class GroupStudyDTO {
     @Getter @Setter
     public static class DeleteResponseDTO {
         private Long id;
+    }
+
+    @Getter @Setter
+    public static class UserRankResponseDTO {
+        private String id;
+        private String email;
+        private String name;
+        private Byte reliability;
+        private String profileImg;
     }
 }

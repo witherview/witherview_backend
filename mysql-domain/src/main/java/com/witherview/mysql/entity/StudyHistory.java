@@ -15,7 +15,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -33,26 +32,42 @@ public class StudyHistory extends CreatedBaseEntity {
     @NotNull
     private Long studyRoom;
 
+    private String historyTitle;
+
     private String savedLocation;
-    @Setter
+
     private String thumbnail;
-    @Setter
+
     private String videoInfo;
 
     @OneToMany(mappedBy = "studyHistory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyFeedback> studyFeedbacks = new ArrayList<>();
 
     @Builder
-    public StudyHistory(Long studyRoom) {
+    public StudyHistory(Long studyRoom, String historyTitle) {
+
         this.studyRoom = studyRoom;
+        this.historyTitle = historyTitle;
     }
 
     protected void updateUser(User user) {
         this.user = user;
     }
 
+    public void updateHistoryTitle(String historyTitle) {
+        this.historyTitle = historyTitle;
+    }
+
     public void updateSavedLocation(String savedLocation) {
         this.savedLocation = savedLocation;
+    }
+
+    public void updateThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public void updateVideoInfo(String videoInfo) {
+        this.videoInfo = videoInfo;
     }
 
     public void addStudyFeedBack(StudyFeedback studyFeedback) {

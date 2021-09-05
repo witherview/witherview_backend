@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -200,5 +203,13 @@ public class GroupStudyService {
         var result = studyRoomRepository.findRooms(userId, industry, job, keyword, lastId, pageSize);
         lists.addAll(result);
         return lists;
+    }
+
+    public List<GroupStudyDTO.UserRankResponseDTO> findUserRanking(Integer lastPage) {
+        int page = lastPage == null ? 0 : lastPage;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("reliability").descending());
+        return userRepository.findAll(pageable).getContent()
+            .stream().map(e -> groupStudyMapper.toUserRankResponseDto(e))
+            .collect(Collectors.toList());
     }
 }

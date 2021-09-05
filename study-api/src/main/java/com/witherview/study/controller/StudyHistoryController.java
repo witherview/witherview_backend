@@ -2,6 +2,7 @@ package com.witherview.study.controller;
 
 import com.witherview.mysql.entity.StudyHistory;
 import com.witherview.study.dto.GroupStudyDTO;
+import com.witherview.study.dto.StudyHistoryDTO;
 import com.witherview.study.mapper.StudyHistoryMapper;
 import com.witherview.study.service.StudyHistoryService;
 import com.witherview.study.util.AuthTokenParsing;
@@ -11,6 +12,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +21,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,7 +55,7 @@ public class StudyHistoryController {
         }
         String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
         StudyHistory studyHistory = studyHistoryService.saveStudyHistory(requestDto.getId(), userId);
-        return new ResponseEntity<>(studyHistoryMapper.toHistoryCreatedDto(studyHistory), HttpStatus.CREATED);
+        return new ResponseEntity<>(studyHistoryMapper.toHistoryIdDto(studyHistory), HttpStatus.CREATED);
     }
 
     @ApiOperation(value = "스터디 녹화 등록")
@@ -65,5 +72,46 @@ public class StudyHistoryController {
         return new ResponseEntity<>(studyHistoryMapper.toVideoSavedDto(studyHistory), HttpStatus.OK);
     }
 
-    // TODO: 스터디 조회 api 작성 필요
+    @ApiOperation(value = "스터디 연습 기록 조회")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "Authorization", paramType = "header")
+    })
+    @GetMapping
+    public ResponseEntity<?> getList(
+        @ApiParam(value = "마지막으로 조회된 페이지")
+        @RequestParam(value = "lastPage", required = false) Integer lastPage,
+        @ApiIgnore Authentication authentication) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        List<StudyHistory> studyHistories = studyHistoryService.findAll(userId, lastPage);
+        return new ResponseEntity<>(studyHistoryMapper.toResponseArray(studyHistories), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "스터디 연습 영상 제목 수정")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "Authorization", paramType = "header")
+    })
+    @PutMapping
+    public ResponseEntity<?> updateStudyHistory(@RequestBody @Valid StudyHistoryDTO.HistoryUpdateRequestDTO dto,
+        BindingResult error,
+        @ApiIgnore Authentication authentication) {
+        if (error.hasErrors()) {
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, error);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        StudyHistory studyHistory = studyHistoryService.updateStudyHistory(userId, dto);
+        return new ResponseEntity<>(studyHistoryMapper.toResponseDto(studyHistory), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "스터디 연습 기록 삭제")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "Authorization", paramType = "header")
+    })
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> deleteSelfHistory(@ApiParam(value = "삭제할 내역 id", required = true) @PathVariable("id") Long historyId,
+        @ApiIgnore Authentication authentication) {
+        String userId = AuthTokenParsing.getAuthClaimValue(authentication, "userId");
+        StudyHistory studyHistory = studyHistoryService.deleteStudyHistory(userId, historyId);
+        return new ResponseEntity<>(studyHistoryMapper.toHistoryIdDto(studyHistory), HttpStatus.OK);
+    }
 }
