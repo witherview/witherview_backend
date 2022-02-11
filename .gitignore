@@ -1,5 +1,8 @@
 HELP.md
 .gradle
+gradle/
+gradlew
+gradlew.bat
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -17,6 +20,7 @@ build/
 
 ### IntelliJ IDEA ###
 .idea
+idea.log
 *.iws
 *.iml
 *.ipr
@@ -39,3 +43,8 @@ out/
 src/main/generated
 
 bin/
+
+# 설정 및 Config 추적 대상에서 제외할 파일
+**/src/main/resources/application-local.yml
+**/src/main/resources/application-aws.yml
+initCmd/
