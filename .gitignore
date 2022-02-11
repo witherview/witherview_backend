@@ -47,4 +47,3 @@ bin/
 # 설정 및 Config 추적 대상에서 제외할 파일
 **/src/main/resources/application-local.yml
 **/src/main/resources/application-aws.yml
-initCmd/
